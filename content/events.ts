@@ -63,6 +63,22 @@ export const events: CremosaEvent[] = [
     note: ".",
     mock: true,
   },
+    {
+    slug: "mock-private-2026-09",
+    title: "Chá das Patroas /// Ed. Anos 2000",
+    date: "2026-07-11",
+    time: "22h",
+    venue: "Fv 4° Distrito",
+    city: "Porto Alegre",
+    region: "RS",
+    country: "Brasil",
+    status: "confirmed",
+    category: "club",
+    lineup: ["Cremosa"],
+    ticketUrl: "https://www.sympla.com.br/evento/cha-das-patroas-ed-anos-2000/3461297",
+    note: ".",
+    mock: true,
+  },
 
   // ─────── PAST (confirmed, from Midia Kit 2026) ───────
   // {
