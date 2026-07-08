@@ -8,7 +8,7 @@ interface LogoProps {
    * dimensions so the right asset is shipped at each breakpoint.
    *  - nav:    small, sticky header — 240px source, h-10
    *  - footer: medium brand mark — 600px source, h-14
-   *  - hero:   large display — 1200px source, fills container
+   *  - hero:   large display — 2000px source, fills container
    *  - master: full-resolution original — only for press / OG use
    */
   size?: LogoSize;
@@ -31,26 +31,29 @@ const VARIANTS: Record<
   nav: {
     src: site.brand.logo.nav,
     intrinsicW: 240,
-    intrinsicH: 135, // original 16:9 → 240/1.778 ≈ 135
-    defaultClass: "h-10 w-auto sm:h-12",
+    intrinsicH: 135, // original 16:9
+    defaultClass: "block h-10 w-auto sm:h-12",
   },
   footer: {
     src: site.brand.logo.default,
     intrinsicW: 600,
     intrinsicH: 338,
-    defaultClass: "h-14 w-auto sm:h-20",
+    defaultClass: "block h-14 w-auto sm:h-20",
   },
   hero: {
+    // 2000×1125 source — covers up to ~3x retina on a 600px CSS width.
+    // The rendered <img> fills the parent up to max-w-6xl (1152px) and
+    // is block + mx-auto so it centers instead of flowing inline-left.
     src: site.brand.logo.hero,
-    intrinsicW: 1200,
-    intrinsicH: 675,
-    defaultClass: "w-full max-w-3xl h-auto",
+    intrinsicW: 2000,
+    intrinsicH: 1125,
+    defaultClass: "block w-full max-w-6xl h-auto mx-auto",
   },
   master: {
     src: site.brand.logo.master,
     intrinsicW: 3840,
     intrinsicH: 2160,
-    defaultClass: "w-full h-auto",
+    defaultClass: "block w-full h-auto",
   },
 };
 

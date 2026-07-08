@@ -17,9 +17,7 @@ export default function HomePage() {
           <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-bubble mb-6">
             // {site.brand.tagline.primary}
           </p>
-          <div className="mb-8 max-w-3xl">
-            <Logo size="hero" priority />
-          </div>
+          <Logo size="hero" priority className="mb-8" />
           <p className="max-w-xl text-cream text-lg sm:text-2xl font-medium">
             {site.brand.tagline.secondary}
           </p>

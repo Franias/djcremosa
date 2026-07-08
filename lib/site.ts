@@ -24,10 +24,14 @@ export const site = {
     activeSince: 2016,
     /** Logo assets — relative paths under /public. */
     logo: {
-      /** Master, 3840×2160, 1.7MB — kept for archival / press use only. */
+      /** Master, 3840×2160, 1.7MB — archival / press use only. */
       master: "/logo/cremosa-original.png",
-      /** 1200px wide — hero, OG image. */
-      hero: "/logo/cremosa-1200.png",
+      /** 2800px wide — ultra-crisp on 4K/retina screens (1.3MB). */
+      "4k": "/logo/cremosa-2800.png",
+      /** 2000px wide — hero, OG image. 2x crisp on most displays (~700KB). */
+      hero: "/logo/cremosa-2000.png",
+      /** 1200px wide — fallback for slow connections (kept for now). */
+      fallback: "/logo/cremosa-1200.png",
       /** 600px wide — footer, generic brand display. */
       default: "/logo/cremosa-600.png",
       /** 240px wide — sticky nav. */
