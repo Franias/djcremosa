@@ -1,0 +1,285 @@
+# SPEC — Site DJ Cremosa
+
+> Documento vivo. Última atualização: **2026-07-08**.
+> Stack: Next.js 16 (App Router) · React 19 · Tailwind v4 · TypeScript · dark mode.
+
+---
+
+## 0. Resumo em uma linha
+
+Site pessoal de **DJ Cremosa** — seletora de Porto Alegre, ativa desde 2016. Apresenta a persona, a agenda de shows, o repertório musical e o material de imprensa. Visual Y2K crimson/magenta, tom direto, mobile-first.
+
+## 1. Identidade de marca (do Midia Kit 2026)
+
+| Atributo | Detalhe |
+|---|---|
+| **Nome artístico** | DJ Cremosa (display secundário: **CREMESSA**) |
+| **Localização** | Porto Alegre, RS — Brasil |
+| **Ativa desde** | 2016 (10 anos em 2026) |
+| **Pilares textuais** | SELETORA · CURADORIA · DISCOTECAGEM |
+| **Manifesto curto** | "Música preta global na pista." |
+| **Tagline curta** | "Sua curadoria musical valoriza a potência da música preta na pista e cria sets dinâmicos que transitam entre diferentes épocas, ritmos e influências." |
+| **Cores** | Crimson `#c8152e`, Magenta `#d6307a`, Bubble pink `#ff6fa3`, Cream `#f4e7d3`, BG `#0a0606` |
+| **Tipografia display** | **Bagel Fat One** (Google Fonts) — bubble Y2K chunky, eco da capa do press kit |
+| **Tipografia corpo** | Geist Sans · Geist Mono |
+| **Tratamento visual** | Film grain overlay (CSS), gloss duplo nas letras-display, scroll vertical sem scroll-jank |
+| **Tom de voz** | Direto, orgulhoso da negritude da cena, em primeira pessoa. Sempre pt-BR |
+
+### Subgêneros (chips na bio, futura seção Música)
+
+funk brasileiro · rap · amapiano · house · pop · R&B
+
+### Highlights de carreira (do kit)
+
+- **2023** — Rap in Cena, ao lado de D'Lock
+- **2024** — Rap in Cena solo
+- Aberturas para Rafa Moreira, Baco Exu do Blues e KL Jay
+- **2025** — Co-funda o coletivo **AfroJams**
+- **2026** — Line-up **Planeta Atlântida** via AfroJams
+- **2026** — Residência **BatukBaile**
+- Setup: **Pioneer DDJ-200**
+
+> ⚠️ **Inconsistência detectada no kit**: o telefone listado é `+51 993723158` (código +51 = **Peru**). Ela opera em Porto Alegre/Brasil, então o número correto provavelmente é `+55 51 99372-3158` ou similar. **Validar com Cremosa antes de publicar** — deixei como está no press kit no site, mas a SPEC recomenda corrigir quando confirmar.
+
+### Contatos oficiais (do kit)
+
+| Canal | Valor |
+|---|---|
+| Instagram | `@djcremosa` |
+| Email | `franciellipdias@gmail.com` |
+| Telefone (kit) | `+51 993723158` ⚠️ validar DDI |
+
+---
+
+## 2. Estrutura de páginas
+
+```
+/                Hero · agenda preview · press highlights
+/agenda          ★ Foco principal · upcoming/past/all com filtro URL
+/musica          [stub] sets, tracklists, filtros por gênero
+/galeria         [stub] grid masonry + lightbox
+/videos          [stub] embeds YouTube/Vimeo
+/sobre           [stub] bio + linha do tempo 2016→hoje
+/contato         Cartões mailto para booking, imprensa, telefone, IG
+```
+
+Todos os stubs compartilham `components/sections/SectionPlaceholder` — em vez de 404, mostram um manifesto do que vai ter na seção.
+
+### Mapa de seção `/agenda` (entregue no protótipo)
+
+```
+HERO
+ ├ Eyebrow: // agenda · ANO
+ ├ Título "AGENDA" gigante (display bubble)
+ └ Lede: "Próximos shows, festivais e residências..."
+
+FILTRO (URL ?view=)
+ ├ [ Próximas (N) ]   ← default
+ ├ [ Histórico (N) ]
+ └ [ Tudo (N) ]
+
+PRÓXIMAS DATAS  (upcoming ascending by date)
+ └ EventRow[]
+     ├ Date col (DIA / MÊS / ANO) — bubble style se futuro
+     ├ Eyebrow chips: categoria · status (com cor)
+     ├ Title h3
+     ├ Venue · city · region · country · time · endDate
+     ├ Line-up (opcional) + note (opcional, italic)
+     └ Actions: Ingressos → (se confirmado)
+
+HISTÓRICO  (past descending by date) — modo compact (esconde line-up)
+ └ mesma estrutura, date em cream-dim (sem gloss)
+```
+
+**Filtro é server-side via searchParam** → zero JS no cliente, URL compartilhável, SEO-friendly.
+
+### `/agenda` schema de dados (`content/events.ts`)
+
+```ts
+interface CremosaEvent {
+  slug: string;
+  title: string;
+  date: "YYYY-MM-DD";
+  endDate?: "YYYY-MM-DD";
+  time?: string;             // "23h"
+  venue: string;
+  city: string;
+  region?: string;           // UF
+  country: string;
+  status: "confirmed" | "tentative" | "sold-out" | "postponed" | "cancelled";
+  category: "festival" | "club" | "party" | "residency" | "tour" | "private";
+  lineup?: string[];
+  ticketUrl?: string;
+  note?: string;
+  mock?: boolean;            // template entries, false em produção
+}
+```
+
+**Mock data atual**: 3 upcoming + 4 past (Rap in Cena 2023/2024, Planeta Atlântida 2026, BatukBaile residency). Os 3 upcoming têm `mock: true` e `note` explicando como substituir.
+
+---
+
+## 3. Design system
+
+### Tokens (em `app/globals.css`)
+
+```
+Surfaces:    bg #0a0606, surface #14090b, surface-2 #1f1014, line #2c1620
+Foreground:  cream #f4e7d3, cream-dim #b9a995
+Brand:       crimson #c8152e, crimson-deep #8a0d1f, magenta #d6307a, bubble #ff6fa3, bubble-hi #ffb3cf
+Status:      ok #7eea9a, warn #ffcc66, down #ff6477
+Fonts:       display Bagel Fat One · sans Geist · mono Geist Mono
+```
+
+### Classes utilitárias custom
+
+- `.bubble` — gradiente de texto 4-stops (highlight → bubble → magenta → crimson-deep) + double text-shadow. Usado em todo título-display.
+- `.grain` — overlay SVG inline de ruído, blend overlay, 18% opacity. Eco do grain do press kit.
+- `.line` — cor de divisor.
+
+### Princípios visuais
+
+- **Dark by default** (a pista é o lugar dela — site preto/vermelho combina)
+- **Sem cantos super-arredondados** exceto botões (pill) e chips
+- **Bordas finas** (`border-line`) em vez de sombras — mantém o cinema de pista
+- **Sem emojis** — usa ★ ▸ → ← etc quando precisa de glyph
+
+---
+
+## 4. Princípios técnicos
+
+| Tema | Decisão |
+|---|---|
+| App Router | Sim — layouts aninhados quando precisar (ex: `(site)/agenda/[year]`) |
+| Client Components | **Mínimo** — hoje zero. Filtro agenda é server-side via `searchParams` |
+| Imagens | `next/image` + Cloudinary loader (Fase 2) |
+| Vídeo | Embed YouTube/Vimeo, nunca self-host |
+| Áudio (sets) | Embed SoundCloud/Mixcloud |
+| Fonts | `next/font/google` (auto-self-hospedadas, zero CLS) |
+| Forms | `mailto:` no MVP. Fase 2: Resend + React Email ou Formspree |
+| Analytics | Fase 5: Plausible (cookie-free) |
+| Deploy | Vercel (free tier cobre tranquilamente) |
+| Domínio sugerido | `djcremosa.com.br` · alias `cremosa.art` |
+| Idioma | `pt-BR` no `<html lang>`. EN fica pra `/en/*` se um dia precisar |
+
+### Pastas
+
+```
+app/
+  agenda/    [prototipado]
+  sobre/     [stub]
+  musica/    [stub]
+  galeria/   [stub]
+  videos/    [stub]
+  contato/   [prototipado]
+components/
+  nav/        SiteNav, SiteFooter
+  sections/   AgendaView, EventRow, SectionPlaceholder
+content/
+  events.ts   fonte da agenda (typed TS records)
+lib/
+  site.ts     brand + contatos
+  events.ts   tipos + helpers (parseDate, splitAgenda, formatDate, badges)
+public/
+  photos/     [vazio — fase 2]
+```
+
+### Versão do framework
+
+- **Next.js 16.2.10** (Turbopack default). Atenção a `params`/`searchParams` como `Promise` (await obrigatório).
+- **React 19.2**.
+- **Tailwind v4** com `@theme` em CSS, sem `tailwind.config.js`.
+
+---
+
+## 5. Roadmap por fase (cumulativo)
+
+### ✅ Fase 1 — Scaffold + brand (FEITO)
+- [x] Next.js 16 + TS + Tailwind v4
+- [x] Paleta + tipografia display = press kit
+- [x] Layout com nav sticky + footer
+- [x] Página `/agenda` funcional com filtro URL
+- [x] 3 mock events + 4 eventos reais do kit
+
+### ⏭️ Fase 2 — Conteúdo
+- [ ] Seed `content/events.ts` com 5–10 shows reais
+- [ ] Substituir mocks por eventos reais conforme forem fechando
+- [ ] `/sobre` com bio completa pt-BR (e EN)
+- [ ] `/contato` formulário real (Resend ou Formspree)
+- [ ] Foto oficial do hero (Cloudinary ou Next/Image local)
+
+### ⏭️ Fase 3 — Música + Galeria + Vídeos
+- [ ] `/musica` — embeds SoundCloud + filtro por gênero
+- [ ] `/galeria` — masonry + lightbox, organizado por evento
+- [ ] `/videos` — embeds YouTube com poster otimizado
+
+### ⏭️ Fase 4 — Conteúdo derivado
+- [ ] `/press-kit` mirror do PDF (download)
+- [ ] `/releases` para EPs/singles se vier a produzir
+- [ ] RSS da agenda (motor XML do Next)
+- [ ] Open Graph image custom por página
+
+### ⏭️ Fase 5 — Polimento + SEO
+- [ ] Lighthouse ≥ 95 mobile
+- [ ] Sitemap + robots
+- [ ] Plausible/Umami analytics
+- [ ] Schema.org `Person` + `MusicEvent` por evento
+- [ ] 404 page bonitona
+
+### ⏭️ Fase 6 — Lançamento
+- [ ] Domínio custom (djcremosa.com.br)
+- [ ] Vercel deploy + branch previews
+- [ ] Link na bio de todas as redes
+- [ ] Submit sitemap ao Google Search Console
+
+---
+
+## 6. Decisões abertas (precisam de input da Cremosa)
+
+1. **Domínio** — `djcremosa.com.br` é o mais óbvio. Confirmar disponibilidade.
+2. **Telefone** — número do kit tem DDI +51 (Peru); validar o correto.
+3. **Página `/en`** — quer versão bilíngue? Se sim, replicar tudo em `/en/*`.
+4. **CMS** — quer editar a agenda sem mexer em código? Se sim, Fase 2 vira **Sanity** (recomendado) ou Notion-as-CMS.
+5. **Player fixo** — quer player SoundCloud no rodapé que continua tocando entre páginas? Tende a incomodar em entrevistas/reuniões.
+6. **Newsletter** — coletar email de fans? Se sim, integração com Resend + double opt-in.
+7. **Loja** — vende camisetas/vinyl? Mercado Livre / Shopify / própria?
+
+---
+
+## 7. Como rodar
+
+```bash
+cd ~/Projects/dj-cremosa
+npm run dev          # http://localhost:3000
+npm run build        # produção
+npm start            # serve o build
+```
+
+Para adicionar um show novo:
+
+```ts
+// content/events.ts
+{
+  slug: "...",
+  title: "...",
+  date: "YYYY-MM-DD",
+  // ...resto
+}
+```
+
+Push e deploy — Vercel rebuild automático.
+
+---
+
+## 8. Critério de "MVP bom o suficiente pra lançar"
+
+- [ ] Hero com nome + última data confirmada (auto-lendo da agenda)
+- [ ] `/agenda` mostra próximos 2–3 shows sem mocks
+- [ ] `/contato` aponta para email que você responde
+- [ ] Bio em uma linha na home
+- [ ] 4–6 fotos reais
+- [ ] 1 release embed (SoundCloud do set mais recente)
+- [ ] Lighthouse ≥ 90 mobile
+- [ ] Domínio apontando
+
+Quando os 8 itens estiverem ✅, **publica**.

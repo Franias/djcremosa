@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DJ Cremosa · site
 
-## Getting Started
+Site pessoal de **DJ Cremosa** — agenda de shows, música, galeria, vídeos e contato.
 
-First, run the development server:
+Stack: **Next.js 16** (App Router, Turbopack) · **React 19** · **Tailwind v4** · **TypeScript** · **dark mode**.
+
+> Documento de referência completo: [`SPEC.md`](./SPEC.md).
+
+---
+
+## 🧞 Comandos
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run dev      # desenvolvimento em http://localhost:3000
+npm run build    # build de produção
+npm start        # serve o build
+npm run lint     # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📁 Estrutura
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/                 rotas (App Router)
+  agenda/            ★ pronto: lista de shows com filtro
+  sobre/  musica/    ⏳ stubs (próximas seções)
+  galeria/ videos/
+  contato/           pronto: cartões de contato
+components/
+  nav/               SiteNav, SiteFooter
+  sections/          AgendaView, EventRow, SectionPlaceholder
+content/
+  events.ts          ★ dados da agenda (TS tipado)
+lib/
+  site.ts            constantes de marca, contatos, social
+  events.ts          tipos + helpers de data
+public/              assets estáticos
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ➕ Adicionar um show
 
-## Learn More
+Edita `content/events.ts`:
 
-To learn more about Next.js, take a look at the following resources:
+```ts
+{
+  slug: "show-2026-11-club-x",
+  title: "Noite de abertura",
+  date: "2026-11-22",          // ISO YYYY-MM-DD
+  time: "23h",
+  venue: "Club X",
+  city: "Porto Alegre",
+  region: "RS",
+  country: "Brasil",
+  status: "confirmed",         // confirmed | tentative | sold-out | postponed | cancelled
+  category: "club",            // festival | club | party | residency | tour | private
+  lineup: ["DJ Cremosa", "+ outros"],
+  ticketUrl: "https://...",
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Push e pronto — Vercel rebuilda.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🪪 Marca
 
-## Deploy on Vercel
+- **Nome:** DJ Cremosa (display: CREMESSA)
+- **Ativa desde:** 2016 · Porto Alegre, RS
+- **Tagline:** "Seletora · Curadoria · Discotecagem"
+- **Manifesto:** "Música preta global na pista."
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Tokens, cores e tipografia estão em `app/globals.css` (`@theme { ... }`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Deploy
+
+1. Conectar o repo na Vercel
+2. Setar `NEXT_PUBLIC_SITE_URL` = `https://djcremosa.com.br`
+3. Cada `git push` vira preview; merge na main vira produção
+
+## 📝 Licença
+
+Código: privado. Conteúdo (texto, imagens, áudio): © DJ Cremosa.

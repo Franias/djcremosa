@@ -1,65 +1,113 @@
-import Image from "next/image";
+import Link from "next/link";
+import { EventRow } from "@/components/sections/EventRow";
+import { events } from "@/content/events";
+import { splitAgenda } from "@/lib/events";
+import { site } from "@/lib/site";
 
-export default function Home() {
+export default function HomePage() {
+  const { upcoming } = splitAgenda(events);
+  const nextThree = upcoming.slice(0, 3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      {/* HERO */}
+      <section className="relative overflow-hidden grain">
+        <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 pt-20 pb-24 sm:pt-32 sm:pb-36">
+          <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-bubble mb-6">
+            // {site.brand.tagline.primary}
           </p>
+          <h1 className="font-display text-[22vw] sm:text-[14rem] leading-[0.82] bubble">
+            CREM<br className="sm:hidden" />
+            <span className="sm:inline">OSA</span>
+          </h1>
+          <p className="mt-8 max-w-xl text-cream text-lg sm:text-2xl font-medium">
+            {site.brand.tagline.secondary}
+          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-3">
+            <Link
+              href="/agenda"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-bubble text-bg font-mono text-[11px] uppercase tracking-[0.22em] hover:bg-bubble-hi transition-colors"
+            >
+              Ver agenda →
+            </Link>
+            {site.social.instagram && (
+              <a
+                href={site.social.instagram.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-line text-cream hover:border-bubble hover:text-bubble font-mono text-[11px] uppercase tracking-[0.22em] transition-colors"
+              >
+                {site.social.instagram.handle}
+              </a>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Faint brand axes on the sides (echo of the press kit layout) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-3 sm:left-6 hidden sm:flex flex-col justify-center"
+        >
+          <span className="rotate-180 font-mono text-[10px] tracking-[0.4em] text-cream-dim/40 [writing-mode:vertical-rl]">
+            SELETORA · CURADORIA · DISCOTECAGEM
+          </span>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* UPCOMING PREVIEW */}
+      <section className="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24">
+        <header className="flex items-baseline justify-between gap-4 mb-8">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-bubble mb-2">
+              // próximas datas
+            </p>
+            <h2 className="font-display text-4xl sm:text-6xl bubble leading-none">
+              Em rota
+            </h2>
+          </div>
+          <Link
+            href="/agenda"
+            className="font-mono text-[10px] uppercase tracking-[0.22em] text-cream-dim hover:text-bubble transition-colors"
+          >
+            agenda completa →
+          </Link>
+        </header>
+
+        {nextThree.length > 0 ? (
+          <ul className="list-none p-0">
+            {nextThree.map((e) => (
+              <li key={e.slug}>
+                <EventRow event={e} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-cream-dim">
+            Sem datas confirmadas no momento. Aguarda o próximo anúncio.
+          </p>
+        )}
+      </section>
+
+      {/* PRESS HIGHLIGHTS */}
+      <section className="mx-auto max-w-6xl px-5 sm:px-8 py-16 sm:py-24 border-t border-line">
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-bubble mb-2">
+          // em destaque
+        </p>
+        <h2 className="font-display text-4xl sm:text-5xl text-cream leading-tight max-w-2xl">
+          Dez anos na pista, da cena de Porto Alegre pro mundo.
+        </h2>
+        <ul className="mt-8 grid sm:grid-cols-2 gap-3 list-none p-0">
+          {site.highlights.map((h) => (
+            <li
+              key={h}
+              className="flex items-start gap-3 border border-line rounded-md px-4 py-3 bg-surface"
+            >
+              <span className="text-bubble mt-0.5">★</span>
+              <span className="text-cream text-sm sm:text-base">{h}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
   );
 }
