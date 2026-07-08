@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { EventRow } from "@/components/sections/EventRow";
 import { events } from "@/content/events";
 import { splitAgenda } from "@/lib/events";
@@ -12,15 +13,14 @@ export default function HomePage() {
     <>
       {/* HERO */}
       <section className="relative overflow-hidden grain">
-        <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 pt-20 pb-24 sm:pt-32 sm:pb-36">
+        <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 pt-12 pb-16 sm:pt-20 sm:pb-28">
           <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-bubble mb-6">
             // {site.brand.tagline.primary}
           </p>
-          <h1 className="font-display text-[22vw] sm:text-[14rem] leading-[0.82] bubble">
-            CREM<br className="sm:hidden" />
-            <span className="sm:inline">OSA</span>
-          </h1>
-          <p className="mt-8 max-w-xl text-cream text-lg sm:text-2xl font-medium">
+          <div className="mb-8 max-w-3xl">
+            <Logo size="hero" priority />
+          </div>
+          <p className="max-w-xl text-cream text-lg sm:text-2xl font-medium">
             {site.brand.tagline.secondary}
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">

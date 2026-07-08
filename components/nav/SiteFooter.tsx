@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { site } from "@/lib/site";
 
 export function SiteFooter() {
@@ -6,9 +7,7 @@ export function SiteFooter() {
     <footer className="mt-16 border-t border-line">
       <div className="mx-auto max-w-6xl px-5 sm:px-8 py-12 flex flex-col gap-8 sm:flex-row sm:justify-between sm:items-start">
         <div>
-          <p className="font-display text-3xl bubble leading-none">
-            {site.brand.name.toUpperCase()}
-          </p>
+          <Logo size="footer" />
           <p className="text-cream-dim text-sm mt-3 max-w-xs">
             {site.brand.tagline.secondary}
           </p>

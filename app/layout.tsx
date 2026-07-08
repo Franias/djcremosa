@@ -35,6 +35,8 @@ export const metadata: Metadata = {
   authors: [{ name: site.brand.name }],
   generator: "Next.js",
   keywords: [
+    "Cremosa",
+    "CREMOSA",
     "DJ Cremosa",
     "CREMESSA",
     "DJ Porto Alegre",
@@ -53,11 +55,18 @@ export const metadata: Metadata = {
     siteName: site.brand.name,
     title: `${site.brand.name} · ${site.brand.tagline.primary}`,
     description: site.brand.tagline.secondary,
+    images: [{ url: site.brand.logo.hero, alt: site.brand.logo.alt }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${site.brand.name} · ${site.brand.tagline.primary}`,
     description: site.brand.tagline.secondary,
+    images: [{ url: site.brand.logo.hero, alt: site.brand.logo.alt }],
+  },
+  icons: {
+    // Favicons ainda usam o default do Next; um logo transparente vai ser
+    // adicionado na fase 2.
+    icon: [{ url: "/favicon.ico" }],
   },
   robots: {
     index: true,

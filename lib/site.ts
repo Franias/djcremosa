@@ -1,19 +1,40 @@
 /**
  * Single source of truth for brand + contact + socials.
  * Update here, propagate everywhere.
+ *
+ * Brand: "Cremosa" (display: CREMOSA).
+ * Legacy alias "DJ Cremosa" kept for SEO continuity and industry billing
+ * conventions — never use it as the visible brand name on the site.
  */
 
 export const site = {
-  // Use only one form of your name on the URL — append the brand aliases only in display.
   brand: {
-    name: "DJ Cremosa",
-    aliases: ["CREMESSA", "DJ Cremosa"],
+    /** Site-wide display name. The image at /logo/cremosa-600.png is the
+     *  canonical logo; text fallback is "CREMOSA" in the bagel bubble font. */
+    name: "Cremosa",
+    /** Title-cased alias used in some contexts (mid-sentence, aria labels). */
+    displayName: "CREMOSA",
+    /** Older / billing / SEO aliases — never rendered as the primary brand. */
+    aliases: ["DJ Cremosa", "CREMESSA"],
     tagline: {
       primary: "Seletora · Curadoria · Discotecagem",
       secondary: "Música preta global na pista — Porto Alegre desde 2016.",
     },
     location: "Porto Alegre, RS — Brasil",
     activeSince: 2016,
+    /** Logo assets — relative paths under /public. */
+    logo: {
+      /** Master, 3840×2160, 1.7MB — kept for archival / press use only. */
+      master: "/logo/cremosa-original.png",
+      /** 1200px wide — hero, OG image. */
+      hero: "/logo/cremosa-1200.png",
+      /** 600px wide — footer, generic brand display. */
+      default: "/logo/cremosa-600.png",
+      /** 240px wide — sticky nav. */
+      nav: "/logo/cremosa-240.png",
+      /** Default logo alt text — used in <img alt>. */
+      alt: "Cremosa — logotipo oficial",
+    },
   },
   contact: {
     email: "franciellipdias@gmail.com",

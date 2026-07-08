@@ -1,6 +1,6 @@
-# DJ Cremosa · site
+# Cremosa · site
 
-Site pessoal de **DJ Cremosa** — agenda de shows, música, galeria, vídeos e contato.
+Site pessoal de **Cremosa** — agenda de shows, música, galeria, vídeos e contato.
 
 Stack: **Next.js 16** (App Router, Turbopack) · **React 19** · **Tailwind v4** · **TypeScript** · **dark mode**.
 Deploy: **GitHub Pages** via GitHub Actions (`output: 'export'`).
@@ -86,7 +86,7 @@ Edita `content/events.ts`:
   country: "Brasil",
   status: "confirmed",         // confirmed | tentative | sold-out | postponed | cancelled
   category: "club",            // festival | club | party | residency | tour | private
-  lineup: ["DJ Cremosa", "+ outros"],
+  lineup: ["Cremosa", "+ outros"],
   ticketUrl: "https://...",
 }
 ```
@@ -95,7 +95,8 @@ Push → Actions rebuilda → live em ~60s.
 
 ## 🪪 Marca
 
-- **Nome:** DJ Cremosa (display: CREMESSA)
+- **Nome:** Cremosa
+- **Logo:** `/public/logo/cremosa-original.png` (master) + versões 1200/600/240
 - **Ativa desde:** 2016 · Porto Alegre, RS
 - **Tagline:** "Seletora · Curadoria · Discotecagem"
 - **Manifesto:** "Música preta global na pista."
@@ -114,7 +115,7 @@ Tokens, cores e tipografia estão em `app/globals.css` (`@theme { ... }`).
 
 ## 📝 Licença
 
-Código: privado. Conteúdo (texto, imagens, áudio): © DJ Cremosa.
+Código: privado. Conteúdo (texto, imagens, áudio): © Cremosa.
 # djcremosa
 # djcremosa
 # djcremosa

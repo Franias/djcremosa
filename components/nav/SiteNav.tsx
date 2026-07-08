@@ -1,13 +1,14 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { site } from "@/lib/site";
 
 const NAV = [
-  { href: "/agenda", label: "Agenda" },
-  { href: "/musica", label: "Música" },
-  { href: "/galeria", label: "Galeria" },
-  { href: "/videos", label: "Vídeos" },
-  { href: "/sobre", label: "Sobre" },
-  { href: "/contato", label: "Contato" },
+  { href: "/agenda/", label: "Agenda" },
+  { href: "/musica/", label: "Música" },
+  { href: "/galeria/", label: "Galeria" },
+  { href: "/videos/", label: "Vídeos" },
+  { href: "/sobre/", label: "Sobre" },
+  { href: "/contato/", label: "Contato" },
 ];
 
 export function SiteNav() {
@@ -15,14 +16,14 @@ export function SiteNav() {
     <header className="sticky top-0 z-30 backdrop-blur-md bg-bg/80 border-b border-line">
       <nav
         aria-label="Principal"
-        className="mx-auto max-w-6xl px-5 sm:px-8 h-14 flex items-center justify-between gap-6"
+        className="mx-auto max-w-6xl px-5 sm:px-8 h-16 flex items-center justify-between gap-6"
       >
         <Link
           href="/"
-          className="font-display text-lg sm:text-xl leading-none bubble whitespace-nowrap"
           aria-label={`${site.brand.name} — início`}
+          className="block shrink-0"
         >
-          {site.brand.name.toUpperCase()}
+          <Logo size="nav" priority />
         </Link>
 
         <ul className="hidden md:flex items-center gap-1 list-none p-0">

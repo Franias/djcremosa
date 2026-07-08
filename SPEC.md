@@ -1,4 +1,4 @@
-# SPEC — Site DJ Cremosa
+# SPEC — Site Cremosa
 
 > Documento vivo. Última atualização: **2026-07-08**.
 > Stack: Next.js 16 (App Router) · React 19 · Tailwind v4 · TypeScript · dark mode.
@@ -7,20 +7,22 @@
 
 ## 0. Resumo em uma linha
 
-Site pessoal de **DJ Cremosa** — seletora de Porto Alegre, ativa desde 2016. Apresenta a persona, a agenda de shows, o repertório musical e o material de imprensa. Visual Y2K crimson/magenta, tom direto, mobile-first.
+Site pessoal de **Cremosa** — seletora de Porto Alegre, ativa desde 2016. Apresenta a persona, a agenda de shows, o repertório musical e o material de imprensa. Visual Y2K crimson/magenta, tom direto, mobile-first.
 
 ## 1. Identidade de marca (do Midia Kit 2026)
 
 | Atributo | Detalhe |
 |---|---|
-| **Nome artístico** | DJ Cremosa (display secundário: **CREMESSA**) |
+| **Nome artístico (site)** | **Cremosa** |
+| **Logo canônico** | `/public/logo/cremosa-original.png` (4K master) + versões 1200/600/240 |
+| **Aliases preservados** | "DJ Cremosa" (legacy SEO / billing de evento), "CREMESSA" (display secundário do press kit) |
 | **Localização** | Porto Alegre, RS — Brasil |
 | **Ativa desde** | 2016 (10 anos em 2026) |
 | **Pilares textuais** | SELETORA · CURADORIA · DISCOTECAGEM |
 | **Manifesto curto** | "Música preta global na pista." |
 | **Tagline curta** | "Sua curadoria musical valoriza a potência da música preta na pista e cria sets dinâmicos que transitam entre diferentes épocas, ritmos e influências." |
 | **Cores** | Crimson `#c8152e`, Magenta `#d6307a`, Bubble pink `#ff6fa3`, Cream `#f4e7d3`, BG `#0a0606` |
-| **Tipografia display** | **Bagel Fat One** (Google Fonts) — bubble Y2K chunky, eco da capa do press kit |
+| **Tipografia display** | **Bagel Fat One** (Google Fonts) — bubble Y2K chunky, usada em headings de seção (AGENDA, CONTATO etc.) |
 | **Tipografia corpo** | Geist Sans · Geist Mono |
 | **Tratamento visual** | Film grain overlay (CSS), gloss duplo nas letras-display, scroll vertical sem scroll-jank |
 | **Tom de voz** | Direto, orgulhoso da negritude da cena, em primeira pessoa. Sempre pt-BR |
