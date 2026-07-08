@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { site } from "@/lib/site";
 
 type LogoSize = "nav" | "footer" | "hero" | "master";
@@ -32,7 +31,7 @@ const VARIANTS: Record<
   nav: {
     src: site.brand.logo.nav,
     intrinsicW: 240,
-    intrinsicH: 135, // original 16:9 → 240/1.778 = 135
+    intrinsicH: 135, // original 16:9 → 240/1.778 ≈ 135
     defaultClass: "h-10 w-auto sm:h-12",
   },
   footer: {
@@ -55,6 +54,19 @@ const VARIANTS: Record<
   },
 };
 
+/**
+ * Plain <img> instead of next/image.
+ *
+ * Why: under `output: 'export'` + `images.unoptimized: true`, next/image
+ * emits the literal src into the HTML without applying `basePath`. So a
+ * site deployed to https://<user>.github.io/<repo>/ ends up with
+ *   <img src="/logo/foo.png">
+ * which 404s (browser resolves against the host root).
+ *
+ * A plain <img> lets us prefix the src ourselves with `site.basePath`,
+ * keeping the asset URL correct under any subpath host. Set
+ * `site.basePath = ""` once you migrate to a custom domain.
+ */
 export function Logo({
   size = "nav",
   width,
@@ -64,17 +76,17 @@ export function Logo({
   priority = false,
 }: LogoProps) {
   const v = VARIANTS[size];
+  const src = `${site.basePath}${v.src}`;
   return (
-    <Image
-      src={v.src}
+    <img
+      src={src}
       alt={alt ?? site.brand.logo.alt}
       width={width ?? v.intrinsicW}
       height={height ?? v.intrinsicH}
-      priority={priority}
+      loading={priority ? "eager" : "lazy"}
+      fetchPriority={priority ? "high" : "auto"}
+      decoding={priority ? "sync" : "async"}
       className={[v.defaultClass, className].filter(Boolean).join(" ")}
-      // Under output: 'export' the image loader is a no-op pass-through;
-      // we ship pre-resized PNGs from public/logo/ so this is fine.
-      unoptimized
     />
   );
 }

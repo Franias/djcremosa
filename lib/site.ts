@@ -36,6 +36,18 @@ export const site = {
       alt: "Cremosa — logotipo oficial",
     },
   },
+  /**
+   * Subpath prefix prepended to every static asset URL and <Link> href.
+   * Required for hosts that serve the site under a subpath
+   * (GitHub Pages → https://<user>.github.io/<repo>/).
+   * Set to "" once the site lives at a custom domain root.
+   *
+   * NOTE: only used manually (e.g. in Logo.tsx). Next.js itself handles
+   * basePath for `_next/*` assets and `<Link>` hrefs automatically via
+   * `next.config.ts → basePath`. Keep both in sync.
+   */
+  basePath: "/djcremosa",
+
   contact: {
     email: "franciellipdias@gmail.com",
     // Validated 2026-07-08: original kit had +51 (Peru DDI); correct number is
