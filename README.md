@@ -115,3 +115,4 @@ Tokens, cores e tipografia estão em `app/globals.css` (`@theme { ... }`).
 ## 📝 Licença
 
 Código: privado. Conteúdo (texto, imagens, áudio): © DJ Cremosa.
+# djcremosa
