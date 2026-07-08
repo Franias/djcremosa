@@ -17,8 +17,10 @@ export const site = {
   },
   contact: {
     email: "franciellipdias@gmail.com",
-    phoneDisplay: "+51 993723158",
-    phoneHref: "tel:+51993723158",
+    // Validated 2026-07-08: original kit had +51 (Peru DDI); correct number is
+    // +55 (Brazil DDI) + 51 (Porto Alegre area) + 99372-3158.
+    phoneDisplay: "+55 51 99372-3158",
+    phoneHref: "tel:+5551993723158",
     bookingEmail: "franciellipdias@gmail.com",
   },
   social: {

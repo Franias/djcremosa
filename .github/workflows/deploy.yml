@@ -1,0 +1,66 @@
+name: Deploy to GitHub Pages
+
+# Builds on push to main and on manual trigger, then publishes ./out to GitHub
+# Pages. The repo must have Settings → Pages → Source = "GitHub Actions"
+# (one-time, by the owner).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Restrict the default token to read-only; allow only the writes Pages needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Don't run concurrent deploys — prevent older runs from overwriting newer.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (next build → ./out)
+        run: npm run build
+        env:
+          # Set the public site URL so Next.js generates absolute OG/Twitter
+          # meta URLs correctly. Override in repo Settings → Secrets if you
+          # ever move off Pages (e.g. djcremosa.com.br → https://djcremosa.com.br).
+          NEXT_PUBLIC_SITE_URL: https://djcremosa.com.br
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

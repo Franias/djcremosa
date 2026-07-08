@@ -1,16 +1,32 @@
+"use client";
+
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { EventRow } from "@/components/sections/EventRow";
 import { splitAgenda, type CremosaEvent } from "@/lib/events";
 
 type View = "upcoming" | "past" | "all";
 
+function parseView(raw: string | null | undefined): View {
+  return raw === "past" || raw === "all" ? raw : "upcoming";
+}
+
 interface AgendaViewProps {
-  view: View;
   events: CremosaEvent[];
 }
 
-/** Server component — URL-driven filter, no client JS. */
-export function AgendaView({ view, events }: AgendaViewProps) {
+/**
+ * Client component — reads the agenda view from the URL search params so it
+ * works under static export (output: 'export') where the server can't read
+ * `searchParams` at request time.
+ *
+ * Pair with `<Suspense>` at the page level so the static HTML is fully
+ * rendered before the search-param-aware UI hydrates.
+ */
+export function AgendaView({ events }: AgendaViewProps) {
+  const sp = useSearchParams();
+  const view = parseView(sp.get("view"));
+
   const { upcoming, past } = splitAgenda(events);
   const showUpcoming = view === "upcoming" || view === "all";
   const showPast = view === "past" || view === "all";
@@ -23,19 +39,19 @@ export function AgendaView({ view, events }: AgendaViewProps) {
         className="flex items-center gap-2 sm:gap-4 py-6 border-b border-line"
       >
         <FilterPill
-          href="/agenda"
+          href="/agenda/?view=upcoming"
           label="Próximas"
           count={upcoming.length}
           active={view === "upcoming"}
         />
         <FilterPill
-          href="/agenda?view=past"
+          href="/agenda/?view=past"
           label="Histórico"
           count={past.length}
           active={view === "past"}
         />
         <FilterPill
-          href="/agenda?view=all"
+          href="/agenda/?view=all"
           label="Tudo"
           count={events.length}
           active={view === "all"}
@@ -100,7 +116,6 @@ export function AgendaView({ view, events }: AgendaViewProps) {
             <ul className="list-none p-0">
               {past.map((e) => (
                 <li key={e.slug}>
-                  {/* Compact mode: hides lineup/note to keep archive scannable. */}
                   <EventRow event={e} compact />
                 </li>
               ))}

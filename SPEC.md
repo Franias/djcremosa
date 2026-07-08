@@ -226,11 +226,18 @@ public/
 - [ ] Schema.org `Person` + `MusicEvent` por evento
 - [ ] 404 page bonitona
 
-### ⏭️ Fase 6 — Lançamento
-- [ ] Domínio custom (djcremosa.com.br)
-- [ ] Vercel deploy + branch previews
+### ✅ Fase 6 — Lançamento (GitHub Pages)
+- [x] `output: 'export'` + `trailingSlash: true` em `next.config.ts` → site vira HTML puro em `out/`
+- [x] `/agenda` refatorado: client component com `useSearchParams`, Suspense no hero estático
+- [x] Workflow GitHub Actions em `.github/workflows/deploy.yml`
+- [x] Telefone validado: `+55 51 99372-3158`
+- [ ] Subir repo no GitHub (proprietário)
+- [ ] Settings → Pages → Source = "GitHub Actions" (uma vez)
+- [ ] Domínio custom `djcremosa.com.br` (CNAME para `<user>.github.io`)
 - [ ] Link na bio de todas as redes
 - [ ] Submit sitemap ao Google Search Console
+
+> **Vercel é a alternativa**: trocar `output: 'export'` por um deploy direto na Vercel te dá de volta SSR nativo, `next/image` otimizado, ISR e API routes. Recomendado se algum dia precisar de formulário com backend ou visualização em tempo real.
 
 ---
 
@@ -246,28 +253,40 @@ public/
 
 ---
 
-## 7. Como rodar
+## 7. Como rodar e fazer deploy
+
+### Local
 
 ```bash
 cd ~/Projects/dj-cremosa
-npm run dev          # http://localhost:3000
-npm run build        # produção
-npm start            # serve o build
+npm run dev          # dev em http://localhost:3000
+npm run build        # gera ./out (estático, pronto pra publicar)
+npx serve out        # serve o build localmente pra testar
 ```
 
-Para adicionar um show novo:
+### Deploy no GitHub Pages (one-time setup + push)
 
-```ts
-// content/events.ts
-{
-  slug: "...",
-  title: "...",
-  date: "YYYY-MM-DD",
-  // ...resto
-}
-```
+1. Crie o repo no GitHub (privado, se quiser). Nome sugerido: `dj-cremosa` ou `cremosa-site`.
+2. Localmente:
+   ```bash
+   git remote add origin git@github.com:SEU-USER/dj-cremosa.git
+   git push -u origin main
+   ```
+3. No GitHub: **Settings → Pages → Build and deployment → Source = "GitHub Actions"** (uma vez só, pelo dono do repo).
+4. Pronto. Cada `git push` em `main` rebuilda e republica em ~60s. A URL pública será `https://SEU-USER.github.io/dj-cremosa/` por padrão, ou seu domínio custom se adicionar CNAME.
 
-Push e deploy — Vercel rebuild automático.
+### Domínio custom (djcremosa.com.br)
+
+1. Compre o domínio (Registro.br, Namecheap, Cloudflare).
+2. No GitHub: **Settings → Pages → Custom domain** → digite `djcremosa.com.br`. Salva.
+3. No DNS do domínio, adicione um CNAME de `www` para `SEU-USER.github.io` e um A-record para o apex (`@`) apontando para os IPs do GitHub Pages (veja docs atualizadas — os IPs mudam ocasionalmente).
+4. Ative **Enforce HTTPS** depois que o certificado provisionar (pode levar ~15 min).
+
+> ⚠️ **Limitação Pages**: conta free GitHub só permite domínio custom se o repo for **público**. Pra repo privado + domínio custom, é preciso GitHub Pro/Team. Alternativa: deixe o repo público (o código é seu, é sua decisão).
+
+### Atualização de telefone (validado)
+
+`lib/site.ts` foi atualizado para `+55 51 99372-3158` (DDI +55 BR, área 51 POA). Substituiu o `+51 993723158` original do press kit que estava errado.
 
 ---
 
