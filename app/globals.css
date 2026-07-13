@@ -29,14 +29,39 @@
   --color-status-warn: #ffcc66;
   --color-status-down: #ff6477;
 
+  /* Win95 chrome — exposed as Tailwind utilities (bg-win-face etc.) */
+  --color-win-face: #c0c0c0;
+  --color-win-face-2: #d4d0c8;
+  --color-win-light: #ffffff;
+  --color-win-shadow: #808080;
+  --color-win-shadow-deep: #404040;
+  --color-win-ink: #000000;
+  --color-win-title-1: #000080;
+  --color-win-title-2: #1084d0;
+  --color-win-teal: #008080;
+
   /* Fonts (loaded in layout.tsx) */
   --font-display: var(--font-display, "Bagel Fat One"), system-ui, serif;
   --font-sans: var(--font-sans, system-ui, sans-serif);
   --font-mono: var(--font-mono, ui-monospace, monospace);
+  --font-pixel: var(--font-pixel, ui-monospace, monospace);
 }
 
 :root {
   color-scheme: dark;
+
+  /* Win95 chrome tokens — used by .win95-* utilities and the
+     <Win95*> components. Centralized so the rebrand is one edit. */
+  --win-face: #c0c0c0;
+  --win-face-2: #d4d0c8;
+  --win-light: #ffffff;
+  --win-shadow: #808080;
+  --win-shadow-deep: #404040;
+  --win-ink: #000000;
+  --win-title-1: #000080;
+  --win-title-2: #1084d0;
+  --win-selection: #000080;
+  --win-teal: #008080;
 }
 
 html,
@@ -46,6 +71,141 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Animated background — slow hue-shifting radial gradient that
+   sits behind the content. The animation lasts ~32s and is
+   subtle enough to read as "alive" without distracting from the
+   Win95 chrome.
+
+   Two layers:
+     1. .bg-anim — moving radial gradient (slow)
+     2. .bg-anim-grain — drifting halftone overlay
+   Both are `position: fixed` so they don't reflow on scroll.
+   ────────────────────────────────────────────────────────────── */
+
+.bg-anim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 20% 0%,
+      rgba(214, 48, 122, 0.18) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 90% 30%,
+      rgba(255, 111, 163, 0.12) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 90% 70% at 50% 100%,
+      rgba(200, 21, 46, 0.15) 0%,
+      transparent 65%
+    ),
+    var(--color-bg);
+  background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
+  background-position: 0% 0%, 100% 0%, 50% 100%, 0 0;
+  animation: bg-drift 32s ease-in-out infinite alternate;
+  will-change: background-position;
+}
+
+@keyframes bg-drift {
+  0% {
+    background-position:
+      0% 0%,
+      100% 0%,
+      50% 100%,
+      0 0;
+  }
+  50% {
+    background-position:
+      60% 40%,
+      30% 60%,
+      80% 30%,
+      0 0;
+  }
+  100% {
+    background-position:
+      100% 80%,
+      0% 30%,
+      20% 60%,
+      0 0;
+  }
+}
+
+/* Optional second layer for extra texture — apply alongside .bg-anim */
+.bg-anim-grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    currentColor 1px,
+    transparent 1.5px
+  );
+  background-size: 32px 32px;
+  background-position: 0 0;
+  opacity: 0.04;
+  color: var(--color-cream);
+  animation: grain-drift 60s linear infinite;
+  will-change: background-position;
+}
+
+@keyframes grain-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 64px 64px; }
+}
+
+/* Respect reduced motion — freeze the animation */
+@media (prefers-reduced-motion: reduce) {
+  .bg-anim,
+  .bg-anim-grain {
+    animation: none;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Native View Transitions — soft crossfade between routes when the
+   browser supports it (Chrome/Edge 111+, Safari 18+). Falls back to
+   instant navigation elsewhere — no harm done.
+
+   The `enableSmoothTransitions()` helper below calls
+   `document.startViewTransition()` on internal link clicks so the
+   browser snaps a screenshot of the current DOM, swaps to the new
+   page, and animates between them.
+   ────────────────────────────────────────────────────────────── */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 240ms;
+  animation-timing-function: ease-out;
+}
+::view-transition-old(root) {
+  animation-name: vt-fade-out;
+}
+::view-transition-new(root) {
+  animation-name: vt-fade-in;
+}
+
+@keyframes vt-fade-out {
+  to { opacity: 0; }
+}
+@keyframes vt-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Hero bubble title morphs between routes — named transition so the
+   browser ties matching <h1> elements across the navigation. */
+::view-transition-old(hero-title),
+::view-transition-new(hero-title) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* Film-grain overlay used on hero/marquee — pure CSS, no asset needed */
@@ -87,6 +247,741 @@ body {
 ::selection {
   background: var(--color-magenta);
   color: var(--color-cream);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Midia-Kit 2026 design tokens — ported into the portfolio so the
+   site reads as the same editorial object as the press PDF.
+
+   - .bubble-strong  : beefier 3-stop glossy display (cover treatment)
+   - .glitch         : pixel-font heading with chromatic-aberration offset
+   - .halftone       : diagonal dot field — backdrop motif (pages 2 + 4)
+   - .scanlines      : CRT/VHS scan-line overlay (sets page 4)
+   - .pink-mode      : light/pink section variant (bio page 2)
+   - .notepad        : Windows-Notepad window chrome (page 3)
+   - .player         : Windows-Media-Player window chrome (page 4)
+   - .cappill        : capsule genre tag with connector node (page 2)
+   - .sparkle        : small Y2K starburst (cover + section titles)
+   ────────────────────────────────────────────────────────────────── */
+
+/* Beefier cover-style wordmark — heavier gloss + bigger drop-shadow */
+.bubble-strong {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  background: linear-gradient(
+    180deg,
+    #ffe9f1 0%,
+    var(--color-bubble-hi) 25%,
+    var(--color-bubble) 55%,
+    var(--color-magenta) 80%,
+    var(--color-crimson-deep) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.55), 0 14px 40px rgba(214, 48, 122, 0.55);
+}
+
+/* Pixel/glitch heading — VT323 + RGB chromatic-aberration offset. Echoes
+   the "contato" header (page 5) and the "DJ SETS" title (page 4). */
+.glitch {
+  font-family: var(--font-pixel);
+  letter-spacing: 0.04em;
+  color: var(--color-cream);
+  text-shadow:
+    -2px 0 var(--color-magenta),
+    2px 0 var(--color-bubble),
+    0 0 12px rgba(255, 111, 163, 0.4);
+}
+
+/* Diagonal halftone dot field — light/cream variant for pink sections,
+   dark/crimson variant for default sections. Combine with `.grain` for
+   extra texture. */
+.halftone {
+  position: relative;
+  isolation: isolate;
+}
+.halftone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(
+    circle at center,
+    currentColor 1.2px,
+    transparent 1.6px
+  );
+  background-size: 14px 14px;
+  background-position: 0 0;
+  opacity: 0.18;
+  mask-image: linear-gradient(135deg, black 0%, transparent 70%);
+  -webkit-mask-image: linear-gradient(135deg, black 0%, transparent 70%);
+  color: var(--color-cream);
+}
+.halftone > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* CRT / VHS scan-line overlay — used on hero & video sections */
+.scanlines {
+  position: relative;
+  isolation: isolate;
+}
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.045) 0px,
+    rgba(255, 255, 255, 0.045) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+.scanlines > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Pink-mode section — light/cream background with dark ink, like the
+   bio page of the Midia Kit. Inverts brand-pink for body so the palette
+   matches the source material. */
+.pink-mode {
+  background: var(--color-bubble-hi);
+  color: #2a0814;
+}
+.pink-mode .ink {
+  color: #2a0814;
+}
+.pink-mode .ink-dim {
+  color: rgba(42, 8, 20, 0.6);
+}
+.pink-mode .pill-ink {
+  background: rgba(42, 8, 20, 0.08);
+  color: #2a0814;
+  border-color: rgba(42, 8, 20, 0.2);
+}
+
+/* Capsule genre pill — rounded rect with circular node connector, like
+   the pills around the artist's head on page 2 of the kit. */
+.cappill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem 0.5rem 1rem;
+  background: var(--color-magenta);
+  color: var(--color-cream);
+  border: 1px solid rgba(255, 111, 163, 0.6);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  box-shadow: 0 4px 14px rgba(214, 48, 122, 0.35);
+  white-space: nowrap;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.cappill::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-bubble-hi);
+  box-shadow: 0 0 0 2px rgba(255, 179, 207, 0.35);
+}
+.cappill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(214, 48, 122, 0.55);
+}
+
+/* Vintage Notepad window — page 3 of the kit. Title bar with File/Edit
+   menu, retro squared controls, monospaced body inside cream body. */
+.notepad {
+  background: #f5efe6;
+  color: #1a0a10;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  font-family: var(--font-mono);
+}
+.notepad-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(180deg, #d6cfd7, #b9b1c0);
+  color: #1a0a10;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.notepad-controls {
+  display: inline-flex;
+  gap: 4px;
+}
+.notepad-controls span {
+  width: 14px;
+  height: 14px;
+  background: #ece6e9;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  line-height: 1;
+}
+.notepad-controls span.close {
+  background: #c84a4a;
+  color: #fff;
+}
+.notepad-menu {
+  display: flex;
+  gap: 1rem;
+  padding: 0.25rem 0.75rem;
+  background: #ece6e9;
+  color: #1a0a10;
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+.notepad-body {
+  padding: 1rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #1a0a10;
+}
+
+/* Vintage Media-Player-style window — page 4 of the kit. Pink chrome
+   with rounded controls, transport bar, and the small triangle play
+   indicator. */
+.player {
+  background: #1a0a10;
+  border: 1px solid var(--color-magenta);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(214, 48, 122, 0.35);
+}
+.player-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.75rem;
+  background: linear-gradient(180deg, #d6307a, #8a0d1f);
+  color: #fff7fb;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+}
+.player-controls {
+  display: inline-flex;
+  gap: 4px;
+}
+.player-controls span {
+  width: 14px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #8a0d1f;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  line-height: 1;
+  border-radius: 2px;
+}
+.player-screen {
+  aspect-ratio: 16 / 9;
+  background: radial-gradient(
+      ellipse at center,
+      rgba(214, 48, 122, 0.55) 0%,
+      rgba(138, 13, 31, 0.85) 100%
+    ),
+    #1a0a10;
+  position: relative;
+  overflow: hidden;
+}
+.player-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+.player-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.player-play::before {
+  content: "";
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  background: rgba(255, 247, 251, 0.92);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(
+    30% 22%,
+    30% 78%,
+    78% 50%
+  );
+  background: transparent;
+  border-style: solid;
+  border-width: 16px 0 16px 26px;
+  border-color: transparent transparent transparent rgba(255, 247, 251, 0.92);
+}
+.player-transport {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.6rem;
+  background: linear-gradient(180deg, #2a0814, #1a0a10);
+  color: var(--color-cream);
+  font-family: var(--font-pixel);
+  font-size: 14px;
+}
+.player-transport-track {
+  flex: 1;
+  height: 4px;
+  margin: 0 0.6rem;
+  background: rgba(255, 111, 163, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+.player-transport-track::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 35%;
+  background: var(--color-bubble);
+}
+
+/* Sparkle — small four-point Y2K starburst. Use around titles to echo
+   the cover of the Midia Kit. */
+.sparkle {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background:
+    radial-gradient(circle at center, var(--color-bubble-hi) 0 18%, transparent 19%),
+    linear-gradient(
+      45deg,
+      transparent 45%,
+      var(--color-bubble-hi) 45%,
+      var(--color-bubble-hi) 55%,
+      transparent 55%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 45%,
+      var(--color-bubble) 45%,
+      var(--color-bubble) 55%,
+      transparent 55%
+    );
+  vertical-align: middle;
+  filter: drop-shadow(0 0 6px rgba(255, 111, 163, 0.6));
+}
+
+/* Win95-style chrome — 3D bevels, sunken track, chunky borders. Used by
+   the splash screen to recreate the boot/loading aesthetic. */
+
+:root {
+  --win95-face: #c0c0c0;
+  --win95-face-dark: #808080;
+  --win95-face-light: #ffffff;
+  --win95-shadow: #404040;
+  --win95-blue: #000080;
+  --win95-blue-light: #1084d0;
+  --win95-ink: #000000;
+}
+
+.win95-face {
+  background: var(--win95-face);
+  color: var(--win95-ink);
+}
+
+.win95-window {
+  background: var(--win95-face);
+  border-top: 2px solid var(--win95-face-light);
+  border-left: 2px solid var(--win95-face-light);
+  border-right: 2px solid var(--win95-face-shadow, #404040);
+  border-bottom: 2px solid var(--win95-face-shadow, #404040);
+  box-shadow:
+    inset -1px -1px 0 #000,
+    inset 1px 1px 0 #dfdfdf;
+  padding: 2px;
+}
+
+/* Sunken inset for the progress track — dark TL, light BR */
+.win95-progress-track {
+  position: relative;
+  height: 18px;
+  background: var(--win95-face);
+  border-top: 2px solid var(--win95-shadow);
+  border-left: 2px solid var(--win95-shadow);
+  border-right: 2px solid var(--win95-face-light);
+  border-bottom: 2px solid var(--win95-face-light);
+  box-shadow: inset 1px 1px 0 #000, inset -1px -1px 0 #dfdfdf;
+  overflow: hidden;
+}
+
+/* Solid blue bar with animated diagonal stripes — the classic Win95
+   "loading" treatment. Width is driven by inline style from React. */
+.win95-progress-bar {
+  height: 100%;
+  background-color: var(--win95-blue);
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--win95-blue) 0,
+    var(--win95-blue) 8px,
+    var(--win95-blue-light) 8px,
+    var(--win95-blue-light) 16px
+  );
+  background-size: 22.6px 22.6px; /* sqrt(2)*16 keeps stripes seamless */
+  animation: win95-stripes 700ms linear infinite;
+  transition: width 80ms linear;
+}
+
+@keyframes win95-stripes {
+  from { background-position: 0 0; }
+  to   { background-position: 22.6px 0; }
+}
+
+/* Chunky 3D beveled border — for the splash title bar */
+.win95-bevel-out {
+  border-top: 2px solid var(--win-light);
+  border-left: 2px solid var(--win-light);
+  border-right: 2px solid var(--win-shadow);
+  border-bottom: 2px solid var(--win-shadow);
+}
+.win95-bevel-in {
+  border-top: 2px solid var(--win-shadow);
+  border-left: 2px solid var(--win-shadow);
+  border-right: 2px solid var(--win-light);
+  border-bottom: 2px solid var(--win-light);
+}
+.win95-bevel-deep-out {
+  box-shadow:
+    inset -1px -1px 0 var(--win-ink),
+    inset 1px 1px 0 var(--win-shadow-deep),
+    inset -2px -2px 0 var(--win-shadow),
+    inset 2px 2px 0 var(--win-light);
+}
+.win95-bevel-deep-in {
+  box-shadow:
+    inset 1px 1px 0 var(--win-ink),
+    inset -1px -1px 0 var(--win-shadow-deep),
+    inset 2px 2px 0 var(--win-shadow),
+    inset -2px -2px 0 var(--win-light);
+}
+
+/* Win95 title bar — the iconic blue gradient strip */
+.win95-title {
+  background: linear-gradient(
+    90deg,
+    var(--win-title-1) 0%,
+    var(--win-title-2) 100%
+  );
+  color: var(--win-light);
+  padding: 3px 4px 3px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+.win95-title-controls {
+  display: inline-flex;
+  gap: 2px;
+}
+.win95-title-controls span {
+  width: 16px;
+  height: 14px;
+  background: var(--win-face);
+  color: var(--win-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-pixel);
+  font-size: 10px;
+  line-height: 1;
+  border-top: 1px solid var(--win-light);
+  border-left: 1px solid var(--win-light);
+  border-right: 1px solid var(--win-shadow-deep);
+  border-bottom: 1px solid var(--win-shadow-deep);
+}
+.win95-title-controls span.close {
+  background: var(--win-face);
+}
+
+/* Win95-style button (use with .win95-button on a <button>) */
+.win95-button {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  color: var(--win-ink);
+  background: var(--win-face);
+  padding: 4px 12px;
+  min-height: 26px;
+  border-top: 1px solid var(--win-light);
+  border-left: 1px solid var(--win-light);
+  border-right: 1px solid var(--win-shadow-deep);
+  border-bottom: 1px solid var(--win-shadow-deep);
+  box-shadow: inset -1px -1px 0 var(--win-shadow), inset 1px 1px 0 var(--win-face-2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  transition: none;
+}
+.win95-button:hover {
+  background: var(--win-face-2);
+}
+.win95-button:active,
+.win95-button[aria-pressed="true"],
+.win95-button[data-active="true"] {
+  border-top-color: var(--win-shadow-deep);
+  border-left-color: var(--win-shadow-deep);
+  border-right-color: var(--win-light);
+  border-bottom-color: var(--win-light);
+  box-shadow: inset 1px 1px 0 var(--win-shadow), inset -1px -1px 0 var(--win-face-2);
+  padding: 5px 11px 3px 13px; /* simulate 1px press */
+}
+.win95-button:focus-visible {
+  outline: 1px dotted var(--win-ink);
+  outline-offset: -4px;
+}
+
+/* Status bar — chunky gray strip across the bottom of the viewport */
+.win95-statusbar {
+  background: var(--win-face);
+  color: var(--win-ink);
+  border-top: 1px solid var(--win-light);
+  box-shadow: inset 1px 1px 0 var(--win-face-2);
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 2px;
+}
+.win95-statusbar-segment {
+  flex: 1;
+  border-top: 1px solid var(--win-shadow-deep);
+  border-left: 1px solid var(--win-shadow-deep);
+  border-right: 1px solid var(--win-light);
+  border-bottom: 1px solid var(--win-light);
+  padding: 2px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.win95-statusbar-segment.grow {
+  flex: 1 1 auto;
+}
+.win95-statusbar-segment.shrink {
+  flex: 0 0 auto;
+}
+
+/* Menu bar (File / Edit / View / Help) */
+.win95-menubar {
+  display: flex;
+  gap: 0;
+  background: var(--win-face);
+  color: var(--win-ink);
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  padding: 2px 2px;
+  border-bottom: 1px solid var(--win-shadow);
+}
+.win95-menubar-item {
+  padding: 3px 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.win95-menubar-item:hover,
+.win95-menubar-item[data-open="true"] {
+  background: var(--win-title-1);
+  color: var(--win-light);
+}
+.win95-menubar-item u {
+  text-decoration: underline;
+}
+
+/* Vertical text rail (side gutter text rotated 90°) — used by the
+   VerticalRails global component. */
+.vrail-text {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(244, 231, 211, 0.45);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Win95 typography pattern
+   ──────────────────────────────────────────────────────────────────
+
+   The site has four font roles. Use these utility classes everywhere
+   so the same Win95 feel reads consistently across the whole page.
+
+     win-display   hero / cover title   (Bagel Fat One, .bubble-strong)
+     win-h2        section heading      (Bagel Fat One, .bubble)
+     win-eyebrow   small label          (VT323, 11px, 0.22em tracking)
+     win-body      body copy            (VT323, 14px, relaxed)
+     win-body-sm   dense copy           (VT323, 12.5px)
+     win-caption   small dim text       (VT323, 11px)
+     win-button    button text          (VT323, 14px)
+     win-status    status-bar text      (VT323, 13px)
+     win-title     win95 title-bar text (VT323, 13px)
+
+   The sizes deliberately mirror what a real Windows 95/98 system
+   would render at 96 dpi, then bumped ~25% so they read at modern
+   1080p+ densities without losing the chunky pixel feel.
+*/
+
+.win-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  line-height: 0.85;
+}
+
+.win-h2 {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+}
+
+.win-eyebrow {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.win-body {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.win-body-sm {
+  font-family: var(--font-pixel);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.win-caption {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-cream-dim);
+}
+
+.win-button-text {
+  font-family: var(--font-pixel);
+  font-size: 14px;
+}
+
+.win-status-text {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+}
+
+.win-title-text {
+  font-family: var(--font-pixel);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* Shell — consistent page container widths & padding. Every page
+   wraps its main content in one of these so widths and gutters stay
+   uniform. Use shell for default sections, shell-narrow for prose-
+   focused blocks (manifesto, dialogs), shell-wide for the rails and
+   the agenda/galeria grids. */
+.shell {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem; /* 1152px — Tailwind's max-w-6xl */
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+@media (min-width: 640px) {
+  .shell {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.shell-narrow {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 48rem; /* 768px — Tailwind's max-w-3xl */
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+@media (min-width: 640px) {
+  .shell-narrow {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.shell-wide {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100rem; /* 1600px — wider for grids + rails */
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+@media (min-width: 640px) {
+  .shell-wide {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Hero section — vertical padding rhythm shared by every page hero.
+   Keeps the eyebrow → display → lede → CTA → icons stack identical
+   across /, /agenda, /musica, /videos, /sobre, /contato. */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-top: 4rem;
+  padding-bottom: 3rem;
+}
+@media (min-width: 640px) {
+  .hero {
+    padding-top: 6rem;
+    padding-bottom: 4rem;
+  }
+}
+
+/* Stack — vertical rhythm for hero children. Use on the inner shell
+   div so the eyebrow, display, lede, CTA, and desktop icons line up
+   the same way on every page. */
+.stack {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Reduce motion respect */

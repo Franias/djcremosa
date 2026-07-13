@@ -1,92 +1,133 @@
 import type { Metadata } from "next";
+import { Sparkle } from "@/components/sections/Sparkle";
+import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = { title: `Contato · ${site.brand.name}` };
+export const metadata: Metadata = {
+  title: `Contato · ${site.brand.name}`,
+  description: `Booking, imprensa e contato geral de ${site.brand.name}. Resposta em até 72h úteis.`,
+};
+
+const CARDS = [
+  {
+    eyebrow: "// booking",
+    title: "Proposta de show",
+    body: site.contact.email,
+    cta: "Abrir app de email →",
+    href: `mailto:${site.contact.email}?subject=${encodeURIComponent("Proposta de show / booking")}`,
+  },
+  {
+    eyebrow: "// imprensa",
+    title: "Solicitar press kit",
+    body: site.contact.email,
+    cta: "Pedir material →",
+    href: `mailto:${site.contact.email}?subject=${encodeURIComponent("Imprensa / press")}`,
+  },
+  {
+    eyebrow: "// telefone",
+    title: "Ligar agora",
+    body: site.contact.phoneDisplay,
+    cta: "Discar →",
+    href: site.contact.phoneHref,
+  },
+] as const;
 
 export default function ContatoPage() {
   return (
     <>
-      <section className="relative overflow-hidden grain">
-        <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-12 sm:pt-24 sm:pb-16">
-          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-bubble mb-4">
-            // booking · imprensa · geral
+      {/* HERO — kit-page-5 glitched "contato" treatment */}
+      <section className="hero grain scanlines">
+        <div className="shell relative z-10 flex flex-col items-center text-center">
+          <p className="win-eyebrow text-bubble mb-4">
+            {"// booking · imprensa · geral"}
           </p>
-          <h1 className="font-display text-[18vw] sm:text-[10rem] leading-[0.85] bubble">
-            CONTATO
-          </h1>
-          <p className="mt-6 max-w-2xl text-cream-dim text-base sm:text-lg">
+          <div className="relative inline-block">
+            <Sparkle
+              size="md"
+              className="absolute -top-6 left-1/4 hidden sm:block"
+            />
+            <Sparkle
+              size="sm"
+              className="absolute top-1 right-1/4 hidden sm:block"
+            />
+            <h1 className="win-display glitch text-[26vw] sm:text-[14rem]">
+              contato
+            </h1>
+          </div>
+          <p className="mt-8 max-w-2xl win-body text-cream-dim">
             Pra proposta de show, festival ou residência, manda direto pelo
-            email. Resposta em até 72h úteis.
+            email. Resposta em até <span className="text-bubble">72h úteis</span>.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 sm:px-8 py-16 grid sm:grid-cols-2 gap-6">
-        <a
-          href={`mailto:${site.contact.email}?subject=${encodeURIComponent("Proposta de show / booking")}`}
-          className="group block border border-line rounded-lg p-6 bg-surface hover:border-bubble transition-colors"
-        >
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-bubble mb-2">
-            Booking
-          </p>
-          <p className="text-cream text-lg sm:text-xl break-all">
-            {site.contact.email}
-          </p>
-          <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-cream-dim group-hover:text-bubble transition-colors">
-            Abrir app de email →
-          </p>
-        </a>
-
-        <a
-          href={`mailto:${site.contact.email}?subject=${encodeURIComponent("Imprensa / press")}`}
-          className="group block border border-line rounded-lg p-6 bg-surface hover:border-bubble transition-colors"
-        >
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-bubble mb-2">
-            Imprensa
-          </p>
-          <p className="text-cream text-lg sm:text-xl break-all">
-            {site.contact.email}
-          </p>
-          <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-cream-dim group-hover:text-bubble transition-colors">
-            Solicitar press kit →
-          </p>
-        </a>
-
-        <a
-          href={site.contact.phoneHref}
-          className="group block border border-line rounded-lg p-6 bg-surface hover:border-bubble transition-colors"
-        >
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-bubble mb-2">
-            Telefone
-          </p>
-          <p className="text-cream text-lg sm:text-xl">{site.contact.phoneDisplay}</p>
-          <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-cream-dim group-hover:text-bubble transition-colors">
-            Ligar →
-          </p>
-        </a>
+      {/* CONTACT WINDOWS — Win95 dialogs */}
+      <section className="shell py-16 grid sm:grid-cols-2 gap-6">
+        {CARDS.map((c) => (
+          <a
+            key={c.eyebrow}
+            href={c.href}
+            className="no-underline group block"
+          >
+            <Win95Window
+              title={c.title}
+              className="transition-shadow group-hover:shadow-[0_0_0_2px_var(--color-bubble)]"
+            >
+              <div className="p-5 bg-win-face text-win-ink">
+                <p className="win-eyebrow mb-3">{c.eyebrow}</p>
+                <p className="win-body-sm break-all">{c.body}</p>
+                <div className="mt-4 flex justify-end">
+                  <Win95Button focused>{c.cta}</Win95Button>
+                </div>
+              </div>
+            </Win95Window>
+          </a>
+        ))}
 
         {site.social.instagram && (
           <a
             href={site.social.instagram.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group block border border-line rounded-lg p-6 bg-surface hover:border-bubble transition-colors"
+            className="no-underline group block"
           >
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-bubble mb-2">
-              Instagram
-            </p>
-            <p className="text-cream text-lg sm:text-xl">
-              {site.social.instagram.handle}
-            </p>
-            <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.22em] text-cream-dim group-hover:text-bubble transition-colors">
-              Abrir perfil →
-            </p>
+            <Win95Window
+              title="Instagram"
+              className="transition-shadow group-hover:shadow-[0_0_0_2px_var(--color-bubble)]"
+            >
+              <div className="p-5 bg-win-face text-win-ink">
+                <p className="win-eyebrow mb-3">{"// @djcremosa"}</p>
+                <p className="win-body-sm">{site.social.instagram.handle}</p>
+                <div className="mt-4 flex justify-end">
+                  <Win95Button focused>Abrir perfil →</Win95Button>
+                </div>
+              </div>
+            </Win95Window>
           </a>
         )}
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 sm:px-8 pb-24">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-cream-dim border border-dashed border-line rounded-md p-4">
+      {/* PRESS KIT REQUEST — Win95 dialog */}
+      <section className="shell pb-24">
+        <Win95Window title="Solicitar press kit.exe" controls>
+          <div className="p-5 sm:p-6 bg-win-face text-win-ink flex flex-col sm:flex-row gap-5 sm:items-center sm:justify-between">
+            <div>
+              <p className="win-eyebrow mb-1">{"// mídia kit 2026"}</p>
+              <p className="win-body-sm max-w-xl">
+                Fotos em alta resolução, bio completa pt-BR/EN e material de
+                divulgação. Manda email e a gente responde em até 72h úteis.
+              </p>
+            </div>
+            <a
+              href={`mailto:${site.contact.email}?subject=${encodeURIComponent("Solicitar press kit")}`}
+              className="no-underline shrink-0"
+            >
+              <Win95Button focused>Solicitar →</Win95Button>
+            </a>
+          </div>
+        </Win95Window>
+
+        <p className="mt-8 win-eyebrow text-cream-dim">
           Formulário completo + captcha entram na fase 2 (Resend + React Email
           ou Formspree). Por enquanto o mailto resolve.
         </p>

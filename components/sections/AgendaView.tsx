@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { EventRow } from "@/components/sections/EventRow";
+import { Win95Dialog } from "@/components/sections/Win95Dialog";
+import { Win95Button } from "@/components/ui/win95";
 import { splitAgenda, type CremosaEvent } from "@/lib/events";
 
 type View = "upcoming" | "past" | "all";
@@ -36,7 +38,7 @@ export function AgendaView({ events }: AgendaViewProps) {
       {/* Filters */}
       <nav
         aria-label="Filtro de agenda"
-        className="flex items-center gap-2 sm:gap-4 py-6 border-b border-line"
+        className="flex items-center gap-2 sm:gap-3 py-6 border-b border-line"
       >
         <FilterPill
           href="/agenda/?view=upcoming"
@@ -56,7 +58,7 @@ export function AgendaView({ events }: AgendaViewProps) {
           count={events.length}
           active={view === "all"}
         />
-        <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.22em] text-cream-dim hidden sm:inline">
+        <span className="ml-auto win-eyebrow text-cream-dim text-[10px] hidden sm:inline">
           {events.length} shows · ordenado por data
         </span>
       </nav>
@@ -67,11 +69,11 @@ export function AgendaView({ events }: AgendaViewProps) {
           <header className="flex items-baseline justify-between gap-4 mb-2">
             <h2
               id="upcoming-heading"
-              className="font-display text-3xl sm:text-5xl bubble leading-none"
+              className="win-h2 bubble text-3xl sm:text-5xl"
             >
               Próximas datas
             </h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-cream-dim">
+            <span className="win-eyebrow text-cream-dim text-[10px]">
               {upcoming.length} {upcoming.length === 1 ? "show" : "shows"}
             </span>
           </header>
@@ -99,11 +101,11 @@ export function AgendaView({ events }: AgendaViewProps) {
           <header className="flex items-baseline justify-between gap-4 mb-2">
             <h2
               id="past-heading"
-              className="font-display text-3xl sm:text-5xl text-cream leading-none"
+              className="win-h2 text-cream text-3xl sm:text-5xl"
             >
               Histórico
             </h2>
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-cream-dim">
+            <span className="win-eyebrow text-cream-dim text-[10px]">
               {past.length} {past.length === 1 ? "show" : "shows"}
             </span>
           </header>
@@ -141,28 +143,20 @@ function FilterPill({
   active: boolean;
 }) {
   return (
-    <Link
-      href={href}
-      scroll={false}
-      aria-current={active ? "page" : undefined}
-      className={[
-        "inline-flex items-center gap-2 px-4 py-2 rounded-full",
-        "font-mono text-[11px] uppercase tracking-[0.22em]",
-        "border transition-colors",
-        active
-          ? "bg-cream text-bg border-cream"
-          : "border-line text-cream-dim hover:border-bubble hover:text-bubble",
-      ].join(" ")}
-    >
-      {label}
-      <span
-        className={[
-          "inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px]",
-          active ? "bg-magenta text-cream" : "bg-surface-2 text-cream-dim",
-        ].join(" ")}
-      >
-        {count}
-      </span>
+    <Link href={href} scroll={false} className="no-underline">
+      <Win95Button active={active} focused={active}>
+        {label}
+        <span
+          className={[
+            "inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] border",
+            active
+              ? "border-win-shadow-deep bg-win-face text-win-ink"
+              : "border-win-shadow-deep bg-win-face text-win-ink",
+          ].join(" ")}
+        >
+          {count}
+        </span>
+      </Win95Button>
     </Link>
   );
 }
@@ -177,14 +171,38 @@ function EmptyState({
   hint?: string;
 }) {
   return (
-    <div className="border border-dashed border-line rounded-lg p-8 text-center">
-      <p className="text-cream text-lg">{heading}</p>
-      <p className="text-cream-dim text-sm mt-2">{body}</p>
-      {hint && (
-        <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-bubble mt-3">
-          {hint}
-        </p>
-      )}
+    <div className="max-w-xl">
+      <Win95Dialog
+        title="agenda — sistema"
+        message={heading}
+        hint={
+          <>
+            {body}
+            {hint && (
+              <>
+                {" "}
+                Segue lá:{" "}
+                <a
+                  href="https://instagram.com/djcremosa"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  {hint}
+                </a>
+                .
+              </>
+            )}
+          </>
+        }
+        actions={[
+          {
+            label: "OK",
+            href: "https://instagram.com/djcremosa",
+            focused: true,
+          },
+        ]}
+      />
     </div>
   );
 }

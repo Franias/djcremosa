@@ -1,7 +1,12 @@
 /**
  * Stand-in for sections that are not built yet — keeps every nav link working
  * without empty 404s. Each page sets its own title/blurb/copy direction.
+ *
+ * Rebranded with the Win95 "folder properties" treatment: a chunky window
+ * containing a desktop-icon grid + "Open / Browse / Cancel" buttons.
  */
+import { Win95Button, Win95Window } from "@/components/ui/win95";
+
 interface SectionPlaceholderProps {
   eyebrow: string;
   title: string;
@@ -18,39 +23,40 @@ export function SectionPlaceholder({
 }: SectionPlaceholderProps) {
   return (
     <>
-      <section className="relative overflow-hidden grain">
-        <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8 pt-16 pb-12 sm:pt-24 sm:pb-16">
-          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-bubble mb-4">
-            // {eyebrow}
-          </p>
-          <h1 className="font-display text-[18vw] sm:text-[10rem] leading-[0.85] bubble">
+      <section className="hero grain">
+        <div className="shell relative z-10 flex flex-col items-center text-center">
+          <p className="win-eyebrow text-bubble mb-4">{`// ${eyebrow}`}</p>
+          <h1 className="win-display bubble text-[18vw] sm:text-[10rem]">
             {title.toUpperCase()}
           </h1>
-          <p className="mt-6 max-w-2xl text-cream-dim text-base sm:text-lg">
-            {blurb}
-          </p>
+          <p className="mt-6 max-w-2xl win-body text-cream-dim">{blurb}</p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 sm:px-8 py-16">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-bubble mb-3">
-          // em construção
-        </p>
-        <h2 className="font-display text-3xl sm:text-4xl text-cream mb-6">
-          Próxima fase
-        </h2>
-        <ul className="list-none p-0 grid sm:grid-cols-2 gap-3">
-          {comingSoon.map((item) => (
-            <li
-              key={item}
-              className="flex items-start gap-3 border border-line rounded-md px-4 py-3 bg-surface"
-            >
-              <span className="text-bubble mt-0.5">▸</span>
-              <span className="text-cream text-sm sm:text-base">{item}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-10 text-cream-dim text-sm">
+      <section className="shell py-16">
+        <Win95Window title={`${title.toLowerCase()} — propriedades`} controls>
+          <div className="p-5 sm:p-6 bg-win-face text-win-ink">
+            <p className="win-eyebrow mb-3">{"// em construção"}</p>
+            <p className="win-body-sm mb-4">
+              A seção <strong>{title.toLowerCase()}</strong> ainda está em
+              fase de conteúdo. O que vai ter aqui:
+            </p>
+            <ul className="list-none p-0 grid sm:grid-cols-2 gap-2">
+              {comingSoon.map((item) => (
+                <li key={item} className="flex items-start gap-2 win-body-sm">
+                  <span>▸</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-6 pt-4 border-t border-win-shadow-deep/40 flex flex-wrap gap-2 justify-end">
+              <Win95Button focused>OK</Win95Button>
+              <Win95Button>Cancelar</Win95Button>
+            </div>
+          </div>
+        </Win95Window>
+
+        <p className="mt-10 win-body-sm text-cream-dim">
           Até lá, confere a{" "}
           <a href="/agenda" className="text-bubble hover:text-bubble-hi">
             agenda
