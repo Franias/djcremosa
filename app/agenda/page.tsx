@@ -38,7 +38,7 @@ export default function AgendaPage() {
             <Sparkle size="md" className="absolute -top-5 -left-7 hidden sm:block" />
             <Sparkle size="lg" className="absolute -top-8 left-1/2 -translate-x-1/2 hidden sm:block" />
             <Sparkle size="sm" className="absolute top-2 -right-6 hidden sm:block" />
-            <h1 className="win-display bubble-strong text-[18vw] sm:text-[12rem]">
+            <h1 className="win-display bubble-strong text-7xl sm:text-9xl">
               AGENDA
             </h1>
           </div>

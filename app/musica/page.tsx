@@ -275,7 +275,7 @@ export default function MusicaPage() {
           <div className="relative inline-block">
             <Sparkle size="md" className="absolute -top-5 -left-7" />
             <Sparkle size="sm" className="absolute top-1 -right-6" />
-            <h1 className="win-display bubble-strong text-[18vw] sm:text-[10rem]">
+            <h1 className="win-display bubble-strong text-7xl sm:text-8xl">
               MÚSICA
             </h1>
           </div>

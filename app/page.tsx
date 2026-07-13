@@ -46,7 +46,7 @@ export default function HomePage() {
               size="sm"
               className="absolute top-2 -right-5 hidden sm:block"
             />
-            <h1 className="win-display bubble-strong text-[22vw] sm:text-[14rem]">
+            <h1 className="win-display bubble-strong text-7xl sm:text-[10rem]">
               CREMOSA
             </h1>
             <Logo size="hero" priority className="mb-2 mx-auto hidden" />

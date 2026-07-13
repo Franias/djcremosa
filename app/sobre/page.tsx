@@ -45,7 +45,7 @@ export default function SobrePage() {
             <Sparkle size="md" className="absolute -top-4 -left-8" />
             <Sparkle size="lg" className="absolute -top-8 left-1/2 -translate-x-1/2" />
             <Sparkle size="sm" className="absolute top-1 -right-8" />
-            <h1 className="win-display bubble-strong text-[18vw] sm:text-[10rem]">
+            <h1 className="win-display bubble-strong text-7xl sm:text-9xl">
               SOBRE
             </h1>
           </div>

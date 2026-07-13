@@ -39,7 +39,7 @@ export default function VideosPage() {
           <div className="relative inline-block">
             <Sparkle size="md" className="absolute -top-5 -left-6 hidden sm:block" />
             <Sparkle size="lg" className="absolute -top-7 left-1/3 hidden sm:block" />
-            <h1 className="win-display glitch text-[20vw] sm:text-[12rem]">
+            <h1 className="win-display glitch text-7xl sm:text-8xl">
               DJ SETS
             </h1>
           </div>

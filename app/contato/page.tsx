@@ -50,7 +50,7 @@ export default function ContatoPage() {
               size="sm"
               className="absolute top-1 right-1/4 hidden sm:block"
             />
-            <h1 className="win-display glitch text-[26vw] sm:text-[14rem]">
+            <h1 className="win-display glitch text-7xl sm:text-9xl lowercase">
               contato
             </h1>
           </div>
