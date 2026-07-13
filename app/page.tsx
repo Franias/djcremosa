@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { EventRow } from "@/components/sections/EventRow";
-import { GenrePills } from "@/components/sections/GenrePills";
 import { Sparkle } from "@/components/sections/Sparkle";
 import { Win95Dialog } from "@/components/sections/Win95Dialog";
 import { PressStartGate } from "@/components/PressStartGate";
@@ -10,12 +9,34 @@ import { events } from "@/content/events";
 import { splitAgenda } from "@/lib/events";
 import { site } from "@/lib/site";
 
-const DESKTOP_ICONS = [
-  { glyph: "📀", label: "Sets", href: "/musica/" },
-  { glyph: "📝", label: "Notas", href: "/sobre/" },
-  { glyph: "📅", label: "Agenda", href: "/agenda/" },
-  { glyph: "🎞", label: "Vídeos", href: "/videos/" },
-  { glyph: "🖼", label: "Galeria", href: "/galeria/" },
+/**
+ * Win95.com-style welcome dialog. 12 shortcut icons arranged in a
+ * 4×3 grid, each linking to a page or external resource.
+ */
+const WELCOME_ICONS = [
+  { glyph: "📅", label: "Agenda", href: "/agenda/", external: false },
+  { glyph: "🎵", label: "Música", href: "/musica/", external: false },
+  { glyph: "🖼", label: "Galeria", href: "/galeria/", external: false },
+  { glyph: "🎞", label: "Vídeos", href: "/videos/", external: false },
+  { glyph: "📖", label: "Sobre", href: "/sobre/", external: false },
+  { glyph: "✉", label: "Contato", href: "/contato/", external: false },
+  { glyph: "💿", label: "Sets", href: "/musica/", external: false },
+  { glyph: "📝", label: "Notas", href: "/sobre/", external: false },
+  { glyph: "⭐", label: "Destaques", href: "/#destaques", external: false },
+  { glyph: "📨", label: "Booking", href: `mailto:${site.contact.email}`, external: true },
+  { glyph: "🎧", label: "SoundCloud", href: "https://soundcloud.com/cremosinha", external: true },
+  { glyph: "📷", label: "Instagram", href: site.social.instagram?.url ?? "#", external: true },
+] as const;
+
+/** Pipe-separated sitemap row — secondary nav, Win95.com-style footer. */
+const SITEMAP = [
+  { label: "Agenda", href: "/agenda/" },
+  { label: "Música", href: "/musica/" },
+  { label: "Galeria", href: "/galeria/" },
+  { label: "Vídeos", href: "/videos/" },
+  { label: "Sobre", href: "/sobre/" },
+  { label: "Contato", href: "/contato/" },
+  { label: "Booking", href: "/contato/" },
 ] as const;
 
 export default function HomePage() {
@@ -24,66 +45,111 @@ export default function HomePage() {
 
   return (
     <PressStartGate>
-      {/* HERO — breadcrumb + lede + CTA + desktop icons */}
+      {/* HERO — Windows95.com-inspired welcome dialog with 4×3 icon grid */}
       <section className="hero grain halftone">
-        <div className="shell relative z-10">
+        <div className="shell relative z-10 flex flex-col items-center text-center">
           <h1 className="sr-only">Cremosa — Início</h1>
-          {/* Breadcrumb */}
-          <p className="win-eyebrow text-bubble mb-6">
-            <span aria-hidden>// </span>
+          {/* Breadcrumb — the page indicator */}
+          <p className="win-eyebrow text-bubble mb-8 self-start">
+            <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span>{" "}
             {site.brand.tagline.primary}
           </p>
 
-          {/* Genre pills — horizontal row */}
-          <GenrePills spread={false} />
-
-          {/* Lede */}
-          <p className="mt-2 max-w-xl win-body text-cream">
+          {/* Big bold heading + italic subtitle — Win95.com style */}
+          <h2 className="font-display text-4xl sm:text-6xl text-cream leading-tight">
+            Welcome to <span className="bubble-strong">Cremosa</span>
+            <span className="align-super text-bubble text-2xl">™</span>
+          </h2>
+          <p className="mt-3 italic text-bubble text-xl sm:text-2xl font-medium">
             {site.brand.tagline.secondary}
           </p>
 
-          {/* CTAs — Win95 buttons */}
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <Link href="/agenda" className="no-underline">
-              <Win95Button focused>Ver agenda →</Win95Button>
-            </Link>
-            {site.social.instagram && (
-              <a
-                href={site.social.instagram.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="no-underline"
-              >
-                <Win95Button>{site.social.instagram.handle}</Win95Button>
-              </a>
-            )}
+          {/* Welcome dialog — 4×3 icon grid (Win95.com pattern) */}
+          <div className="mt-10 w-full max-w-4xl">
+            <Win95Window title="cremosa.exe — welcome" controls>
+              <div className="bg-win-face p-5 sm:p-7 text-win-ink">
+                <p className="win-eyebrow text-win-shadow-deep mb-5 text-center">
+                  {"// 12 atalhos · clique pra abrir"}
+                </p>
+                <ul className="grid grid-cols-3 sm:grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-5 list-none p-0">
+                  {WELCOME_ICONS.map((icon) => (
+                    <li key={icon.label} className="flex flex-col items-center">
+                      {icon.external ? (
+                        <a
+                          href={icon.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group no-underline flex flex-col items-center gap-2"
+                        >
+                          <span
+                            aria-hidden
+                            className="text-4xl sm:text-5xl win95-bevel-out bg-win-face-2 p-2 group-hover:bg-win-light transition-colors"
+                            style={{ imageRendering: "pixelated" }}
+                          >
+                            {icon.glyph}
+                          </span>
+                          <span className="win-caption text-center text-win-ink group-hover:text-crimson transition-colors">
+                            {icon.label}
+                          </span>
+                        </a>
+                      ) : (
+                        <Link
+                          href={icon.href}
+                          className="group no-underline flex flex-col items-center gap-2"
+                        >
+                          <span
+                            aria-hidden
+                            className="text-4xl sm:text-5xl win95-bevel-out bg-win-face-2 p-2 group-hover:bg-win-light transition-colors"
+                            style={{ imageRendering: "pixelated" }}
+                          >
+                            {icon.glyph}
+                          </span>
+                          <span className="win-caption text-center text-win-ink group-hover:text-crimson transition-colors">
+                            {icon.label}
+                          </span>
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {/* Status bar — echoes Win95.com footer */}
+              <div className="win95-statusbar mt-2">
+                <span className="win95-statusbar-segment grow">
+                  © 2026 {site.brand.name} · Porto Alegre, RS
+                </span>
+                <span className="win95-statusbar-segment grow hidden sm:inline">
+                  {site.brand.tagline.primary}
+                </span>
+                <span className="win95-statusbar-segment shrink">
+                  v1.0 · 2026
+                </span>
+              </div>
+            </Win95Window>
           </div>
 
-          {/* Desktop icons strip — Midia Kit page 3 reference */}
-          <div className="mt-14 w-full">
-            <ul className="flex flex-wrap items-end gap-4 sm:gap-6 list-none p-0 max-w-2xl">
-              {DESKTOP_ICONS.map((icon) => (
-                <li key={icon.label}>
-                  <Link
-                    href={icon.href}
-                    className="flex flex-col items-center gap-1 group no-underline"
-                  >
-                    <span
-                      aria-hidden
-                      className="text-3xl sm:text-4xl win95-bevel-out bg-win-face p-1.5 group-hover:bg-win-face-2 transition-colors"
-                      style={{ imageRendering: "pixelated" }}
-                    >
-                      {icon.glyph}
-                    </span>
-                    <span className="win-caption group-hover:text-bubble transition-colors">
-                      {icon.label}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Pipe-separated link row — secondary nav like the Windows95.com footer */}
+          <nav
+            aria-label="Mapa do site"
+            className="mt-8 max-w-3xl win-body-sm text-cream-dim text-center"
+          >
+            {SITEMAP.map((label, i) => (
+              <span key={label.href + label.label}>
+                <Link
+                  href={label.href}
+                  className="text-cream hover:text-bubble underline underline-offset-2"
+                >
+                  {label.label}
+                </Link>
+                {i < SITEMAP.length - 1 && (
+                  <span className="opacity-50 mx-2" aria-hidden>
+                    |
+                  </span>
+                )}
+              </span>
+            ))}
+          </nav>
         </div>
       </section>
 
