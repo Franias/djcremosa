@@ -8,10 +8,10 @@
 
 @theme {
   /* Surfaces */
-  --color-bg: #0a0606;
-  --color-surface: #14090b;
-  --color-surface-2: #1f1014;
-  --color-line: #2c1620;
+  --color-bg: #6a2840;
+  --color-surface: #5a2038;
+  --color-surface-2: #6a2840;
+  --color-line: #7a3450;
 
   /* Foreground */
   --color-cream: #f4e7d3;
@@ -102,18 +102,24 @@ body[data-gate-active="true"] header.sticky {
   background:
     radial-gradient(
       ellipse 80% 60% at 20% 0%,
-      rgba(214, 48, 122, 0.18) 0%,
+      rgba(255, 111, 163, 0.55) 0%,
       transparent 60%
     ),
     radial-gradient(
       ellipse 60% 50% at 90% 30%,
-      rgba(255, 111, 163, 0.12) 0%,
+      rgba(214, 48, 122, 0.45) 0%,
       transparent 55%
     ),
     radial-gradient(
       ellipse 90% 70% at 50% 100%,
-      rgba(200, 21, 46, 0.15) 0%,
+      rgba(138, 13, 31, 0.50) 0%,
       transparent 65%
+    ),
+    linear-gradient(
+      180deg,
+      #6a2840 0%,
+      #8a3a55 50%,
+      #6a2840 100%
     ),
     var(--color-bg);
   background-size: 200% 200%, 200% 200%, 200% 200%, 100% 100%;
