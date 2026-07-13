@@ -44,13 +44,16 @@ export const site = {
    * Subpath prefix prepended to every static asset URL and <Link> href.
    * Required for hosts that serve the site under a subpath
    * (GitHub Pages → https://<user>.github.io/<repo>/).
-   * Set to "" once the site lives at a custom domain root.
+   *
+   * Source of truth: `process.env.NEXT_PUBLIC_BASE_PATH`. In dev we
+   * default to "" so `http://localhost:3000/` is the site root; in
+   * production we set it to `/djcremosa` (see deploy.yml).
    *
    * NOTE: only used manually (e.g. in Logo.tsx). Next.js itself handles
    * basePath for `_next/*` assets and `<Link>` hrefs automatically via
    * `next.config.ts → basePath`. Keep both in sync.
    */
-  basePath: "/djcremosa",
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH ?? "",
 
   contact: {
     email: "franciellipdias@gmail.com",

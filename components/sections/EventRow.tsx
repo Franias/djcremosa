@@ -22,7 +22,7 @@ export function EventRow({ event, compact = false }: EventRowProps) {
       title={winTitle}
       className="mb-3"
       titleExtras={
-        <span className="win-eyebrow opacity-80 text-[10px] tracking-[0.18em]">
+        <span className="win-eyebrow-sm opacity-80">
           {CATEGORY_LABEL[event.category]} · {STATUS_LABEL[event.status]}
         </span>
       }
@@ -37,13 +37,13 @@ export function EventRow({ event, compact = false }: EventRowProps) {
       >
         {/* Date column */}
         <div className="flex flex-col items-start pt-1 select-none">
-          <span className="win-eyebrow text-win-shadow-deep tracking-[0.18em]">
+          <span className="win-eyebrow-sm text-win-shadow-deep">
             {month}
           </span>
           <span className="win-display leading-[0.85] text-[40px] sm:text-[52px] text-win-ink">
             {day}
           </span>
-          <span className="win-eyebrow text-win-shadow-deep tracking-[0.18em]">
+          <span className="win-eyebrow-sm text-win-shadow-deep">
             {year}
           </span>
         </div>
@@ -53,13 +53,13 @@ export function EventRow({ event, compact = false }: EventRowProps) {
           <header className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
               {event.mock && (
-                <span className="win-eyebrow border border-win-shadow-deep rounded-sm px-1.5 text-[10px]">
+                <span className="win-eyebrow-sm border border-win-shadow-deep rounded-sm px-1.5">
                   Exemplo
                 </span>
               )}
               <span
                 className={[
-                  "win-eyebrow border rounded-sm px-1.5 py-px text-[10px]",
+                  "win-eyebrow-sm border rounded-sm px-1.5 py-px",
                   "border-win-shadow-deep bg-win-face-2 text-win-ink",
                 ].join(" ")}
               >
@@ -99,7 +99,7 @@ export function EventRow({ event, compact = false }: EventRowProps) {
             <div className="flex flex-col gap-1">
               {event.lineup && event.lineup.length > 0 && (
                 <p className="win-body-sm text-win-shadow-deep">
-                  <span className="win-eyebrow mr-2 text-[10px]">
+                  <span className="win-eyebrow-sm mr-2">
                     Line-up:
                   </span>
                   {event.lineup.join(" · ")}
@@ -128,17 +128,17 @@ export function EventRow({ event, compact = false }: EventRowProps) {
                 </Link>
               )}
             {event.status === "sold-out" && (
-              <span className="win-eyebrow text-win-shadow-deep">
+              <span className="win-eyebrow-sm text-win-shadow-deep">
                 ★ Esgotado — nos vemos na pista
               </span>
             )}
             {event.status === "cancelled" && (
-              <span className="win-eyebrow text-crimson">
+              <span className="win-eyebrow-sm text-crimson">
                 Evento cancelado
               </span>
             )}
             {event.status === "postponed" && (
-              <span className="win-eyebrow text-status-warn">
+              <span className="win-eyebrow-sm text-status-warn">
                 Nova data em breve
               </span>
             )}

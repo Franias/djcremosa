@@ -58,7 +58,7 @@ export function AgendaView({ events }: AgendaViewProps) {
           count={events.length}
           active={view === "all"}
         />
-        <span className="ml-auto win-eyebrow text-cream-dim text-[10px] hidden sm:inline">
+        <span className="ml-auto win-eyebrow-sm text-cream-dim hidden sm:inline">
           {events.length} shows · ordenado por data
         </span>
       </nav>
@@ -73,7 +73,7 @@ export function AgendaView({ events }: AgendaViewProps) {
             >
               Próximas datas
             </h2>
-            <span className="win-eyebrow text-cream-dim text-[10px]">
+            <span className="win-eyebrow-sm text-cream-dim">
               {upcoming.length} {upcoming.length === 1 ? "show" : "shows"}
             </span>
           </header>
@@ -105,7 +105,7 @@ export function AgendaView({ events }: AgendaViewProps) {
             >
               Histórico
             </h2>
-            <span className="win-eyebrow text-cream-dim text-[10px]">
+            <span className="win-eyebrow-sm text-cream-dim">
               {past.length} {past.length === 1 ? "show" : "shows"}
             </span>
           </header>
@@ -148,7 +148,7 @@ function FilterPill({
         {label}
         <span
           className={[
-            "inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] border",
+            "inline-flex items-center justify-center min-w-5 h-5 px-1.5 win-eyebrow-sm border",
             active
               ? "border-win-shadow-deep bg-win-face text-win-ink"
               : "border-win-shadow-deep bg-win-face text-win-ink",

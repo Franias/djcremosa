@@ -1,21 +1,17 @@
 import type { Metadata } from "next";
-import { SectionPlaceholder } from "@/components/sections/SectionPlaceholder";
+import { GaleriaGrid } from "@/components/sections/GaleriaGrid";
 import { site } from "@/lib/site";
 
-export const metadata: Metadata = { title: `Galeria · ${site.brand.name}` };
+export const metadata: Metadata = {
+  title: `Galeria · ${site.brand.name}`,
+  description: `Fotos de pista, bastidores e retratos de ${site.brand.name}. ${site.brand.location}.`,
+};
 
+/**
+ * Server wrapper — exports the page metadata and defers all interaction
+ * (filter / lightbox) to <GaleriaGrid />. Required because Next.js 16
+ * forbids exporting `metadata` from a `"use client"` file.
+ */
 export default function GaleriaPage() {
-  return (
-    <SectionPlaceholder
-      eyebrow="bastidores · pista · portraits"
-      title="Galeria"
-      blurb="Mosaico das fotos de pista, retrato e bastidor — Cloudinary pra carregar rápido."
-      comingSoon={[
-        "Grid masonry responsivo com lazy loading",
-        "Filtro por evento (vinculado à agenda)",
-        "Lightbox fullscreen com setas",
-        "Download de fotos de imprensa (apenas credenciados)",
-      ]}
-    />
-  );
+  return <GaleriaGrid />;
 }

@@ -912,16 +912,17 @@ body[data-gate-active="true"] header.sticky {
    The site is fully Win95-typographed. Use these utility classes
    everywhere so the same MS-Sans-Serif feel reads consistently.
 
-     win-display   hero h1 (Bagel Fat One)    — CREMOSA, AGENDA, SOBRE…
-     win-h2        section heading (Bagel Fat One)
-     win-eyebrow   "// foo" labels   (VT323, 11px, uppercase, 0.22em)
-     win-body      body copy          (VT323, 14px, 1.55 line-height)
-     win-body-sm   dense copy         (VT323, 12.5px, 1.5 line-height)
-     win-caption   small dim text     (VT323, 11px, uppercase, 0.18em)
-     win-button-text   button text    (VT323, 13px)
-     win-status-text   status-bar     (VT323, 12px)
-     win-title-text    win95 title    (VT323, 13px)
-     win-mono      Notepad body only   (Geist Mono, 13px)
+     win-display     hero h1 (Bagel Fat One)    — CREMOSA, AGENDA, SOBRE…
+     win-h2          section heading (Bagel Fat One)
+     win-eyebrow     "// foo" labels   (VT323, 20px, uppercase, 0.22em)
+     win-eyebrow-sm  dense inline label (VT323, 12px, 0.18em — title bar extras, transport row meta)
+     win-body        body copy          (VT323, 20px, 1.55 line-height)
+     win-body-sm     dense copy         (VT323, 18px, 1.5 line-height)
+     win-caption     small dim text     (VT323, 18px, uppercase, 0.18em)
+     win-button-text button text        (VT323, 20px)
+     win-status-text status-bar         (VT323, 20px)
+     win-title-text  win95 title        (VT323, 20px)
+     win-mono        Notepad body only  (Geist Mono)
 
    Body default font is VT323 (MS Sans Serif pixel), so any unstyled
    text inherits the Win95 feel. The `font-pixel` class is reserved
@@ -931,9 +932,8 @@ body[data-gate-active="true"] header.sticky {
    use on the site. Geist Mono is reserved for the .notepad-body
    class — it's literally a Notepad.
 
-   The sizes deliberately mirror what a real Windows 95/98 system
-   would render at 96 dpi, then bumped ~25% so they read at modern
-   1080p+ densities without losing the chunky pixel feel.
+   Sizes are WCAG-driven: every utility class is ≥18px (eyebrow-sm
+   is 12px for inline metadata in chrome, never used for body copy).
 */
 
 .win-display {
@@ -950,28 +950,41 @@ body[data-gate-active="true"] header.sticky {
 
 .win-eyebrow {
   font-family: var(--font-pixel);
-  font-size: 11px;
+  font-size: 20px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 400;
   line-height: 1.3;
 }
 
+/* Dense variant — for inline metadata inside compact chrome surfaces
+   (Win95 title-bar extras, transport-row timestamps, card meta).
+   Same family + uppercase + tracking style as `.win-eyebrow`, scaled
+   down so it fits a 20–32px tall row without breaking alignment. */
+.win-eyebrow-sm {
+  font-family: var(--font-pixel);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
 .win-body {
   font-family: var(--font-pixel);
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1.55;
 }
 
 .win-body-sm {
   font-family: var(--font-pixel);
-  font-size: 12.5px;
+  font-size: 18px;
   line-height: 1.5;
 }
 
 .win-caption {
   font-family: var(--font-pixel);
-  font-size: 11px;
+  font-size: 18px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   line-height: 1.4;
@@ -980,18 +993,18 @@ body[data-gate-active="true"] header.sticky {
 
 .win-button-text {
   font-family: var(--font-pixel);
-  font-size: 13px;
+  font-size: 20px;
   letter-spacing: 0.02em;
 }
 
 .win-status-text {
   font-family: var(--font-pixel);
-  font-size: 12px;
+  font-size: 20px;
 }
 
 .win-title-text {
   font-family: var(--font-pixel);
-  font-size: 13px;
+  font-size: 20px;
   letter-spacing: 0.02em;
 }
 

@@ -37,9 +37,27 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Sync audio (from backup)
+        # Audio source files (.gitignored) are restored from a private
+        # backup before each deploy. Override AUDIO_SRC via repo
+        # Settings → Secrets → Variables if the path changes.
+        # On a CI runner with no backup mounted, this step skips itself.
+        run: |
+          if [[ -n "${AUDIO_SRC:-}" && -d "${AUDIO_SRC}" ]]; then
+            echo "::notice::Syncing audio from ${AUDIO_SRC}"
+            npm run sync:audio
+          else
+            echo "::warning::AUDIO_SRC not set or unreachable; deploying without audio. /musica visualizer will run in idle CSS mode."
+          fi
+
       - name: Build (next build → ./out)
         run: npm run build
         env:
+          # next.config.ts reads NEXT_PUBLIC_BASE_PATH to set the
+          # asset prefix for production (matches GitHub Pages path).
+          # Leave unset for custom-domain deploys.
+          NEXT_PUBLIC_BASE_PATH: /djcremosa
+          # Set the public site URL so Next.js generates absolute OG/Twitter
           # Set the public site URL so Next.js generates absolute OG/Twitter
           # meta URLs correctly. Override in repo Settings → Secrets if you
           # ever move off Pages (e.g. djcremosa.com.br → https://djcremosa.com.br).

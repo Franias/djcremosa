@@ -57,7 +57,7 @@ export default function HomePage() {
           </p>
 
           {/* Big bold heading — Win95.com style */}
-          <h2 className="font-display text-4xl sm:text-6xl text-cream leading-tight">
+          <h2 className="win-h2 text-4xl sm:text-6xl text-cream">
             Welcome to <span className="bubble-strong">Cremosa</span>
             <span className="align-super text-bubble text-2xl">™</span>
           </h2>
@@ -195,8 +195,6 @@ export default function HomePage() {
                   <dd>Porto Alegre, RS</dd>
                   <dt className="text-win-shadow-deep">Ativa desde</dt>
                   <dd>{site.brand.activeSince}</dd>
-                  <dt className="text-win-shadow-deep">Setup</dt>
-                  <dd>Pioneer DDJ-200</dd>
                   <dt className="text-win-shadow-deep">Coletivo</dt>
                   <dd>AfroJams (2025→)</dd>
                   <dt className="text-win-shadow-deep">Residência</dt>
@@ -307,14 +305,14 @@ export default function HomePage() {
               <p className="text-win-shadow-deep text-sm mt-3 max-w-xs">
                 {site.brand.tagline.secondary}
               </p>
-              <p className="text-win-shadow-deep win-eyebrow mt-4 text-[10px]">
+              <p className="text-win-shadow-deep win-eyebrow-sm mt-4">
                 {site.brand.location}
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-6 sm:gap-10 text-sm">
               <div>
-                <p className="win-eyebrow mb-2 text-[10px]">Contato</p>
+                <p className="win-eyebrow-sm mb-2">Contato</p>
                 <ul className="list-none p-0 flex flex-col gap-1 win-body-sm">
                   <li>
                     <a
@@ -336,7 +334,7 @@ export default function HomePage() {
               </div>
 
               <div>
-                <p className="win-eyebrow mb-2 text-[10px]">Onde me achar</p>
+                <p className="win-eyebrow-sm mb-2">Onde me achar</p>
                 <ul className="list-none p-0 flex flex-col gap-1 win-body-sm">
                   {site.social.instagram && (
                     <li>

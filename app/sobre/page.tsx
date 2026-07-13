@@ -40,7 +40,7 @@ export default function SobrePage() {
         <div className="shell relative z-10">
           <h1 className="sr-only">Sobre — Cremosa</h1>
           <p className="win-eyebrow text-bubble mb-6">
-            <span aria-hidden>// </span>
+            <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span> Sobre
           </p>
           <p className="mt-6 max-w-2xl win-body text-cream-dim">
@@ -101,8 +101,6 @@ export default function SobrePage() {
                       <dd>AfroJams</dd>
                       <dt className="text-win-shadow-deep">Residência:</dt>
                       <dd>BatukBaile</dd>
-                      <dt className="text-win-shadow-deep">Setup:</dt>
-                      <dd>Pioneer DDJ-200</dd>
                     </dl>
                     <div className="mt-4 pt-3 border-t border-win-shadow-deep/40 flex justify-end">
                       <Link href="/contato" className="no-underline">

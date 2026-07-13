@@ -123,11 +123,12 @@ under "Shell".
 ## How every page hero should look
 
 The same skeleton on `/`, `/agenda`, `/musica`, `/videos`, `/sobre`,
-`/contato`, `/galeria`. Hero content is always center-aligned:
+`/contato`, `/galeria`. Hero content is always **left-aligned** so the
+display title reads as an editorial head, not a poster:
 
 ```tsx
 <section className="hero grain halftone">  {/* or scanlines */}
-  <div className="shell relative z-10 flex flex-col items-center text-center">
+  <div className="shell relative z-10">
     {/* 1. eyebrow */}
     <p className="win-eyebrow text-bubble mb-4">{"// agenda · 2026"}</p>
 

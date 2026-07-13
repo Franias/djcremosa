@@ -47,7 +47,7 @@ export function GaleriaGrid() {
         <div className="shell relative z-10">
           <h1 className="sr-only">Galeria — Cremosa</h1>
           <p className="win-eyebrow text-bubble mb-6">
-            <span aria-hidden>// </span>
+            <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span> Galeria
           </p>
           <p className="mt-6 max-w-2xl win-body text-cream-dim">
@@ -81,7 +81,7 @@ export function GaleriaGrid() {
               />
             ),
           )}
-          <span className="ml-auto win-eyebrow text-cream-dim text-[10px] hidden sm:inline">
+          <span className="ml-auto win-eyebrow-sm text-cream-dim hidden sm:inline">
             {visible.length} {visible.length === 1 ? "foto" : "fotos"}
           </span>
         </div>
@@ -133,7 +133,7 @@ function FilterChip({
       focused={active}
     >
       {label}
-      <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-[10px] border border-win-shadow-deep bg-win-face text-win-ink">
+      <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 win-eyebrow-sm border border-win-shadow-deep bg-win-face text-win-ink">
         {count}
       </span>
     </Win95Button>
@@ -165,7 +165,7 @@ function Tile({
     >
       <div className="win95-bevel-deep-in bg-win-face">
         <div className="win95-title" role="presentation">
-          <span className="win-eyebrow truncate tracking-[0.18em] text-[10px]">
+          <span className="win-eyebrow-sm truncate">
             {CONTEXT_LABELS[photo.context]} · {photo.caption}
           </span>
           <span className="win95-title-controls" aria-hidden>
@@ -203,10 +203,10 @@ function Tile({
 
           {/* Footer strip — credit */}
           <div className="absolute inset-x-0 bottom-0 px-2 py-1 bg-bg/80 backdrop-blur-sm flex items-center justify-between text-cream">
-            <span className="win-eyebrow truncate tracking-[0.18em] text-[10px]">
+            <span className="win-eyebrow-sm truncate">
               foto · {photo.credit}
             </span>
-            <span className="win-eyebrow text-bubble text-[10px]">→ abrir</span>
+            <span className="win-eyebrow-sm text-bubble">→ abrir</span>
           </div>
         </div>
       </div>
@@ -273,11 +273,11 @@ function Lightbox({
             {!loaded && (
               <div className="absolute inset-0 grid place-items-center p-6">
                 <div className="w-full max-w-md flex flex-col gap-2">
-                  <p className="win-eyebrow text-bubble text-center text-[12px]">
+                  <p className="win-eyebrow-sm text-bubble text-center">
                     Carregando imagem…
                   </p>
                   <Win95ProgressBar value={progress} label="Carregando imagem" />
-                  <p className="win-eyebrow tabular-nums text-cream-dim text-center text-[11px]">
+                  <p className="win-eyebrow-sm tabular-nums text-cream-dim text-center">
                     {Math.round(progress).toString().padStart(3, " ")}%
                   </p>
                 </div>

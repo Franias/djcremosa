@@ -123,28 +123,93 @@ interface CremosaEvent {
 
 ## 3. Design system
 
+### Identidade visual (rebrand 2026-07)
+
+O site agora vive dentro de uma metáfora de **Windows 95/98 desktop**: cada
+página é uma janela dentro de um shell Win95. O conteúdo do kit está
+integrado como chrome nativo (título azul, botões 3D bevel, menu bar,
+status bar com relógio, splash de boot, ícones de desktop).
+
 ### Tokens (em `app/globals.css`)
 
 ```
 Surfaces:    bg #0a0606, surface #14090b, surface-2 #1f1014, line #2c1620
 Foreground:  cream #f4e7d3, cream-dim #b9a995
-Brand:       crimson #c8152e, crimson-deep #8a0d1f, magenta #d6307a, bubble #ff6fa3, bubble-hi #ffb3cf
+Brand:       crimson #c8152e, crimson-deep #8a0d1f, magenta #d6307a,
+             bubble #ff6fa3, bubble-hi #ffb3cf
+Win95 chrome (registrados em `@theme`):
+             win-face #c0c0c0, win-face-2 #d4d0c8, win-light #ffffff,
+             win-shadow #808080, win-shadow-deep #404040, win-ink #000000,
+             win-title-1 #000080, win-title-2 #1084d0, win-teal #008080
 Status:      ok #7eea9a, warn #ffcc66, down #ff6477
-Fonts:       display Bagel Fat One · sans Geist · mono Geist Mono
 ```
 
-### Classes utilitárias custom
+### Padrão tipográfico (regra única)
 
-- `.bubble` — gradiente de texto 4-stops (highlight → bubble → magenta → crimson-deep) + double text-shadow. Usado em todo título-display.
-- `.grain` — overlay SVG inline de ruído, blend overlay, 18% opacity. Eco do grain do press kit.
-- `.line` — cor de divisor.
+| Função | Fonte | Classe | Onde |
+|---|---|---|---|
+| Hero display titles (`CREMOSA`, `AGENDA`, `SOBRE`, `GALERIA`, `MÚSICA`) | Bagel Fat One | `.bubble-strong` | Apenas nos `<h1>` de hero |
+| Glitch hero titles (`contato`, `DJ SETS`) | VT323 | `.glitch` | Apenas nessas duas páginas |
+| Chrome Win95 (title bar, botões, menu, status bar) | VT323 | embutido em `.win95-*` | Toda chrome Win95 |
+| Site eyebrows `// foo` **fora** de janelas | VT323 | `font-pixel text-[11px]` | Acima de seções/hero |
+| Texto de corpo **dentro** de janelas Win95 | Geist Mono | `font-mono` | Conteúdo de diálogos |
+| Parágrafos/ledes **fora** de janelas (dark site) | Geist Sans | sem classe (default) | Hero ledes |
+| Manifestos editoriais / citações | Geist Mono | `font-mono` | Sobre manifesto |
+| Notepad body / midia-kit reference | Geist Mono | embutido em `.notepad-body` | Sobre + Música |
+
+> **Regra:** "dentro de janela" = fonte mono (Geist Mono). "Fora de janela,
+> precisa ler como MS Sans Serif" = `font-pixel`. "Hero gigante" = `.bubble-strong`.
+
+### Primitivas Win95 (`components/ui/win95.tsx`)
+
+| Componente | Uso |
+|---|---|
+| `Win95Window` | Container com blue title bar + bevel 3D; aceita `title`, `controls`, `titleExtras` |
+| `Win95Button` / `Win95Link` | Botão 3D bevel padrão; aceita `active`, `focused` |
+| `Win95StatusBar` | Strip inferior com clock live (HH:MM); aceita segmentos children |
+| `Win95MenuBar` | `Arquivo · Editar · Exibir · Ajuda` com mnemonics underlined |
+| `Win95Field` | Input com sunken inset |
+| `Win95ProgressBar` | Barra Win95 (azul + stripes animadas) |
+
+### Outros componentes
+
+- `Win95Dialog` (`components/sections/Win95Dialog.tsx`) — diálogo de
+  sistema com variantes `info | warning | error`, mensagem, hint e action
+  row. Usado para empty states (agenda) e CTAs de booking (sobre).
+- `VerticalRails` (`components/sections/VerticalRails.tsx`) — trilhos
+  verticais no rodapé das páginas (ocultos em `lg` no mobile), com
+  `SELETORA · CURADORIA · DISCOTECAGEM` à esquerda e `PRESS KIT · 2026` à
+  direita.
+- `LoadingScreen` (`components/LoadingScreen.tsx`) — splash de boot
+  Win95 (logo + progress bar animada), toca 1x por sessão
+  (sessionStorage `cremosa-splash-seen`).
+- `GenrePills`, `Sparkle`, `Notepad`, `MediaPlayer` — primitivas
+  restantes do kit, mantidas para coerência editorial.
+
+### Classes utilitárias custom (em `app/globals.css`)
+
+- `.bubble-strong` — gradiente 5-stop glossy display (cover treatment)
+- `.glitch` — pixel-font heading com chromatic-aberration offset
+- `.halftone` — campo de pontos diagonais para backgrounds
+- `.scanlines` — overlay CRT / VHS linhas horizontais
+- `.pink-mode` — variante rosa de seção (matching kit page 2)
+- `.notepad` — Windows-Notepad window chrome (page 3)
+- `.player` — Windows-Media-Player window chrome (page 4)
+- `.cappill` — pílula de gênero (capsule tag com nó conector)
+- `.sparkle` — starburst Y2K (inline)
+- `.win95-*` (ver tabela de primitivas acima)
+- `.grain` — overlay SVG inline de ruído, blend overlay, 18% opacity
 
 ### Princípios visuais
 
-- **Dark by default** (a pista é o lugar dela — site preto/vermelho combina)
-- **Sem cantos super-arredondados** exceto botões (pill) e chips
-- **Bordas finas** (`border-line`) em vez de sombras — mantém o cinema de pista
-- **Sem emojis** — usa ★ ▸ → ← etc quando precisa de glyph
+- **Win95 por padrão** — toda UI de chrome vive dentro de uma
+  `Win95Window`. Sem cantos arredondados fora de `.win95-button` /
+  `.cappill`.
+- **Dark where no Win95** — fora de janelas, o site usa `#0a0606`.
+- **Bordas bevel em vez de sombras** — chunky 3D bevel é o cinema.
+- **Sem emojis** no body — usa ★ ▸ → ← etc quando precisa de glyph.
+- **Tabular monospace** para os relojes / timestamps.
+- **Eyebrows `// foo`** sempre em `font-pixel` para ler como MS Sans Serif.
 
 ---
 
@@ -262,9 +327,37 @@ public/
 ```bash
 cd ~/Projects/dj-cremosa
 npm run dev          # dev em http://localhost:3000
-npm run build        # gera ./out (estático, pronto pra publicar)
+npm run build        # roda sync:audio + gera ./out (estático, pronto pra publicar)
 npx serve out        # serve o build localmente pra testar
+
+# Comandos auxiliares
+npm run sync:audio   # copia os MP3s de ~/Music/.../soundcloudtracks pra public/audio/
+npm run lint         # ESLint
 ```
+
+### Áudio (MP3s em /public/audio)
+
+Os MP3s ficam em `/public/audio/` mas **são .gitignored** (194MB não vai
+pro repo). Antes de cada `npm run build` (local e no CI), o script
+`scripts/sync-audio.sh` copia os arquivos do backup local:
+
+- **Origem padrão:** `~/Music/Downloaded by MediaHuman/soundcloudtracks/`
+- **Override:** `AUDIO_SRC=/outro/caminho npm run sync:audio`
+- **Idempotente:** pula arquivos que já estão atualizados (mtime + size)
+- **Mapeamento:** a tabela `TRACKS` no script mapeia nome original do
+  MediaHuman → slug kebab-case (ex.: `"Baguncinha [frita] #2.mp3"` →
+  `baguncinha-frita-2.mp3`).
+
+**No CI (GitHub Actions):** o workflow chama `npm run sync:audio` antes do
+build. Se `AUDIO_SRC` não estiver definido (caso comum em runner
+limpo), o passo é pulado com warning e o site faz deploy **sem áudio** —
+o visualizador de `/musica` cai no modo idle (animação CSS, sem FFT).
+
+Para o CI ter áudio, defina a variável `AUDIO_SRC` em
+**Settings → Secrets and variables → Actions → Variables** apontando para
+o caminho do backup no runner (ou monte um volume com os MP3s).
+
+### Deploy no GitHub Pages (one-time setup + push)
 
 ### Deploy no GitHub Pages (one-time setup + push)
 

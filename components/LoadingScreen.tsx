@@ -141,10 +141,10 @@ export function LoadingScreen() {
             </div>
           </div>
 
-          <p className="win-eyebrow text-center mt-3 text-white text-[10px]">
+          <p className="win-eyebrow-sm text-center mt-3 text-white">
             {`// ${site.brand.tagline.primary}`}
           </p>
-          <p className="win-eyebrow text-center mt-1 text-white/60 animate-pulse text-[10px]">
+          <p className="win-eyebrow-sm text-center mt-1 text-white/60 animate-pulse">
             pressione qualquer tecla para pular
           </p>
         </div>

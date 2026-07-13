@@ -40,7 +40,7 @@ export default function ContatoPage() {
         <div className="shell relative z-10">
           <h1 className="sr-only">Contato — Cremosa</h1>
           <p className="win-eyebrow text-bubble mb-6">
-            <span aria-hidden>// </span>
+            <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span> Contato
           </p>
           <p className="mt-6 max-w-2xl win-body text-cream-dim">

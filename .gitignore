@@ -24,13 +24,21 @@
 .DS_Store
 *.pem
 
+# Audio source files — pulled fresh per-machine from
+# ~/Music/Downloaded by MediaHuman/soundcloudtracks (see SPEC.md).
+# Don't commit 200MB of MP3s to the repo; deploy from a CDN or
+# pre-publish them via a script.
+# To opt in to committing audio, comment the next line out.
+/public/audio/*.mp3
+!/public/audio/.gitkeep
+
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (can opt-in to committing if needed)
 .env*
 
 # vercel

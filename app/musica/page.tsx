@@ -14,7 +14,7 @@ import {
   resumeAudio,
   type AudioRig,
 } from "@/lib/audio";
-import { tracks } from "@/content/soundcloud";
+import { tracks, type SoundCloudTrack } from "@/content/soundcloud";
 
 type AnyRig = AudioRig;
 
@@ -271,7 +271,7 @@ export default function MusicaPage() {
         <div className="shell relative z-10">
           <h1 className="sr-only">Música — Cremosa</h1>
           <p className="win-eyebrow text-bubble mb-6">
-            <span aria-hidden>// </span>
+            <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span> Música
           </p>
           <p className="mt-6 max-w-2xl win-body text-cream-dim">
@@ -288,7 +288,7 @@ export default function MusicaPage() {
           title="cremosa — visualizador.exe"
           controls
           titleExtras={
-            <span className="win-eyebrow opacity-80 text-[10px] tracking-[0.18em]">
+            <span className="win-eyebrow-sm opacity-80">
               {nowPlaying
                 ? `${isPlaying ? "▶ playing" : "❚❚ paused"} · ${nowPlaying.title}`
                 : "❚❚ idle · drop an mp3"}
@@ -333,13 +333,13 @@ export default function MusicaPage() {
                   {isPlaying ? "▶" : "❚❚"}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="font-pixel text-[13px] text-cream truncate">
+                  <p className="win-body-sm text-cream truncate">
                     {nowPlaying
                       ? nowPlaying.title
                       : "nenhuma faixa carregada — escolha abaixo ou arraste um MP3"}
                   </p>
                   <div className="mt-1.5 flex items-center gap-2">
-                    <span className="win-eyebrow text-cream-dim tabular-nums text-[10px]">
+                    <span className="win-eyebrow-sm text-cream-dim tabular-nums">
                       {fmt(currentTime)}
                     </span>
                     {/* Scrubber */}
@@ -359,7 +359,7 @@ export default function MusicaPage() {
                         style={{ width: `${progress * 100}%` }}
                       />
                     </div>
-                    <span className="win-eyebrow text-cream-dim tabular-nums text-[10px]">
+                    <span className="win-eyebrow-sm text-cream-dim tabular-nums">
                       {fmt(duration)}
                     </span>
                   </div>
@@ -398,83 +398,18 @@ export default function MusicaPage() {
         </Win95Window>
       </section>
 
-      {/* TRACKS LIBRARY — click to load */}
+      {/* PLAYLIST — Win95 list view below the visualizer */}
       <section className="shell py-10 sm:py-14 border-t border-line">
-        <header className="mb-8 flex items-baseline justify-between gap-4 flex-wrap">
-          <div>
-            <p className="win-eyebrow text-bubble mb-2">
-              {"// tracks · soundcloud"}
-            </p>
-            <h2 className="win-h2 text-cream text-3xl sm:text-4xl">
-              Biblioteca ({tracks.length})
-            </h2>
-          </div>
-          <p className="win-eyebrow text-cream-dim text-[10px]">
-            {"// clica pra tocar · arrastar MP3 também funciona"}
-          </p>
-        </header>
+        <p className="win-eyebrow text-bubble mb-4">
+          {"// clica pra tocar"}
+        </p>
 
-        <ul className="list-none p-0 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tracks.map((t) => {
-            const active = nowPlaying?.slug === t.slug;
-            return (
-              <li key={t.slug}>
-                <button
-                  type="button"
-                  onClick={() => loadFromUrl(t.audioSrc, t.title, t.slug)}
-                  className={[
-                    "block w-full text-left no-underline group",
-                    active ? "" : "",
-                  ].join(" ")}
-                >
-                  <article
-                    className={[
-                      "win95-bevel-out p-[2px] transition-shadow",
-                      active
-                        ? "bg-bubble shadow-[0_0_0_2px_var(--color-bubble)]"
-                        : "bg-win-face group-hover:shadow-[0_0_0_2px_var(--color-bubble)]",
-                    ].join(" ")}
-                  >
-                    <div className="win95-bevel-deep-in bg-win-face">
-                      <div className="win95-title" role="presentation">
-                        <span className="win-eyebrow truncate tracking-[0.18em] text-[10px]">
-                          {t.context} · {t.slug}
-                        </span>
-                        <span className="win95-title-controls" aria-hidden>
-                          <span>─</span>
-                          <span>□</span>
-                          <span className="close">×</span>
-                        </span>
-                      </div>
-                      <div className="win95-bevel-deep-in bg-win-face p-4 text-win-ink">
-                        <h3
-                          className={[
-                            "win-button-text leading-snug mb-1.5 lowercase",
-                            active ? "text-magenta" : "",
-                          ].join(" ")}
-                        >
-                          {active && "▶ "}
-                          {t.title}
-                        </h3>
-                        <p className="win-body-sm text-win-shadow-deep">
-                          {t.note}
-                        </p>
-                        <div className="mt-3 flex items-center justify-between">
-                          <span className="win-eyebrow text-win-shadow-deep text-[10px] tracking-[0.18em]">
-                            {t.context}
-                          </span>
-                          <span className="win-eyebrow text-bubble text-[10px]">
-                            {active ? "❚❚ playing" : "▶ tocar"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <Playlist
+          tracks={tracks}
+          currentSlug={nowPlaying?.slug ?? null}
+          isPlaying={isPlaying}
+          onPlay={(t) => loadFromUrl(t.audioSrc, t.title, t.slug)}
+        />
       </section>
 
       {/* FOOTER NOTE — how it works */}
@@ -492,13 +427,8 @@ export default function MusicaPage() {
               VU (média dos bins graves).
             </p>
             <p className="win-body-sm mt-3">
-              Os MP3s ficam em{" "}
-              <code className="win-title-text text-[12px] bg-bg text-bubble px-1.5 py-0.5 win95-bevel-in">
-                /public/audio/
-              </code>{" "}
-              (servidos como arquivos estáticos). Funciona em qualquer host
-              estático — GitHub Pages, Netlify, Cloudflare Pages, etc. —
-              porque o áudio é same-origin com a página.
+              Arrasta qualquer MP3 aqui pra tocar — o arquivo carrega
+              direto do disco e alimenta o AnalyserNode em tempo real.
             </p>
           </div>
         </Win95Window>
@@ -514,4 +444,126 @@ function fmt(seconds: number): string {
   const m = Math.floor(total / 60);
   const s = total % 60;
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+}
+
+/* ─────────────────────────── Playlist ─────────────────────────── */
+
+/**
+ * Playlist — Win95 list-view player. Renders the catalogue as a dense
+ * table with columns: #, status, title, genre, duration. Currently
+ * playing row gets a magenta accent + "▶" indicator + brighter text.
+ * Click any row to load + play that track.
+ *
+ * Sits below the visualizer on /musica. Designed to read like a
+ * classic Winamp playlist window.
+ */
+interface PlaylistProps {
+  tracks: SoundCloudTrack[];
+  currentSlug: string | null;
+  isPlaying: boolean;
+  onPlay: (track: SoundCloudTrack) => void;
+}
+
+function Playlist({ tracks, currentSlug, isPlaying, onPlay }: PlaylistProps) {
+  const totalSec = tracks.reduce(
+    (acc, t) => acc + (t.durationSec ?? 0),
+    0,
+  );
+
+  return (
+    <div className="win95-bevel-out bg-win-face p-[2px]">
+      <div className="win95-bevel-deep-in bg-win-face">
+        {/* Title bar */}
+        <div className="win95-title" role="presentation">
+          <span className="win-title-text">
+            playlist.txt — {tracks.length} faixas · {fmt(totalSec)} total
+          </span>
+          <span className="win95-title-controls" aria-hidden>
+            <span>─</span>
+            <span>□</span>
+            <span className="close">×</span>
+          </span>
+        </div>
+
+        {/* Column headers */}
+        <div
+          className="grid items-center gap-2 px-3 py-1.5 bg-[#d4d0c8] border-b border-win-shadow-deep/40 win-eyebrow text-win-shadow-deep"
+          style={{ gridTemplateColumns: "32px 24px 1fr 80px 56px" }}
+        >
+          <span className="text-right">#</span>
+          <span />
+          <span>Título</span>
+          <span>Gênero</span>
+          <span className="text-right tabular-nums">Dur.</span>
+        </div>
+
+        {/* Track rows */}
+        <ol className="list-none p-0 m-0">
+          {tracks.map((t, i) => {
+            const active = t.slug === currentSlug;
+            return (
+              <li key={t.slug}>
+                <button
+                  type="button"
+                  onClick={() => onPlay(t)}
+                  aria-current={active ? "true" : undefined}
+                  className={[
+                    "w-full text-left grid items-center gap-2 px-3 py-1.5",
+                    "win-body-sm tabular-nums transition-colors",
+                    active
+                      ? "bg-magenta text-cream"
+                      : "bg-win-face text-win-ink hover:bg-[#dde9f5]",
+                  ].join(" ")}
+                  style={{ gridTemplateColumns: "32px 24px 1fr 80px 56px" }}
+                >
+                  <span className="text-right opacity-70">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className={[
+                      "text-center",
+                      active
+                        ? "text-cream animate-pulse"
+                        : "text-bubble opacity-0 group-hover:opacity-100",
+                    ].join(" ")}
+                    aria-hidden
+                  >
+                    {active ? (isPlaying ? "▶" : "❚❚") : "▶"}
+                  </span>
+                  <span className="truncate lowercase">
+                    {t.title}
+                  </span>
+                  <span className="win-caption text-win-shadow-deep truncate">
+                    {t.context}
+                  </span>
+                  <span
+                    className={[
+                      "text-right tabular-nums",
+                      active ? "text-cream" : "text-win-shadow-deep",
+                    ].join(" ")}
+                  >
+                    {fmt(t.durationSec ?? 0)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+
+        {/* Footer status */}
+        <div className="win95-statusbar mt-1">
+          <span className="win95-statusbar-segment grow">
+            {tracks.length} tracks · {fmt(totalSec)} · soundcloud
+          </span>
+          <span className="win95-statusbar-segment shrink">
+            {currentSlug
+              ? isPlaying
+                ? "▶ playing"
+                : "❚❚ paused"
+              : "idle"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }

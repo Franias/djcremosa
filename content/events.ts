@@ -11,12 +11,14 @@ import type { CremosaEvent } from "@/lib/events";
  *
  * When a new show is confirmed, add an entry here and push to git.
  * Phase 5 swap path: this whole file moves into Sanity / Notion / MDX.
+ *
+ * Slug convention: kebab-case short tag, e.g. `clube-x-2026-11-22`.
  */
 
 export const events: CremosaEvent[] = [
-  // ─────── UPCOMING (mock — replace these) ───────
+  // ─────── UPCOMING (confirmed) ───────
   {
-    slug: "mock-club-night-2026-08",
+    slug: "baile-do-10-2026-07-04",
     title: "080 /// Baile do 10",
     date: "2026-07-04",
     time: "23h",
@@ -27,27 +29,12 @@ export const events: CremosaEvent[] = [
     status: "confirmed",
     category: "club",
     lineup: ["Cremosa"],
-    ticketUrl: "https://https://www.sympla.com.br/evento/baile-do-dez-segunda-edicao/3481116.com",
+    ticketUrl:
+      "https://www.sympla.com.br/evento/baile-do-dez-segunda-edicao/3481116",
     note: ".",
   },
-  // {
-  //   slug: "mock-festival-2026-10",
-  //   title: "Festival /// Exemplo",
-  //   date: "2026-10-18",
-  //   endDate: "2026-10-19",
-  //   time: "00h",
-  //   venue: "Parque /// placeholder",
-  //   city: "Florianópolis",
-  //   region: "SC",
-  //   country: "Brasil",
-  //   status: "tentative",
-  //   category: "festival",
-  //   lineup: ["Cremosa", "+ 12 artistas TBA"],
-  //   note: "Placeholder — exemplo para festivais com data fim.",
-  //   mock: true,
-  // },
   {
-    slug: "mock-private-2026-09",
+    slug: "role-do-kit-2026-07-10",
     title: "Cade o kit /// 1 ano",
     date: "2026-07-10",
     time: "23h",
@@ -58,11 +45,12 @@ export const events: CremosaEvent[] = [
     status: "confirmed",
     category: "club",
     lineup: ["Cremosa"],
-    ticketUrl: "https://shotgun.live/en/events/role-do-kit?uhandle=clarissad836&utm_campaign=share_event&utm_term=clarissad836&utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQPOTM2NjE5NzQzMzkyNDU5AAGnFELCsH-vMcibY9xT4T8g9c0kMptJP_fJdbSVtydwwKxVtXMmVamkLSu27LI_aem_zm5oHQ3F9bH63YwvnemE6A",
+    ticketUrl:
+      "https://shotgun.live/en/events/role-do-kit?uhandle=clarissad836",
     note: ".",
   },
-    {
-    slug: "mock-private-2026-09",
+  {
+    slug: "cha-das-patroas-2026-07-11",
     title: "Chá das Patroas /// Ed. Anos 2000",
     date: "2026-07-11",
     time: "22h",
@@ -73,7 +61,8 @@ export const events: CremosaEvent[] = [
     status: "confirmed",
     category: "club",
     lineup: ["Cremosa"],
-    ticketUrl: "https://www.sympla.com.br/evento/cha-das-patroas-ed-anos-2000/3461297",
+    ticketUrl:
+      "https://www.sympla.com.br/evento/cha-das-patroas-ed-anos-2000/3461297",
     note: ".",
   },
 

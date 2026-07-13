@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Bagel_Fat_One, Geist, Geist_Mono } from "next/font/google";
+import { Bagel_Fat_One, Geist, Geist_Mono, VT323 } from "next/font/google";
 import { SiteNav } from "@/components/nav/SiteNav";
 import { SiteFooter } from "@/components/nav/SiteFooter";
+import { VerticalRails } from "@/components/sections/VerticalRails";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -18,6 +19,14 @@ const geistMono = Geist_Mono({
 // Bagel Fat One = the chunky Y2K bubble that matches the press kit title.
 const bagelFat = Bagel_Fat_One({
   variable: "--font-display",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+// VT323 = pixel / terminal monospace. Echoes the glitched "contato" header
+// and Windows-Media-Player chrome in the Midia Kit 2026.
+const vt323 = VT323({
+  variable: "--font-pixel",
   subsets: ["latin"],
   weight: "400",
 });
@@ -68,6 +77,11 @@ export const metadata: Metadata = {
     // adicionado na fase 2.
     icon: [{ url: "/favicon.ico" }],
   },
+  // Enable cross-route View Transitions (Chrome 124+, Safari 18+).
+  // Browsers without support ignore the meta tag — navigation still works.
+  other: {
+    "view-transition": "same-origin",
+  },
   robots: {
     index: true,
     follow: true,
@@ -87,11 +101,18 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} ${bagelFat.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bagelFat.variable} ${vt323.variable}`}
     >
       <body className="min-h-screen flex flex-col bg-bg text-cream">
+        {/* Animated background gradient — slow hue drift */}
+        <div className="bg-anim" aria-hidden />
+        <div className="bg-anim-grain" aria-hidden />
+        {/* Boot splash removed — the Press Start gate on / handles first-
+            session UX now. Kept the component around for future use. */}
         <SiteNav />
-        <main className="flex-1">{children}</main>
+        {/* Vertical side rails echoing the Midia Kit editorial frame */}
+        <VerticalRails />
+        <main className="flex-1 relative z-10">{children}</main>
         <SiteFooter />
       </body>
     </html>
