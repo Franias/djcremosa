@@ -30,7 +30,7 @@ export default function AgendaPage() {
     <>
       {/* Hero — fully static */}
       <section className="hero grain halftone">
-        <div className="shell relative z-10 flex flex-col items-center text-center">
+        <div className="shell relative z-10">
           <p className="win-eyebrow text-bubble mb-4">
             {`// agenda · ${new Date().getFullYear()}`}
           </p>
@@ -43,7 +43,7 @@ export default function AgendaPage() {
             </h1>
           </div>
 
-          <div className="mt-10 max-w-3xl w-full">
+          <div className="mt-10 max-w-3xl">
             <Win95Window title="agenda — instruções" controls>
               <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
                 <p className="win-body-sm">

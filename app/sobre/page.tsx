@@ -37,7 +37,7 @@ export default function SobrePage() {
     <>
       {/* HERO */}
       <section className="hero grain halftone">
-        <div className="shell relative z-10 flex flex-col items-center text-center">
+        <div className="shell relative z-10">
           <p className="win-eyebrow text-bubble mb-4">
             {"// bio · trajetória · manifesto"}
           </p>

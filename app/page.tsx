@@ -4,6 +4,7 @@ import { EventRow } from "@/components/sections/EventRow";
 import { GenrePills } from "@/components/sections/GenrePills";
 import { Sparkle } from "@/components/sections/Sparkle";
 import { Win95Dialog } from "@/components/sections/Win95Dialog";
+import { PressStartGate } from "@/components/PressStartGate";
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { events } from "@/content/events";
 import { splitAgenda } from "@/lib/events";
@@ -22,17 +23,14 @@ export default function HomePage() {
   const nextThree = upcoming.slice(0, 3);
 
   return (
-    <>
+    <PressStartGate>
       {/* HERO — bubble title + desktop icons + about dialog */}
       <section className="hero grain halftone">
-        <div className="shell relative z-10 flex flex-col items-center text-center">
+        <div className="shell relative z-10">
           {/* Eyebrow */}
           <p className="win-eyebrow text-bubble mb-6">
             {`// ${site.brand.tagline.primary}`}
           </p>
-
-          {/* Floating genre pills — fan out around the artist / logo */}
-          <GenrePills />
 
           {/* Sparkles around the title */}
           <div className="relative inline-block">
@@ -48,19 +46,22 @@ export default function HomePage() {
               size="sm"
               className="absolute top-2 -right-5 hidden sm:block"
             />
-            <h1 className="win-display bubble-strong text-[22vw] sm:text-[14rem] text-center">
+            <h1 className="win-display bubble-strong text-[22vw] sm:text-[14rem]">
               CREMOSA
             </h1>
             <Logo size="hero" priority className="mb-2 mx-auto hidden" />
           </div>
 
+          {/* Genre pills — horizontal row below the title */}
+          <GenrePills spread={false} />
+
           {/* Lede */}
-          <p className="mt-8 max-w-xl win-body text-cream text-center">
+          <p className="mt-2 max-w-xl win-body text-cream">
             {site.brand.tagline.secondary}
           </p>
 
           {/* CTAs — Win95 buttons */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link href="/agenda" className="no-underline">
               <Win95Button focused>Ver agenda →</Win95Button>
             </Link>
@@ -77,8 +78,8 @@ export default function HomePage() {
           </div>
 
           {/* Desktop icons strip — Midia Kit page 3 reference */}
-          <div className="mt-14 flex justify-center w-full">
-            <ul className="flex flex-wrap items-end justify-center gap-4 sm:gap-6 list-none p-0 max-w-2xl">
+          <div className="mt-14 w-full">
+            <ul className="flex flex-wrap items-end gap-4 sm:gap-6 list-none p-0 max-w-2xl">
               {DESKTOP_ICONS.map((icon) => (
                 <li key={icon.label}>
                   <Link
@@ -92,7 +93,7 @@ export default function HomePage() {
                     >
                       {icon.glyph}
                     </span>
-                    <span className="win-caption group-hover:text-bubble transition-colors text-center">
+                    <span className="win-caption group-hover:text-bubble transition-colors">
                       {icon.label}
                     </span>
                   </Link>
@@ -162,7 +163,7 @@ export default function HomePage() {
 
       {/* UPCOMING PREVIEW — keep agenda focus */}
       <section className="shell py-16 sm:py-24 border-t border-line">
-        <header className="flex flex-col items-center text-center sm:flex-row sm:items-baseline sm:justify-between sm:text-left gap-4 mb-8">
+        <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 mb-8">
           <div className="relative">
             <Sparkle size="sm" className="absolute -top-4 -left-5" />
             <p className="win-eyebrow text-bubble mb-2">
@@ -313,6 +314,6 @@ export default function HomePage() {
           </div>
         </Win95Window>
       </section>
-    </>
+    </PressStartGate>
   );
 }

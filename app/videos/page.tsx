@@ -32,7 +32,7 @@ export default function VideosPage() {
     <>
       {/* HERO — kit-page-4 DJ SETS treatment */}
       <section className="hero grain halftone scanlines">
-        <div className="shell relative z-10 flex flex-col items-center text-center">
+        <div className="shell relative z-10">
           <p className="win-eyebrow text-bubble mb-4">
             {"// lives · aftermovies · entrevistas"}
           </p>
