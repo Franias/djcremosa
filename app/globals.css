@@ -68,9 +68,18 @@ html,
 body {
   background: var(--color-bg);
   color: var(--color-cream);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  font-family: var(--font-pixel);
+  /* VT323 is a bitmap font — keep pixelated edges, no smoothing. */
+  -webkit-font-smoothing: none;
+  font-smooth: never;
+  text-rendering: optimizeSpeed;
+}
+
+/* Hide the SiteNav header while the PressStartGate splash is active
+   on the home page. The gate sets body[data-gate-active="true"] on
+   mount and removes it on dismiss. */
+body[data-gate-active="true"] header.sticky {
+  display: none !important;
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -625,11 +634,13 @@ body {
   padding: 2px;
 }
 
-/* Sunken inset for the progress track — dark TL, light BR */
+/* Sunken inset for the progress track — dark TL, light BR.
+   Chunky height + double-bevel border + pure-white interior for the
+   classic Win95 installer look. */
 .win95-progress-track {
   position: relative;
-  height: 18px;
-  background: var(--win95-face);
+  height: 28px;
+  background: #ffffff;
   border-top: 2px solid var(--win95-shadow);
   border-left: 2px solid var(--win95-shadow);
   border-right: 2px solid var(--win95-face-light);
@@ -638,26 +649,28 @@ body {
   overflow: hidden;
 }
 
-/* Solid blue bar with animated diagonal stripes — the classic Win95
-   "loading" treatment. Width is driven by inline style from React. */
+/* Classic Win95 progress bar: solid navy fill with thin lighter-blue
+   diagonal stripes scrolling left-to-right. ~14px stripe pitch for
+   the chunky retro feel. Pixel-art crispness on the bar edge. */
 .win95-progress-bar {
   height: 100%;
   background-color: var(--win95-blue);
   background-image: repeating-linear-gradient(
     45deg,
     var(--win95-blue) 0,
-    var(--win95-blue) 8px,
-    var(--win95-blue-light) 8px,
-    var(--win95-blue-light) 16px
+    var(--win95-blue) 7px,
+    var(--win95-blue-light) 7px,
+    var(--win95-blue-light) 14px
   );
-  background-size: 22.6px 22.6px; /* sqrt(2)*16 keeps stripes seamless */
-  animation: win95-stripes 700ms linear infinite;
+  background-size: 19.8px 19.8px; /* sqrt(2)*14 keeps stripes seamless */
+  animation: win95-stripes 600ms linear infinite;
   transition: width 80ms linear;
+  image-rendering: pixelated;
 }
 
 @keyframes win95-stripes {
   from { background-position: 0 0; }
-  to   { background-position: 22.6px 0; }
+  to   { background-position: 19.8px 0; }
 }
 
 /* Chunky 3D beveled border — for the splash title bar */
@@ -696,29 +709,30 @@ body {
     var(--win-title-2) 100%
   );
   color: var(--win-light);
-  padding: 3px 4px 3px 4px;
+  padding: 6px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-family: var(--font-pixel);
-  font-size: 13px;
+  font-size: 20px;
   letter-spacing: 0.02em;
   user-select: none;
+  min-height: 32px;
 }
 .win95-title-controls {
   display: inline-flex;
   gap: 2px;
 }
 .win95-title-controls span {
-  width: 16px;
-  height: 14px;
+  width: 26px;
+  height: 22px;
   background: var(--win-face);
   color: var(--win-ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-pixel);
-  font-size: 10px;
+  font-size: 16px;
   line-height: 1;
   border-top: 1px solid var(--win-light);
   border-left: 1px solid var(--win-light);
@@ -732,11 +746,11 @@ body {
 /* Win95-style button (use with .win95-button on a <button>) */
 .win95-button {
   font-family: var(--font-pixel);
-  font-size: 14px;
+  font-size: 20px;
   color: var(--win-ink);
   background: var(--win-face);
-  padding: 4px 12px;
-  min-height: 26px;
+  padding: 8px 18px;
+  min-height: 40px;
   border-top: 1px solid var(--win-light);
   border-left: 1px solid var(--win-light);
   border-right: 1px solid var(--win-shadow-deep);
@@ -760,7 +774,7 @@ body {
   border-right-color: var(--win-light);
   border-bottom-color: var(--win-light);
   box-shadow: inset 1px 1px 0 var(--win-shadow), inset -1px -1px 0 var(--win-face-2);
-  padding: 5px 11px 3px 13px; /* simulate 1px press */
+  padding: 9px 17px 7px 19px; /* simulate 1px press */
 }
 .win95-button:focus-visible {
   outline: 1px dotted var(--win-ink);
@@ -774,11 +788,12 @@ body {
   border-top: 1px solid var(--win-light);
   box-shadow: inset 1px 1px 0 var(--win-face-2);
   font-family: var(--font-pixel);
-  font-size: 13px;
+  font-size: 20px;
   display: flex;
   align-items: center;
   gap: 1px;
-  padding: 2px;
+  padding: 4px;
+  min-height: 40px;
 }
 .win95-statusbar-segment {
   flex: 1;
@@ -786,7 +801,7 @@ body {
   border-left: 1px solid var(--win-shadow-deep);
   border-right: 1px solid var(--win-light);
   border-bottom: 1px solid var(--win-light);
-  padding: 2px 6px;
+  padding: 4px 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -805,12 +820,12 @@ body {
   background: var(--win-face);
   color: var(--win-ink);
   font-family: var(--font-pixel);
-  font-size: 14px;
-  padding: 2px 2px;
+  font-size: 20px;
+  padding: 3px 4px;
   border-bottom: 1px solid var(--win-shadow);
 }
 .win95-menubar-item {
-  padding: 3px 8px;
+  padding: 6px 12px;
   cursor: pointer;
   user-select: none;
 }
@@ -871,7 +886,7 @@ body {
 
 .win-eyebrow {
   font-family: var(--font-pixel);
-  font-size: 11px;
+  font-size: 20px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   font-weight: 400;
@@ -880,36 +895,36 @@ body {
 
 .win-body {
   font-family: var(--font-pixel);
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1.55;
 }
 
 .win-body-sm {
   font-family: var(--font-pixel);
-  font-size: 12.5px;
+  font-size: 18px;
   line-height: 1.5;
 }
 
 .win-caption {
   font-family: var(--font-pixel);
-  font-size: 11px;
+  font-size: 18px;
   line-height: 1.4;
   color: var(--color-cream-dim);
 }
 
 .win-button-text {
   font-family: var(--font-pixel);
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .win-status-text {
   font-family: var(--font-pixel);
-  font-size: 13px;
+  font-size: 20px;
 }
 
 .win-title-text {
   font-family: var(--font-pixel);
-  font-size: 13px;
+  font-size: 20px;
   letter-spacing: 0.02em;
 }
 

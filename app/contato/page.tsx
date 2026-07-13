@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Sparkle } from "@/components/sections/Sparkle";
+
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { site } from "@/lib/site";
 
@@ -38,23 +38,12 @@ export default function ContatoPage() {
       {/* HERO — kit-page-5 glitched "contato" treatment */}
       <section className="hero grain scanlines">
         <div className="shell relative z-10">
-          <p className="win-eyebrow text-bubble mb-4">
-            {"// booking · imprensa · geral"}
+          <h1 className="sr-only">Contato — Cremosa</h1>
+          <p className="win-eyebrow text-bubble mb-6">
+            <span aria-hidden>// </span>
+            Início <span className="opacity-60 mx-1">›</span> Contato
           </p>
-          <div className="relative inline-block">
-            <Sparkle
-              size="md"
-              className="absolute -top-6 left-1/4 hidden sm:block"
-            />
-            <Sparkle
-              size="sm"
-              className="absolute top-1 right-1/4 hidden sm:block"
-            />
-            <h1 className="win-display glitch text-7xl sm:text-9xl lowercase">
-              contato
-            </h1>
-          </div>
-          <p className="mt-8 max-w-2xl win-body text-cream-dim">
+          <p className="mt-6 max-w-2xl win-body text-cream-dim">
             Pra proposta de show, festival ou residência, manda direto pelo
             email. Resposta em até <span className="text-bubble">72h úteis</span>.
           </p>

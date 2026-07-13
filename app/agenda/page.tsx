@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AgendaView } from "@/components/sections/AgendaView";
-import { Sparkle } from "@/components/sections/Sparkle";
+
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { events } from "@/content/events";
 import { site } from "@/lib/site";
@@ -31,19 +31,14 @@ export default function AgendaPage() {
       {/* Hero — fully static */}
       <section className="hero grain halftone">
         <div className="shell relative z-10">
-          <p className="win-eyebrow text-bubble mb-4">
-            {`// agenda · ${new Date().getFullYear()}`}
+          <h1 className="sr-only">Agenda — Cremosa</h1>
+          {/* Breadcrumb — informs the user which page they are on */}
+          <p className="win-eyebrow text-bubble mb-6">
+            <span aria-hidden>// </span>
+            Início <span className="opacity-60 mx-1">›</span> Agenda · {new Date().getFullYear()}
           </p>
-          <div className="relative inline-block">
-            <Sparkle size="md" className="absolute -top-5 -left-7 hidden sm:block" />
-            <Sparkle size="lg" className="absolute -top-8 left-1/2 -translate-x-1/2 hidden sm:block" />
-            <Sparkle size="sm" className="absolute top-2 -right-6 hidden sm:block" />
-            <h1 className="win-display bubble-strong text-7xl sm:text-9xl">
-              AGENDA
-            </h1>
-          </div>
 
-          <div className="mt-10 max-w-3xl">
+          <div className="mt-2 max-w-3xl">
             <Win95Window title="agenda — instruções" controls>
               <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
                 <p className="win-body-sm">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sparkle } from "@/components/sections/Sparkle";
+
 import {
   Win95Button,
   Win95ProgressBar,
@@ -45,17 +45,11 @@ export function GaleriaGrid() {
       {/* HERO */}
       <section className="hero grain halftone">
         <div className="shell relative z-10">
-          <p className="win-eyebrow text-bubble mb-4">
-            {"// pista · bastidores · retratos"}
+          <h1 className="sr-only">Galeria — Cremosa</h1>
+          <p className="win-eyebrow text-bubble mb-6">
+            <span aria-hidden>// </span>
+            Início <span className="opacity-60 mx-1">›</span> Galeria
           </p>
-          <div className="relative inline-block">
-            <Sparkle size="md" className="absolute -top-5 -left-7 hidden sm:block" />
-            <Sparkle size="lg" className="absolute -top-8 left-1/3 hidden sm:block" />
-            <Sparkle size="sm" className="absolute top-1 -right-6 hidden sm:block" />
-            <h1 className="win-display bubble-strong text-7xl sm:text-9xl">
-              GALERIA
-            </h1>
-          </div>
           <p className="mt-6 max-w-2xl win-body text-cream-dim">
             Mosaico das fotos de pista, retrato e bastidor. Clique em qualquer
             imagem pra abrir em tela cheia.

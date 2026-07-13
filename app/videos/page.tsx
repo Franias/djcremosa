@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { MediaPlayer } from "@/components/sections/MediaPlayer";
-import { Sparkle } from "@/components/sections/Sparkle";
+
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { site } from "@/lib/site";
 
@@ -33,17 +33,12 @@ export default function VideosPage() {
       {/* HERO — kit-page-4 DJ SETS treatment */}
       <section className="hero grain halftone scanlines">
         <div className="shell relative z-10">
-          <p className="win-eyebrow text-bubble mb-4">
-            {"// lives · aftermovies · entrevistas"}
+          <h1 className="sr-only">Vídeos — Cremosa</h1>
+          <p className="win-eyebrow text-bubble mb-6">
+            <span aria-hidden>// </span>
+            Início <span className="opacity-60 mx-1">›</span> Vídeos
           </p>
-          <div className="relative inline-block">
-            <Sparkle size="md" className="absolute -top-5 -left-6 hidden sm:block" />
-            <Sparkle size="lg" className="absolute -top-7 left-1/3 hidden sm:block" />
-            <h1 className="win-display glitch text-7xl sm:text-8xl">
-              DJ SETS
-            </h1>
-          </div>
-          <p className="mt-8 max-w-2xl win-body text-cream-dim">
+          <p className="mt-6 max-w-2xl win-body text-cream-dim">
             Lives, aftermovies de festival e entrevistas. Embeds do YouTube
             com poster otimizado — não pesa a página.
           </p>

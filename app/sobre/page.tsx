@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { GenrePills } from "@/components/sections/GenrePills";
 import { Notepad } from "@/components/sections/Notepad";
-import { Sparkle } from "@/components/sections/Sparkle";
+
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { site } from "@/lib/site";
 
@@ -38,18 +38,12 @@ export default function SobrePage() {
       {/* HERO */}
       <section className="hero grain halftone">
         <div className="shell relative z-10">
-          <p className="win-eyebrow text-bubble mb-4">
-            {"// bio · trajetória · manifesto"}
+          <h1 className="sr-only">Sobre — Cremosa</h1>
+          <p className="win-eyebrow text-bubble mb-6">
+            <span aria-hidden>// </span>
+            Início <span className="opacity-60 mx-1">›</span> Sobre
           </p>
-          <div className="relative inline-block">
-            <Sparkle size="md" className="absolute -top-4 -left-8" />
-            <Sparkle size="lg" className="absolute -top-8 left-1/2 -translate-x-1/2" />
-            <Sparkle size="sm" className="absolute top-1 -right-8" />
-            <h1 className="win-display bubble-strong text-7xl sm:text-9xl">
-              SOBRE
-            </h1>
-          </div>
-          <p className="mt-8 max-w-2xl win-body text-cream-dim">
+          <p className="mt-6 max-w-2xl win-body text-cream-dim">
             Seletora e curadora musical baseada em Porto Alegre. Ativa desde
             2016, construindo pista a partir da música preta global.
           </p>

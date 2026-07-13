@@ -24,35 +24,18 @@ export default function HomePage() {
 
   return (
     <PressStartGate>
-      {/* HERO — bubble title + desktop icons + about dialog */}
+      {/* HERO — breadcrumb + lede + CTA + desktop icons */}
       <section className="hero grain halftone">
         <div className="shell relative z-10">
-          {/* Eyebrow */}
+          <h1 className="sr-only">Cremosa — Início</h1>
+          {/* Breadcrumb */}
           <p className="win-eyebrow text-bubble mb-6">
-            {`// ${site.brand.tagline.primary}`}
+            <span aria-hidden>// </span>
+            Início <span className="opacity-60 mx-1">›</span>{" "}
+            {site.brand.tagline.primary}
           </p>
 
-          {/* Sparkles around the title */}
-          <div className="relative inline-block">
-            <Sparkle
-              size="md"
-              className="absolute -top-3 -left-6 hidden sm:block"
-            />
-            <Sparkle
-              size="lg"
-              className="absolute -top-6 left-1/2 -translate-x-1/2"
-            />
-            <Sparkle
-              size="sm"
-              className="absolute top-2 -right-5 hidden sm:block"
-            />
-            <h1 className="win-display bubble-strong text-7xl sm:text-[10rem]">
-              CREMOSA
-            </h1>
-            <Logo size="hero" priority className="mb-2 mx-auto hidden" />
-          </div>
-
-          {/* Genre pills — horizontal row below the title */}
+          {/* Genre pills — horizontal row */}
           <GenrePills spread={false} />
 
           {/* Lede */}

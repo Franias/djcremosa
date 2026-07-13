@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Sparkle } from "@/components/sections/Sparkle";
+
 import { MediaVisualizer } from "@/components/sections/MediaVisualizer";
 import {
   Win95Button,
@@ -269,17 +269,12 @@ export default function MusicaPage() {
       {/* HERO */}
       <section className="hero grain halftone">
         <div className="shell relative z-10">
-          <p className="win-eyebrow text-bubble mb-4">
-            {"// visualizador · sets · mixes"}
+          <h1 className="sr-only">Música — Cremosa</h1>
+          <p className="win-eyebrow text-bubble mb-6">
+            <span aria-hidden>// </span>
+            Início <span className="opacity-60 mx-1">›</span> Música
           </p>
-          <div className="relative inline-block">
-            <Sparkle size="md" className="absolute -top-5 -left-7" />
-            <Sparkle size="sm" className="absolute top-1 -right-6" />
-            <h1 className="win-display bubble-strong text-7xl sm:text-8xl">
-              MÚSICA
-            </h1>
-          </div>
-          <p className="mt-8 max-w-2xl win-body text-cream-dim">
+          <p className="mt-6 max-w-2xl win-body text-cream-dim">
             {tracks.length} sets no arquivo. Clica numa faixa abaixo ou arrasta
             qualquer MP3 aqui — o visualizador pulsa com a música em tempo real
             via Web Audio API.
