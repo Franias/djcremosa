@@ -44,8 +44,8 @@ export default function SobrePage() {
             Início <span className="opacity-60 mx-1">›</span> Sobre
           </p>
           <p className="mt-6 max-w-2xl win-body">
-            Seletora e curadora musical baseada em Porto Alegre. Ativa desde
-            2016, construindo pista a partir da música preta global.
+            Seletora e curadora musical original de Porto Alegre. Ativa desde
+            2016, construindo a pista a partir da música preta.
           </p>
         </div>
       </section>

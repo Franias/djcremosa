@@ -110,7 +110,7 @@ test.describe("smoke — press start gate", () => {
       name: /press start/i,
     });
     await expect(splash).toBeVisible();
-    await expect(splash.getByText(/press start/i)).toBeVisible();
+    await expect(splash.getByText(/press anywhere/i)).toBeVisible();
   });
 
   test("skip gate via ?skipGate=1 bypasses the splash", async ({ page }) => {
@@ -124,7 +124,7 @@ test.describe("smoke — press start gate", () => {
     await page.goto("/");
     const splash = page.getByRole("dialog", { name: /press start/i });
     await expect(splash).toBeVisible();
-    await splash.getByText(/press start/i).click();
+    await splash.getByText(/press anywhere/i).click();
     // Wait for the splash to fade out + unmount.
     await expect(splash).toHaveCount(0, { timeout: 5_000 });
     await expect(page.locator("h1").first()).toBeVisible();
@@ -132,7 +132,15 @@ test.describe("smoke — press start gate", () => {
 
   test("site nav is hidden while splash is showing", async ({ page }) => {
     await page.goto("/");
-    // body[data-gate-active="true"] → CSS hides the SiteNav header.
+    // Wait for hydration so body[data-gate-active] is set by the
+    // PressStartGate effect. CSS reads the same attribute to hide
+    // the SiteNav — if it never gets set on hydration, the test
+    // would flake intermittently.
+    await page.waitForFunction(
+      () => document.body.getAttribute("data-gate-active") === "true",
+      null,
+      { timeout: 5_000 },
+    );
     const dataAttr = await page.evaluate(() =>
       document.body.getAttribute("data-gate-active"),
     );

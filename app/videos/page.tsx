@@ -143,7 +143,7 @@ export default function VideosPage() {
             <h2 className="win-h2 text-win-shadow-deep">
               {afrJamsPlaylist.title}
             </h2>
-            <p className="win-body-sm text-cream-dim mt-3 max-w-2xl">
+            <p className="win-body-sm mt-3 max-w-2xl">
               {afrJamsPlaylist.blurb}
             </p>
           </div>

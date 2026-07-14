@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Sparkle } from "@/components/sections/Sparkle";
+import { useBodyScrollLock } from "@/lib/hooks/useBodyScrollLock";
 import { site } from "@/lib/site";
 
 /**
@@ -10,13 +11,18 @@ import { site } from "@/lib/site";
  *   - Big Cremosa logo centred
  *   - Win95 progress bar filling 0→100% over ~3s (decorative — the
  *     page is already loaded, the bar just sets the "booting up" mood)
- *   - "PRESS START" text below — entire splash is the click target,
- *     not just the text
+ *   - "PRESS ANYWHERE TO PLAY" text below (pulsing magenta glow) —
+ *     entire splash is the click target, not just the text
  *   - Hidden SiteNav (via body[data-gate-active])
  *
  * Dismissed by: click anywhere, Space, Enter.
  * Persisted via sessionStorage so it doesn't replay per tab.
  * URL escape hatch: ?skipGate=1 to skip.
+ *
+ * Why this is a client component: sessionStorage and the progress-bar
+ * rAF loop both require window. The body[data-gate-active] attribute
+ * that hides the SiteNav is set here so global CSS can hide the
+ * sticky header until the gate dismisses.
  */
 
 const SESSION_KEY = "cremosa-pressed-start";
@@ -67,8 +73,6 @@ export function PressStartGate({ children, allowSkip = true }: PressStartGatePro
     if (decided) return;
 
     document.body.setAttribute("data-gate-active", "true");
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
 
     const t0 = performance.now();
     let raf = 0;
@@ -83,9 +87,11 @@ export function PressStartGate({ children, allowSkip = true }: PressStartGatePro
     return () => {
       cancelAnimationFrame(raf);
       document.body.removeAttribute("data-gate-active");
-      document.body.style.overflow = prevOverflow;
     };
   }, [decided]);
+
+  // Body scroll lock — restored exactly when the splash unmounts.
+  useBodyScrollLock(!decided);
 
   // URL escape hatch (re-eval on hash/search change).
   // `popstate` fires when the user navigates back/forward or when
@@ -138,7 +144,9 @@ export function PressStartGate({ children, allowSkip = true }: PressStartGatePro
             transition: `opacity ${FADE_MS}ms ease-out`,
           }}
         >
-          <div className="flex flex-col items-center gap-8 sm:gap-10 w-full max-w-3xl">
+          {/* Pad for notched phones + tighten the spacing on phones so
+              the splash fits in landscape viewports without scrolling. */}
+          <div className="flex flex-col items-center gap-5 sm:gap-10 w-full max-w-3xl py-[max(env(safe-area-inset-top),2.5rem)] pb-[max(env(safe-area-inset-bottom),2.5rem)]">
             {/* Big Cremosa logo — significantly larger than the
                 existing splash / boot screen so it dominates the page. */}
             <picture>
@@ -183,24 +191,14 @@ export function PressStartGate({ children, allowSkip = true }: PressStartGatePro
               </p>
             </div>
 
-            {/* "Press Start" — just text, the whole splash is the
-                click target. Magenta glow pulses to draw the eye. */}
-            <p
-              className="win-eyebrow text-center"
-            >Press anywhere to play
+            {/* "Press anywhere to play" — the whole splash is the
+                click target. The pulsing glow uses a CSS class
+                (defined in globals.css as `pressstart-pulse`) so
+                the @keyframes block isn't re-injected on every
+                render the way an inline <style> would be. */}
+            <p className="win-eyebrow text-center px-2 pressstart-pulse">
+              Press anywhere to play
             </p>
-            <style>{`
-              @keyframes pressstart-pulse {
-                0%, 100% {
-                  opacity: 1;
-                  text-shadow: 0 0 20px rgba(255,111,163,0.9), 0 0 40px rgba(255,111,163,0.55), 0 4px 12px rgba(0,0,0,0.6);
-                }
-                50% {
-                  opacity: 0.78;
-                  text-shadow: 0 0 30px rgba(255,111,163,1), 0 0 60px rgba(255,111,163,0.7), 0 0 90px rgba(255,111,163,0.4), 0 4px 12px rgba(0,0,0,0.6);
-                }
-              }
-            `}</style>
 
             {/* Bottom hints */}
             <div className="text-center space-y-1">

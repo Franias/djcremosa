@@ -153,7 +153,9 @@ test.describe("02 — Home page", () => {
     // The footer is below the fold; scroll to it before asserting.
     await page.locator("footer").scrollIntoViewIfNeeded();
     const footer = page.locator("footer");
-    const contatoLink = footer.locator('a[href="/contato"]');
+    // Next.js renders Link hrefs with a trailing slash when
+    // `trailingSlash: true` is set in next.config.ts — match both.
+    const contatoLink = footer.locator('a[href="/contato"], a[href="/contato/"]');
     await expect(contatoLink.first()).toBeVisible();
   });
 

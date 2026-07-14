@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type AnchorHTMLAttributes, type ButtonHTMLAttributes, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
+import { cn } from "@/lib/cn";
 
 /**
  * Win95-styled UI primitives — single file so the Win95 look stays
@@ -32,35 +33,71 @@ interface Win95WindowProps extends HTMLAttributes<HTMLDivElement> {
   controls?: boolean;
   /** Optional node to render in the title-bar slot beside the title. */
   titleExtras?: ReactNode;
+  /**
+   * Promote the title-bar × to a real <button> that fires `onClose`.
+   * Use when the window is interactive (e.g. a modal drawer or a
+   * dismissible card). Leave `controls=true` for visual only.
+   * Implies controls are shown. The first two (─, □) stay decorative.
+   */
+  closeable?: boolean;
+  /** Fires when the user clicks the title-bar ×. */
+  onClose?: () => void;
+  /** Accessible label for the close button (default "Fechar"). */
+  closeLabel?: string;
 }
 
 export function Win95Window({
   title,
   controls = true,
+  closeable = false,
   titleExtras,
   className,
   children,
+  onClose,
+  closeLabel,
   ...rest
 }: Win95WindowProps) {
+  // `closeable` implies controls are visible. Keep the visual ─ / □
+  // glyphs from `.win95-title-controls`; only the final × is wired.
+  const showControls = controls || closeable;
   return (
     <div
-      className={["win95-bevel-out bg-win-face p-[2px]", className]
-        .filter(Boolean)
-        .join(" ")}
+      className={cn("win95-bevel-out bg-win-face p-[2px]", className)}
       {...rest}
     >
       <div className="win95-bevel-deep-in bg-win-face">
-        {(title || controls) && (
+        {(title || showControls) && (
           <div className="win95-title" role="presentation">
-            <span className="flex items-center gap-2 truncate">
-              {title}
-              {titleExtras}
+            <span className="flex items-center gap-2 min-w-0 flex-1 truncate">
+              <span className="win-title-text truncate">{title}</span>
+              {titleExtras && (
+                <span className="win-eyebrow-sm opacity-80 truncate shrink min-w-0 max-w-[60%]">
+                  {titleExtras}
+                </span>
+              )}
             </span>
-            {controls && (
-              <span className="win95-title-controls" aria-hidden>
-                <span>─</span>
-                <span>□</span>
-                <span className="close">×</span>
+            {showControls && (
+              <span className="win95-title-controls">
+                {closeable ? (
+                  <>
+                    <span aria-hidden>─</span>
+                    <span aria-hidden>□</span>
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      aria-label={closeLabel ?? "Fechar"}
+                      className="close"
+                    >
+                      ×
+                    </button>
+                  </>
+                ) : (
+                  <span className="contents" aria-hidden>
+                    <span>─</span>
+                    <span>□</span>
+                    <span className="close">×</span>
+                  </span>
+                )}
               </span>
             )}
           </div>
@@ -78,11 +115,17 @@ interface Win95ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;
   /** Add a magenta inner border (like a focused/selected button). */
   focused?: boolean;
+  /** Stretch to fill the parent's width (use inside column layouts). */
+  block?: boolean;
+  /** Align label to the left; pair with `block` for menu-item style. */
+  alignStart?: boolean;
 }
 
 export function Win95Button({
   active = false,
   focused = false,
+  block = false,
+  alignStart = false,
   className,
   children,
   type,
@@ -92,15 +135,13 @@ export function Win95Button({
     <button
       type={type ?? "button"}
       data-active={active ? "true" : undefined}
-      className={[
+      className={cn(
         "win95-button",
-        focused
-          ? "outline outline-1 outline-magenta outline-offset-[-3px]"
-          : "",
+        focused && "outline outline-1 outline-magenta outline-offset-[-3px]",
+        block && "w-full",
+        alignStart && "justify-start text-left",
         className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      )}
       {...rest}
     >
       {children}
@@ -113,22 +154,29 @@ export function Win95Link(
   props: AnchorHTMLAttributes<HTMLAnchorElement> & {
     active?: boolean;
     focused?: boolean;
+    block?: boolean;
+    alignStart?: boolean;
   },
 ) {
-  const { active = false, focused = false, className, children, ...rest } =
-    props;
+  const {
+    active = false,
+    focused = false,
+    block = false,
+    alignStart = false,
+    className,
+    children,
+    ...rest
+  } = props;
   return (
     <a
       data-active={active ? "true" : undefined}
-      className={[
+      className={cn(
         "win95-button no-underline",
-        focused
-          ? "outline outline-1 outline-magenta outline-offset-[-3px]"
-          : "",
+        focused && "outline outline-1 outline-magenta outline-offset-[-3px]",
+        block && "w-full",
+        alignStart && "justify-start text-left",
         className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      )}
       {...rest}
     >
       {children}

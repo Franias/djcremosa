@@ -28,7 +28,7 @@ test.describe("01 — Press Start gate", () => {
     // The overlay is a dialog with a "press start"-flavored label.
     const splash = page.getByRole("dialog", { name: /press start/i });
     await expect(splash).toBeVisible();
-    await expect(splash.getByText(/press start/i).first()).toBeVisible();
+    await expect(splash.getByText(/press anywhere/i).first()).toBeVisible();
   });
 
   test("SiteNav header is hidden while splash is active", async ({ page }) => {
@@ -62,7 +62,7 @@ test.describe("01 — Press Start gate", () => {
 
     const splash = page.getByRole("dialog", { name: /press start/i });
     await expect(splash).toBeVisible();
-    await splash.getByText(/press start/i).first().click();
+    await splash.getByText(/press anywhere/i).first().click();
 
     // After click: fade-out (380ms) then unmount
     await expect(splash).toHaveCount(0, { timeout: 5_000 });
@@ -116,7 +116,7 @@ test.describe("01 — Press Start gate", () => {
     // First visit: splash shows
     const splash = page.getByRole("dialog", { name: /press start/i });
     await expect(splash).toBeVisible();
-    await splash.getByText(/press start/i).first().click();
+    await splash.getByText(/press anywhere/i).first().click();
     await expect(splash).toHaveCount(0, { timeout: 5_000 });
 
     // Reload: sessionStorage is preserved across page reloads

@@ -49,11 +49,14 @@ test.describe("05 — Contato", () => {
   test("Imprensa card opens mailto: with 'Imprensa' subject", async ({
     page,
   }) => {
+    // The Imprensa card is the second card in the CARDS array. We
+    // find the anchor containing its CTA button (which is also a
+    // mailto link with the same href) and check the subject.
     const link = page
       .locator("a[href^='mailto:franciellipdias@gmail.com']")
-      .nth(1);
-    await expect(link).toBeAttached();
-    const href = await link.getAttribute("href");
+      .filter({ hasText: /Pedir material/ });
+    await expect(link.first()).toBeAttached();
+    const href = await link.first().getAttribute("href");
     expect(href).toMatch(/subject=/);
     expect(href).toMatch(/Imprensa/i);
   });
@@ -62,8 +65,10 @@ test.describe("05 — Contato", () => {
     const telLink = page.locator("a[href^='tel:+']").first();
     await expect(telLink).toBeAttached();
     const href = await telLink.getAttribute("href");
-    // +55 = BR, 51 = POA area, then the number
-    expect(href).toMatch(/^\+55519/);
+    // href is rendered as e.g. "tel:+5551993723158" — strip the tel:
+    // prefix before checking the +55 51 E.164 pattern.
+    const number = href?.replace(/^tel:/, "") ?? "";
+    expect(number).toMatch(/^\+55519/);
   });
 
   test("Instagram card opens instagram.com/djcremosa in new tab", async ({

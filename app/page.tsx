@@ -7,6 +7,7 @@ import { HomeAbout } from "@/components/sections/HomeAbout";
 import { PressStartGate } from "@/components/PressStartGate";
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { events } from "@/content/events";
+import { cn } from "@/lib/cn";
 import { splitAgenda } from "@/lib/events";
 import { site } from "@/lib/site";
 
@@ -51,61 +52,22 @@ export default function HomePage() {
         <div className="shell relative z-10 flex flex-col items-center text-center">
           <h1 className="sr-only">Cremosa — Início</h1>
           {/* Breadcrumb — the page indicator */}
-          <p className="win-eyebrow win-eyebrow-shadow mb-8 self-start">
-            <span aria-hidden>{"//"}</span>
-            Início <span className="opacity-60 mx-1">›</span>{" "}
-            {site.brand.tagline.primary}
-          </p>
+          
 
           {/* Welcome dialog — 4×3 icon grid (Win95.com pattern) */}
-          <div className="mt-10 w-full max-w-4xl">
+          <div className="mt-6 sm:mt-10 w-full max-w-4xl">
             <Win95Window title="cremosa.exe — welcome" controls>
-              <div className="bg-win-face p-5 sm:p-7 text-win-ink">
-                <p className="win-eyebrow text-win-shadow-deep mb-5 text-center">
-                  {"// 12 atalhos · clique pra abrir"}
+              <div className="bg-win-face p-4 sm:p-7 text-win-ink">
+                <p className="win-eyebrow text-win-shadow-deep mb-4 sm:mb-5 text-center">
+                  {"// 12 atalhos · toque pra abrir"}
                 </p>
-                <ul className="grid grid-cols-3 sm:grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-5 list-none p-0">
+                {/* Grid: 3 cols on phones (icons stay >44px tap-target),
+                    4 cols from sm (640px). The sm:gap-x-5 widens the
+                    columns slightly to use the extra horizontal room. */}
+                <ul className="grid grid-cols-3 sm:grid-cols-4 gap-x-2 sm:gap-x-5 gap-y-5 sm:gap-y-6 list-none p-0">
                   {WELCOME_ICONS.map((icon) => (
                     <li key={icon.label} className="flex flex-col items-center">
-                      {icon.external ? (
-                        <a
-                          href={icon.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="win95-icon group no-underline flex flex-col items-center gap-2"
-                          data-tooltip={`Abrir ${icon.label} em nova aba`}
-                          title={icon.label}
-                        >
-                          <span
-                            aria-hidden
-                            className="text-4xl sm:text-5xl win95-bevel-out bg-win-face-2 p-2 group-hover:bg-win-light transition-colors"
-                            style={{ imageRendering: "pixelated" }}
-                          >
-                            {icon.glyph}
-                          </span>
-                          <span className="win-caption text-center text-win-ink group-hover:text-crimson transition-colors">
-                            {icon.label}
-                          </span>
-                        </a>
-                      ) : (
-                        <Link
-                          href={icon.href}
-                          className="win95-icon group no-underline flex flex-col items-center gap-2"
-                          data-tooltip={`Ir para ${icon.label}`}
-                          title={icon.label}
-                        >
-                          <span
-                            aria-hidden
-                            className="text-4xl sm:text-5xl win95-bevel-out bg-win-face-2 p-2 group-hover:bg-win-light transition-colors"
-                            style={{ imageRendering: "pixelated" }}
-                          >
-                            {icon.glyph}
-                          </span>
-                          <span className="win-caption text-center text-win-ink group-hover:text-crimson transition-colors">
-                            {icon.label}
-                          </span>
-                        </Link>
-                      )}
+                      <WelcomeIcon {...icon} />
                     </li>
                   ))}
                 </ul>
@@ -113,7 +75,7 @@ export default function HomePage() {
               {/* Status bar — echoes Win95.com footer */}
               <div className="win95-statusbar mt-2">
                 <span className="win95-statusbar-segment grow">
-                  © 2026 {site.brand.name} · Porto Alegre, RS
+                  © 2026 {site.brand.name} · POA, RS
                 </span>
                 <span className="win95-statusbar-segment grow hidden sm:inline">
                   {site.brand.tagline.primary}
@@ -128,7 +90,7 @@ export default function HomePage() {
           {/* Pipe-separated link row — secondary nav like the Windows95.com footer */}
           <nav
             aria-label="Mapa do site"
-            className="mt-8 max-w-3xl win-body-sm text-cream-dim text-center"
+            className="mt-6 sm:mt-8 max-w-3xl win-body-sm text-cream-dim text-center"
           >
             {SITEMAP.map((label, i) => (
               <span key={label.href + label.label}>
@@ -150,20 +112,20 @@ export default function HomePage() {
       </section>
 
       {/* ABOUT DIALOG — manifesto in a Win95 window */}
-      <section className="shell py-16 sm:py-24 border-t border-line">
+      <section className="shell py-12 sm:py-24 border-t border-line">
         <HomeAbout />
       </section>
 
       {/* UPCOMING PREVIEW — keep agenda focus */}
-      <section className="shell py-16 sm:py-24 border-t border-line">
-        <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 mb-8">
+      <section className="shell py-12 sm:py-24 border-t border-line">
+        <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 mb-6 sm:mb-8">
           <div className="relative">
             <Sparkle size="sm" className="absolute -top-4 -left-5" />
             <p className="win-eyebrow win-eyebrow-shadow mb-2">
               {"// próximas datas"}
             </p>
           </div>
-          <Link href="/agenda" className="no-underline">
+          <Link href="/agenda" className="no-underline self-start sm:self-auto">
             <Win95Button>agenda completa →</Win95Button>
           </Link>
         </header>
@@ -207,14 +169,14 @@ export default function HomePage() {
       </section>
 
       {/* PRESS HIGHLIGHTS — Win95 window containing the list */}
-      <section className="shell py-16 sm:py-24 border-t border-line">
+      <section className="shell py-12 sm:py-24 border-t border-line">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">{"// em destaque"}</p>
-        <h2 className="win-h2 text-cream text-4xl sm:text-5xl leading-tight max-w-2xl mb-10">
+        <h2 className="win-h2 text-cream text-3xl sm:text-5xl leading-tight max-w-2xl mb-8 sm:mb-10">
           Dez anos na pista, da cena de Porto Alegre pro mundo.
         </h2>
 
         <Win95Window title="cremosa.txt — destaques" className="max-w-2xl">
-          <div className="p-5 bg-win-face text-win-ink">
+          <div className="p-4 sm:p-5 bg-win-face text-win-ink">
             <p className="win-caption mb-3 text-win-shadow-deep">
               Última atualização: 2026
             </p>
@@ -234,11 +196,11 @@ export default function HomePage() {
       </section>
 
       {/* SYSTEM FOLDER — contato + onde me achar, lifted from old second footer */}
-      <section className="shell py-16 sm:py-24 border-t border-line">
+      <section className="shell py-12 sm:py-24 border-t border-line">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">{"// pasta do sistema"}</p>
 
         <Win95Window title="cremosa — pasta do sistema" controls>
-          <div className="p-5 sm:p-6 bg-win-face text-win-ink flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-start">
+          <div className="p-4 sm:p-6 bg-win-face text-win-ink flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-start">
             <div>
               <Logo size="footer" />
               <p className="text-win-shadow-deep text-sm mt-3 max-w-xs">
@@ -249,7 +211,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 sm:gap-10 text-sm">
+            <div className="grid grid-cols-2 gap-5 sm:gap-10 text-sm">
               <div>
                 <p className="win-eyebrow-sm mb-2">Contato</p>
                 <ul className="list-none p-0 flex flex-col gap-1 win-body-sm">
@@ -302,5 +264,81 @@ export default function HomePage() {
         </Win95Window>
       </section>
     </PressStartGate>
+  );
+}
+
+/* WelcomeIcon — a single tile in the home-page desktop icon grid.
+   External destinations render as <a target="_blank">; same-origin
+   routes use Next's <Link>. The tile is a full tap-target on phones
+   (≥44px tall) and on hover (pointer devices) the icon bg flips to
+   the win-light color. Touch devices never see the hover.
+
+   Tooltip strategy:
+     - `data-tooltip` is the long description ("Ir para Agenda").
+       Picked up by `.win95-icon::after` on hover (no-op on touch).
+     - `title={label}` is the short label that AT and the browser
+       use as the native tooltip. Kept as the bare label so existing
+       tests that select via `[title="Agenda"]` continue to pass.
+     - `aria-label={label}` re-states the label for screen readers
+       so they don't have to walk the icon + caption combo.
+   We previously duplicated the long and short strings, but keeping
+   them separate is intentional: native browser tooltip vs. CSS. */
+interface WelcomeIconProps {
+  glyph: string;
+  label: string;
+  href: string;
+  external: boolean;
+}
+
+function WelcomeIcon({ glyph, label, href, external }: WelcomeIconProps) {
+  const tooltip = external
+    ? `Abrir ${label} em nova aba`
+    : `Ir para ${label}`;
+  // Common className spans both branches so the JSX below stays
+  // readable. `cn()` filters out falsy branches for us.
+  const linkClass = cn(
+    "win95-icon group no-underline no-context",
+    "flex flex-col items-center gap-1.5 sm:gap-2",
+    "tap-target",
+  );
+  const iconBoxClass =
+    "text-3xl sm:text-5xl win95-bevel-out bg-win-face-2 p-1.5 sm:p-2 group-hover:bg-win-light transition-colors";
+  const labelClass =
+    "win-caption text-center text-win-ink group-hover:text-crimson transition-colors leading-tight";
+
+  const body = (
+    <>
+      <span aria-hidden className={iconBoxClass} style={{ imageRendering: "pixelated" }}>
+        {glyph}
+      </span>
+      <span className={labelClass}>{label}</span>
+    </>
+  );
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={linkClass}
+        data-tooltip={tooltip}
+        aria-label={label}
+        title={label}
+      >
+        {body}
+      </a>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      className={linkClass}
+      data-tooltip={tooltip}
+      aria-label={label}
+      title={label}
+    >
+      {body}
+    </Link>
   );
 }
