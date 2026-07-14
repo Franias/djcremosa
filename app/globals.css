@@ -997,6 +997,13 @@ body[data-gate-active="true"] header.sticky {
     padding: 8px 18px;
     min-height: 40px;
   }
+
+  /* The icon-only home control should align with the text controls in
+     the desktop navbar. On phones all controls already share the 44px
+     touch-target minimum above. */
+  .win95-nav-home {
+    min-height: 48px;
+  }
 }
 .win95-button:hover {
   background: var(--win-face-2);

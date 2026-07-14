@@ -3,9 +3,10 @@ import { test, expect } from "@playwright/test";
 /**
  * 05 — Contato (/contato/)
  *
- * The contato page renders 4 contact cards (Booking, Imprensa, Telefone,
- * Instagram) + a "Solicitar press kit" dialog at the bottom. All CTAs
- * should be mailto: / tel: / external links — no on-page form.
+ * The contato page renders 6 contact cards (Booking, Imprensa, Telefone,
+ * Instagram, Twitch, TikTok) + a "Solicitar press kit" dialog at the
+ * bottom. All CTAs should be mailto: / tel: / external links — no
+ * on-page form.
  *
  * The "Imprimir" / "OK" buttons on the agenda instruções dialog are
  * tested in 03-agenda-instructions.spec.ts.
@@ -28,12 +29,14 @@ test.describe("05 — Contato", () => {
     ).toBeAttached();
   });
 
-  test("renders all 4 contact cards", async ({ page }) => {
+  test("renders all 6 contact cards", async ({ page }) => {
     // Each card has an eyebrow with the channel name
     await expect(page.getByText(/\/\/ booking/i).first()).toBeVisible();
     await expect(page.getByText(/\/\/ imprensa/i).first()).toBeVisible();
     await expect(page.getByText(/\/\/ telefone/i).first()).toBeVisible();
     await expect(page.getByText(/\/\/ @djcremosa/i).first()).toBeVisible();
+    await expect(page.getByText(/\/\/ twitch\.tv\/djcremosa/i).first()).toBeVisible();
+    await expect(page.getByText(/\/\/ @cremosinh4/i).first()).toBeVisible();
   });
 
   test("Booking card opens mailto: with prefilled subject", async ({ page }) => {
@@ -80,6 +83,34 @@ test.describe("05 — Contato", () => {
     await expect(igLink).toHaveAttribute(
       "href",
       "https://instagram.com/djcremosa",
+    );
+  });
+
+  test("Twitch card opens twitch.tv/djcremosa in new tab", async ({
+    page,
+  }) => {
+    const twitchLink = page
+      .locator("a[href*='twitch.tv/djcremosa']")
+      .first();
+    await expect(twitchLink).toBeVisible();
+    await expect(twitchLink).toHaveAttribute("target", "_blank");
+    await expect(twitchLink).toHaveAttribute(
+      "href",
+      "https://www.twitch.tv/djcremosa",
+    );
+  });
+
+  test("TikTok card opens tiktok.com/@cremosinh4 in new tab", async ({
+    page,
+  }) => {
+    const tiktokLink = page
+      .locator("a[href*='tiktok.com/@cremosinh4']")
+      .first();
+    await expect(tiktokLink).toBeVisible();
+    await expect(tiktokLink).toHaveAttribute("target", "_blank");
+    await expect(tiktokLink).toHaveAttribute(
+      "href",
+      "https://www.tiktok.com/@cremosinh4",
     );
   });
 

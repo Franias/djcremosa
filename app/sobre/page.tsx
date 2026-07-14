@@ -169,7 +169,7 @@ export default function SobrePage() {
             </p>
             <div className="flex justify-center">
               <Link href="/contato" className="no-underline">
-                <Win95Button focused>Falar pelo contato →</Win95Button>
+                <Win95Button focused>Contatar →</Win95Button>
               </Link>
             </div>
           </div>

@@ -26,11 +26,15 @@ test.describe("02 — Home page", () => {
     await expect(welcome).toBeVisible();
   });
 
-  test("welcome dialog has 12 desktop icons (4x3 grid)", async ({ page }) => {
-    // Each icon is an <a> with class "win95-icon" inside the welcome grid
+  test("welcome dialog has 14 desktop icons (4x4 grid w/ partial last row)", async ({
+    page,
+  }) => {
+    // Each icon is an <a> with class "win95-icon" inside the welcome grid.
+    // 6 page routes + 2 sets/notes/destaques + 5 external (Booking, SoundCloud,
+    // Instagram, Twitch, TikTok) = 14.
     const icons = page.locator("a.win95-icon");
     const count = await icons.count();
-    expect(count).toBe(12);
+    expect(count).toBe(14);
   });
 
   test("all 6 page icons link to the correct routes", async ({ page }) => {
@@ -70,6 +74,20 @@ test.describe("02 — Home page", () => {
     await expect(icon).toBeVisible();
     const href = await icon.getAttribute("href");
     expect(href).toBe("https://instagram.com/djcremosa");
+  });
+
+  test("Twitch icon opens twitch.tv/djcremosa", async ({ page }) => {
+    const icon = page.locator('a.win95-icon[title="Twitch"]').first();
+    await expect(icon).toBeVisible();
+    const href = await icon.getAttribute("href");
+    expect(href).toBe("https://www.twitch.tv/djcremosa");
+  });
+
+  test("TikTok icon opens tiktok.com/@cremosinh4", async ({ page }) => {
+    const icon = page.locator('a.win95-icon[title="TikTok"]').first();
+    await expect(icon).toBeVisible();
+    const href = await icon.getAttribute("href");
+    expect(href).toBe("https://www.tiktok.com/@cremosinh4");
   });
 
   test("SiteNav has 8 link elements (home + 6 pages + booking)", async ({

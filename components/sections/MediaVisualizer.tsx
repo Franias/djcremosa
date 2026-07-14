@@ -54,6 +54,7 @@ export function MediaVisualizer({
   analyser = null,
   playing = false,
 }: MediaVisualizerProps) {
+  const [mode, setMode] = useState<Mode>(initialMode);
   return (
     <div className={className}>
       {/* Visualizer canvas */}
@@ -64,7 +65,8 @@ export function MediaVisualizer({
         <MediaVisualizerClient
           analyser={analyser}
           playing={playing}
-          initialMode={initialMode}
+          mode={mode}
+          onModeChange={setMode}
         />
 
         {/* CRT scanlines overlay — kit page 4 reference */}
@@ -87,12 +89,11 @@ export function MediaVisualizer({
         />
       </div>
 
-      {/* Mode switcher */}
-      <div className="mt-3 flex items-center justify-center gap-4">
-        <ModeRadio current={initialMode} value="spectrum" label="Spectrum" />
-        <ModeRadio current={initialMode} value="oscilloscope" label="Scope" />
-        <ModeRadio current={initialMode} value="vu" label="VU" />
-      </div>
+      {/* Mode switcher — sits OUTSIDE the canvas (otherwise the
+          absolutely-positioned spectrum/oscilloscope/VU layers would
+          overlay it). Full-width Win95 button row that mirrors the
+          transport bar's Play/Stop/Carregar buttons. */}
+      <ModeSwitcher current={mode} onChange={setMode} />
     </div>
   );
 }
@@ -128,7 +129,8 @@ function BeatFlash({ trigger }: { trigger: number }) {
 interface ClientProps {
   analyser: AnalyserNode | null;
   playing: boolean;
-  initialMode: Mode;
+  mode: Mode;
+  onModeChange: (m: Mode) => void;
 }
 
 /**
@@ -139,9 +141,9 @@ interface ClientProps {
 function MediaVisualizerClient({
   analyser,
   playing,
-  initialMode,
+  mode,
+  onModeChange,
 }: ClientProps) {
-  const [mode, setMode] = useState<Mode>(initialMode);
 
   // Live FFT data — populated by the RAF loop below.
   const [freq, setFreq] = useState<Float32Array>(() => new Float32Array(64));
@@ -231,16 +233,7 @@ function MediaVisualizerClient({
           <VuMetersIdle playing={playing} />
         ))}
 
-      {/* Mode switcher — only shown when analyser is present (user can
-          choose a different view of the same data). Idle mode hides it
-          since there's no data to switch. */}
-      {analyser && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
-          <ModeRadioInline current={mode} value="spectrum" label="Spectrum" onChange={setMode} />
-          <ModeRadioInline current={mode} value="oscilloscope" label="Scope" onChange={setMode} />
-          <ModeRadioInline current={mode} value="vu" label="VU" onChange={setMode} />
-        </div>
-      )}
+      {/* Mode switcher lives outside the canvas — see MediaVisualizer. */}
 
       {/* BPM readout — appears once enough beats have fired. */}
       {analyser && (
@@ -257,65 +250,49 @@ function MediaVisualizerClient({
 
 /* ─────────────────────────── Mode switcher ─────────────────────────── */
 
-function ModeRadio({
-  current,
-  value,
-  label,
-}: {
-  current: Mode;
-  value: Mode;
-  label: string;
-}) {
-  const active = current === value;
-  return (
-    <span
-      className={[
-        "win-eyebrow-sm px-2 py-1 win95-bevel-out",
-        active ? "bg-win-face-2 text-win-ink" : "bg-win-face text-win-shadow-deep",
-      ].join(" ")}
-    >
-      {label}
-    </span>
-  );
-}
+const MODE_BUTTONS: ReadonlyArray<{ value: Mode; label: string; aria: string }> = [
+  { value: "spectrum", label: "Spectrum", aria: "Modo spectrum — barras" },
+  { value: "oscilloscope", label: "Scope", aria: "Modo osciloscópio" },
+  { value: "vu", label: "VU", aria: "Modo medidores VU" },
+];
 
-function ModeRadioInline({
+function ModeSwitcher({
   current,
-  value,
-  label,
   onChange,
 }: {
   current: Mode;
-  value: Mode;
-  label: string;
   onChange: (m: Mode) => void;
 }) {
-  const active = current === value;
+  // The switcher is rendered as a real Win95 button group rather than
+  // a set of tiny 16×16 radio cells so the click target matches the
+  // rest of the player chrome (Play / Stop / Carregar MP3…). The
+  // active option flips to the pressed Win95 look so the selection
+  // stays obvious at a glance, and the row gets its own keyboard
+  // semantics (`role="radiogroup"`) for screen readers.
   return (
-    <label className="flex items-center gap-1.5 cursor-pointer">
-      <span
-        aria-hidden
-        className="win95-bevel-in bg-win-face w-4 h-4 grid place-items-center"
-      >
-        {active && <span className="block w-2 h-2 bg-win-ink" />}
-      </span>
-      <input
-        type="radio"
-        name="viz-mode"
-        value={value}
-        checked={active}
-        onChange={() => onChange(value)}
-        className="sr-only"
-      />
-      <span
-        className={[
-          "win-eyebrow-sm px-1.5 py-0.5 win95-bevel-out",
-          active ? "bg-win-face-2 text-win-ink" : "bg-win-face text-win-shadow-deep",
-        ].join(" ")}
-      >
-        {label}
-      </span>
-    </label>
+    <div
+      role="radiogroup"
+      aria-label="Modo do visualizador"
+      className="mt-3 flex flex-wrap items-center justify-center gap-2"
+    >
+      {MODE_BUTTONS.map(({ value, label, aria }) => {
+        const active = current === value;
+        return (
+          <button
+            key={value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            aria-label={aria}
+            data-active={active ? "true" : undefined}
+            onClick={() => onChange(value)}
+            className="win95-button min-w-[96px]"
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

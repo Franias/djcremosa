@@ -275,8 +275,6 @@ export default function VideosPage() {
               {"// sobre o canal"}
             </p>
             <p className="win-body-sm leading-relaxed">
-              Os vídeos vivem no YouTube porque é onde a audiência já está —
-              cada set fica gravado em HD, com data e link永久 compartilhável.
               Quando algum vídeo novo sair, ele aparece aqui automaticamente
               (via o canal{" "}
               <a

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { EventRow } from "@/components/sections/EventRow";
@@ -11,6 +12,7 @@ import { cn } from "@/lib/cn";
 import { splitAgenda } from "@/lib/events";
 import { site } from "@/lib/site";
 
+
 /**
  * Win95.com-style welcome dialog. 12 shortcut icons arranged in a
  * 4×3 grid, each linking to a page or external resource.
@@ -23,11 +25,11 @@ const WELCOME_ICONS = [
   { glyph: "📖", label: "Sobre", href: "/sobre/", external: false },
   { glyph: "✉", label: "Contato", href: "/contato/", external: false },
   { glyph: "💿", label: "Sets", href: "/musica/", external: false },
-  { glyph: "📝", label: "Notas", href: "/sobre/", external: false },
   { glyph: "⭐", label: "Destaques", href: "/#destaques", external: false },
-  { glyph: "📨", label: "Booking", href: `mailto:${site.contact.email}`, external: true },
   { glyph: "🎧", label: "SoundCloud", href: "https://soundcloud.com/cremosinha", external: true },
   { glyph: "📷", label: "Instagram", href: site.social.instagram?.url ?? "#", external: true },
+  { glyph: "🕹", label: "Twitch", href: site.social.twitch?.url ?? "#", external: true },
+  { glyph: "🎬", label: "TikTok", href: site.social.tiktok?.url ?? "#", external: true },
 ] as const;
 
 /** Pipe-separated sitemap row — secondary nav, Win95.com-style footer. */
@@ -51,8 +53,81 @@ export default function HomePage() {
       <section className="hero grain halftone">
         <div className="shell relative z-10 flex flex-col items-center text-center">
           <h1 className="sr-only">Cremosa — Início</h1>
-          {/* Breadcrumb — the page indicator */}
+          {/* Welcome banner — decorative Y2K-style glitter header above
+              the figure row. `max-w-3xl` keeps it from overpowering the
+              figure; `h-auto` preserves the 480×281 aspect ratio. AT-
+              invisible because the page already has an sr-only h1 with
+              the site's real identity ("Cremosa — Início"). */}
           
+          {/* Hero figure with party GIFs flanking — flex row from md up,
+              stacked on phones (GIFs hidden via `hidden md:block`). The
+              figure uses `flex-1 min-w-0` so it shrinks to make room for
+              the GIFs while keeping its `max-w-5xl` cap on wider screens. */}
+          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 lg:gap-6 w-full">
+            {/* Left GIF — decorative, hidden from AT */}
+            <div className="hidden md:block win95-bevel-out p-[2px] shrink-0">
+              <img
+                src={`${site.basePath}/photos/party-like-its-2002.gif`}
+                alt=""
+                width={500}
+                height={228}
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-32 lg:w-40 xl:w-48"
+                style={{ imageRendering: "pixelated" }}
+              />
+            </div>
+
+            <figure className="p-6 w-full md:flex-1 md:min-w-0 md:max-w-5xl">
+              <div className="win95-bevel-out bg-win-face p-[2px] overflow-hidden">
+                <Image
+                  src={`${site.basePath}/photos/cremosa-home.jpg`}
+                  alt="Cremosa em um retrato promocional com a marca CREMOSA"
+                  width={1057}
+                  height={655}
+                  sizes="(max-width: 1024px) 100vw, 1024px"
+                  preload
+                  className="block h-auto w-full"
+                />
+              </div>
+            </figure>
+
+            {/* Right GIF — decorative, hidden from AT (intentionally not
+                a duplicate `alt` to signal symmetry without repetition) */}
+            <div
+              className="hidden md:block win95-bevel-out p-[2px] shrink-0"
+              aria-hidden
+            >
+              <img
+                src={`${site.basePath}/photos/party-like-its-2002.gif`}
+                alt=""
+                width={500}
+                height={228}
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-32 lg:w-40 xl:w-48"
+                style={{ imageRendering: "pixelated" }}
+              />
+            </div>
+          </div>
+          {/* Breadcrumb — the page indicator */}
+          <section className="shell">
+            <Win95Window title="booking.exe — confirmar" controls>
+              <div className="p-6 sm:p-8 bg-win-face text-win-ink text-center">
+                <p className="win-eyebrow mb-3">
+                  {"// quer levar a Cremosa pra sua pista?"}
+                </p>
+                <p className="win-body mb-6">
+                  Booking, imprensa, residência — resposta em até 72h úteis.
+                </p>
+                <div className="flex justify-center">
+                  <Link href="/contato" className="no-underline">
+                    <Win95Button focused>Contatar →</Win95Button>
+                  </Link>
+                </div>
+              </div>
+            </Win95Window>
+          </section>
 
           {/* Welcome dialog — 4×3 icon grid (Win95.com pattern) */}
           <div className="mt-6 sm:mt-10 w-full max-w-4xl">
@@ -112,12 +187,12 @@ export default function HomePage() {
       </section>
 
       {/* ABOUT DIALOG — manifesto in a Win95 window */}
-      <section className="shell py-12 sm:py-24 border-t border-line">
+      <section className="shell py-12  ">
         <HomeAbout />
       </section>
 
       {/* UPCOMING PREVIEW — keep agenda focus */}
-      <section className="shell py-12 sm:py-24 border-t border-line">
+      <section className="shell py-12 border-line">
         <header className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-4 mb-6 sm:mb-8">
           <div className="relative">
             <Sparkle size="sm" className="absolute -top-4 -left-5" />
@@ -168,8 +243,26 @@ export default function HomePage() {
         )}
       </section>
 
+      {/* HAPPY FACE BANNER — decorative kaomoji strip between agenda
+          and press sections. `max-w-3xl` matches the welcome banner so
+          the two visual flourishes feel like a matched set. `mx-auto`
+          centers it within the shell container. Decorative (alt=""),
+          page already has an sr-only h1 with real site identity. */}
+      <section className="shell py-12 ">
+        <img
+          src={`${site.basePath}/photos/happy-face.gif`}
+          alt=""
+          width={452}
+          height={100}
+          loading="lazy"
+          decoding="async"
+          className="block h-auto w-full max-w-3xl mx-auto"
+          style={{ imageRendering: "pixelated" }}
+        />
+      </section>
+
       {/* PRESS HIGHLIGHTS — Win95 window containing the list */}
-      <section className="shell py-12 sm:py-24 border-t border-line">
+      {/* <section className="shell py-12 sm:py-24">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">{"// em destaque"}</p>
         <h2 className="win-h2 text-cream text-3xl sm:text-5xl leading-tight max-w-2xl mb-8 sm:mb-10">
           Dez anos na pista, da cena de Porto Alegre pro mundo.
@@ -193,10 +286,10 @@ export default function HomePage() {
             </p>
           </div>
         </Win95Window>
-      </section>
+      </section> */}
 
       {/* SYSTEM FOLDER — contato + onde me achar, lifted from old second footer */}
-      <section className="shell py-12 sm:py-24 border-t border-line">
+      <section className="shell py-12 sm:py-16">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">{"// pasta do sistema"}</p>
 
         <Win95Window title="cremosa — pasta do sistema" controls>
@@ -246,6 +339,30 @@ export default function HomePage() {
                         className="text-win-ink hover:underline"
                       >
                         Instagram · {site.social.instagram.handle}
+                      </a>
+                    </li>
+                  )}
+                  {site.social.twitch && (
+                    <li>
+                      <a
+                        href={site.social.twitch.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-win-ink hover:underline"
+                      >
+                        Twitch · {site.social.twitch.handle}
+                      </a>
+                    </li>
+                  )}
+                  {site.social.tiktok && (
+                    <li>
+                      <a
+                        href={site.social.tiktok.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-win-ink hover:underline"
+                      >
+                        TikTok · {site.social.tiktok.handle}
                       </a>
                     </li>
                   )}

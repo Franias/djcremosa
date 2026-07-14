@@ -93,6 +93,50 @@ export default function ContatoPage() {
             </Win95Window>
           </a>
         )}
+
+        {site.social.twitch && (
+          <a
+            href={site.social.twitch.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="no-underline group block"
+          >
+            <Win95Window
+              title="Twitch"
+              className="transition-shadow group-hover:shadow-[0_0_0_2px_var(--color-bubble)]"
+            >
+              <div className="p-5 bg-win-face text-win-ink">
+                <p className="win-eyebrow mb-3">{"// twitch.tv/djcremosa"}</p>
+                <p className="win-body-sm">{site.social.twitch.handle}</p>
+                <div className="mt-4 flex justify-end">
+                  <Win95Button focused>Abrir canal →</Win95Button>
+                </div>
+              </div>
+            </Win95Window>
+          </a>
+        )}
+
+        {site.social.tiktok && (
+          <a
+            href={site.social.tiktok.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="no-underline group block"
+          >
+            <Win95Window
+              title="TikTok"
+              className="transition-shadow group-hover:shadow-[0_0_0_2px_var(--color-bubble)]"
+            >
+              <div className="p-5 bg-win-face text-win-ink">
+                <p className="win-eyebrow mb-3">{"// @cremosinh4"}</p>
+                <p className="win-body-sm">{site.social.tiktok.handle}</p>
+                <div className="mt-4 flex justify-end">
+                  <Win95Button focused>Abrir perfil →</Win95Button>
+                </div>
+              </div>
+            </Win95Window>
+          </a>
+        )}
       </section>
 
       {/* PRESS KIT REQUEST — Win95 dialog */}

@@ -52,7 +52,7 @@ export function SiteNav() {
             <ul className="flex items-center gap-2 list-none m-0 p-0 whitespace-nowrap">
               <li>
                 <Link href="/" className="no-underline" aria-label="Início">
-                  <Win95Button>
+                  <Win95Button className="win95-nav-home">
                     <HomeIcon />
                   </Win95Button>
                 </Link>

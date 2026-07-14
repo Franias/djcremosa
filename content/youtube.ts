@@ -156,7 +156,7 @@ const YT_MQ = (id: string) => `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
  */
 export const afrJamsPlaylist: YouTubePlaylist = {
   id: "PLLi5256twtgA",
-  title: "AFROJAMS · TEMPORADAS — DJ Cremosa",
+  title: "",
   blurb:
     "Co-fundadora do coletivo AfroJams (2025). Seis sets dela filmados no canal @AFRXJAMS — Black Divas, R&B, afrobeats, charme, Miami bass e brasilidades.",
   count: 6,

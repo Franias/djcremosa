@@ -68,6 +68,14 @@ export const site = {
       handle: "@djcremosa",
       url: "https://instagram.com/djcremosa",
     },
+    twitch: {
+      handle: "djcremosa",
+      url: "https://www.twitch.tv/djcremosa",
+    },
+    tiktok: {
+      handle: "@cremosinh4",
+      url: "https://www.tiktok.com/@cremosinh4",
+    },
     // Add as soon as she confirms them:
     // soundcloud: { url: "https://soundcloud.com/djcremosa" },
     // spotify:    { url: "https://open.spotify.com/artist/..." },

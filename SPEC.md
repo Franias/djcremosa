@@ -47,6 +47,8 @@ funk brasileiro · rap · amapiano · house · pop · R&B
 | Canal | Valor |
 |---|---|
 | Instagram | `@djcremosa` |
+| Twitch | `https://www.twitch.tv/djcremosa` |
+| TikTok | `@cremosinh4` (https://www.tiktok.com/@cremosinh4) |
 | Email | `franciellipdias@gmail.com` |
 | Telefone (kit) | `+51 993723158` ⚠️ validar DDI |
 
@@ -61,7 +63,7 @@ funk brasileiro · rap · amapiano · house · pop · R&B
 /galeria         [stub] grid masonry + lightbox
 /videos          [stub] embeds YouTube/Vimeo
 /sobre           [stub] bio + linha do tempo 2016→hoje
-/contato         Cartões mailto para booking, imprensa, telefone, IG
+/contato         Cartões mailto para booking, imprensa, telefone, IG, Twitch, TikTok
 ```
 
 Todos os stubs compartilham `components/sections/SectionPlaceholder` — em vez de 404, mostram um manifesto do que vai ter na seção.
