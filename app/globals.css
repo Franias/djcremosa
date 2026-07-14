@@ -8,9 +8,9 @@
 
 @theme {
   /* Surfaces */
-  --color-bg: #6a2840;
+  --color-bg: #FFFFFF;
   --color-surface: #5a2038;
-  --color-surface-2: #6a2840;
+  --color-surface-2: #FFFFFF;
   --color-line: #7a3450;
 
   /* Foreground */
@@ -95,12 +95,12 @@ body {
     var(--bg-stars),
     linear-gradient(
       180deg,
-      #6a2840 0%,
+      #FFFFFF 0%,
       #8a3a55 50%,
-      #6a2840 100%
+      #FFFFFF 100%
     ),
     var(--color-bg);
-  background-size: 620px 620px, 100% 100%, 100% 100%;
+  background-size: 420px 420px, 100% 100%, 100% 100%;
   background-repeat: repeat, no-repeat, no-repeat;
   background-position: 0 0, 0 0, 0 0;
   background-attachment: fixed, fixed, fixed;
@@ -121,7 +121,7 @@ body::before {
   position: fixed;
   inset: 0;
   background-image: var(--bg-stars);
-  background-size: 620px 620px;
+  background-size: 420px 420px;
   background-repeat: repeat;
   background-position: 0 0;
   background-attachment: fixed;
@@ -180,9 +180,9 @@ body[data-gate-active="true"] header.sticky {
     ),
     linear-gradient(
       180deg,
-      #6a2840 0%,
+      #FFFFFF 0%,
       #8a3a55 50%,
-      #6a2840 100%
+      #FFFFFF 100%
     ),
     var(--color-bg);
   background-size:
@@ -215,7 +215,7 @@ body[data-gate-active="true"] header.sticky {
   z-index: 0;
   pointer-events: none;
   background-image: url("/bg/star-halftone.jpg");
-  background-size: 620px 620px;
+  background-size: 420px 420px;
   background-repeat: repeat;
   background-position: 0 0;
   opacity: 0.85;
@@ -751,6 +751,31 @@ body[data-gate-active="true"] header.sticky {
   filter: drop-shadow(0 0 6px rgba(255, 111, 163, 0.6));
 }
 
+/* Press-start splash pulse — magenta neon glow on the "Press anywhere
+   to play" hint. Lives here (not inline in <PressStartGate/>) so the
+   keyframes are only declared once and don't cause a fresh
+   <style> element on every splash render. */
+@keyframes pressstart-pulse {
+  0%, 100% {
+    opacity: 1;
+    text-shadow:
+      0 0 20px rgba(255, 111, 163, 0.9),
+      0 0 40px rgba(255, 111, 163, 0.55),
+      0 4px 12px rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    opacity: 0.78;
+    text-shadow:
+      0 0 30px rgba(255, 111, 163, 1),
+      0 0 60px rgba(255, 111, 163, 0.7),
+      0 0 90px rgba(255, 111, 163, 0.4),
+      0 4px 12px rgba(0, 0, 0, 0.6);
+  }
+}
+.pressstart-pulse {
+  animation: pressstart-pulse 1.6s ease-in-out infinite;
+}
+
 /* Win95-style chrome — 3D bevels, sunken track, chunky borders. Used by
    the splash screen to recreate the boot/loading aesthetic. */
 
@@ -881,7 +906,12 @@ body[data-gate-active="true"] header.sticky {
      the title flex item even when the title runs long. */
   flex-shrink: 0;
 }
-.win95-title-controls span {
+/* Title-bar control boxes. Targets both decorative <span> controls
+   (─, □, ×) and the interactive <button className="close"> that
+   Win95Window renders when `closeable` is set. Both need identical
+   sizing / bevel so the row stays visually balanced. */
+.win95-title-controls span,
+.win95-title-controls button {
   width: 24px;
   height: 20px;
   background: var(--win-face);
@@ -896,15 +926,39 @@ body[data-gate-active="true"] header.sticky {
   border-left: 1px solid var(--win-light);
   border-right: 1px solid var(--win-shadow-deep);
   border-bottom: 1px solid var(--win-shadow-deep);
+  /* Reset native <button> affordances so it looks like the Win9x
+     chiseled square rather than a browser-rendered button. */
+  padding: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.win95-title-controls button:hover {
+  background: var(--win-face-2);
+}
+.win95-title-controls button:active,
+.win95-title-controls button[aria-pressed="true"] {
+  border-top-color: var(--win-shadow-deep);
+  border-left-color: var(--win-shadow-deep);
+  border-right-color: var(--win-light);
+  border-bottom-color: var(--win-light);
+  /* Subtle 1px press travel so it feels like a real Win9x button. */
+  transform: translate(1px, 1px);
+}
+.win95-title-controls button:focus-visible {
+  outline: 1px dotted var(--win-ink);
+  outline-offset: -4px;
 }
 @media (min-width: 640px) {
-  .win95-title-controls span {
+  .win95-title-controls span,
+  .win95-title-controls button {
     width: 26px;
     height: 22px;
     font-size: 16px;
   }
 }
-.win95-title-controls span.close {
+.win95-title-controls span.close,
+.win95-title-controls button.close {
   background: var(--win-face);
 }
 
@@ -1037,9 +1091,11 @@ body[data-gate-active="true"] header.sticky {
  * visually floating against the dark site background.
  *
  * This class re-introduces the missing bevel so the bar reads with
- * the same visual weight as a Win95Window's chrome:
- *   - top + left  → white  (lit from above-left)
- *   - right + bottom → gray (anchored)
+ * the same visual weight as a Win95Window's chrome — matching the
+ * header's `win95-bevel-out` exactly (2px borders, no inset
+ * highlight):
+ *   - top + left  → 2px white  (lit from above-left)
+ *   - right + bottom → 2px gray (anchored)
  *   - drop the inset face-2 highlight (the double-white effect)
  *
  * Applied via `className` on <Win95StatusBar> in SiteFooter only;
@@ -1049,9 +1105,10 @@ body[data-gate-active="true"] header.sticky {
  * provides the dark bottom edge. */
 .win95-statusbar--pinned {
   box-shadow: none;
-  border-left: 1px solid var(--win-light);
-  border-right: 1px solid var(--win-shadow);
-  border-bottom: 1px solid var(--win-shadow);
+  border-top: 2px solid var(--win-light);
+  border-left: 2px solid var(--win-light);
+  border-right: 2px solid var(--win-shadow);
+  border-bottom: 2px solid var(--win-shadow);
 }
 
 /* Menu bar (File / Edit / View / Help) */

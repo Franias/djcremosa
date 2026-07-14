@@ -120,6 +120,14 @@ export const viewport: Viewport = {
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
+  // `viewport-fit=cover` lets the page extend behind the iPhone notch
+  // and Android cutouts. Combined with `env(safe-area-inset-*)` in
+  // globals.css (see `.safe-x`, `.safe-top`, `.safe-bottom`) sticky
+  // chrome hugs the real visible bounds instead of the device width.
+  viewportFit: "cover",
+  // Keep users pinch-zooming — accessibility wins outweigh the layout
+  // stability hit for an editorial site.
+  maximumScale: 5,
 };
 
 export default function RootLayout({
@@ -148,8 +156,7 @@ export default function RootLayout({
             session UX now. Kept the component around for future use. */}
         <SiteNav />
         {/* Vertical side rails echoing the Midia Kit editorial frame */}
-        <VerticalRails />
-        <main className="flex-1 relative z-10">{children}</main>
+        <main className="flex-1 relative z-10 pb-16 safe-bottom sm:pb-20">{children}</main>
         <SiteFooter />
       </body>
     </html>
