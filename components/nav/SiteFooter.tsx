@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 px-3 pb-3">
+    <footer className="mt-12 sm:mt-16 safe-x pb-[max(env(safe-area-inset-bottom),0.75rem)]">
       <Win95StatusBar>
         <span className="win95-statusbar-segment grow">
           ● Pronto · {site.brand.location}
