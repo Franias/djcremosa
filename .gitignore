@@ -24,13 +24,20 @@
 .DS_Store
 *.pem
 
-# Audio source files — pulled fresh per-machine from
-# ~/Music/Downloaded by MediaHuman/soundcloudtracks (see SPEC.md).
-# Don't commit 200MB of MP3s to the repo; deploy from a CDN or
-# pre-publish them via a script.
-# To opt in to committing audio, comment the next line out.
-/public/audio/*.mp3
-!/public/audio/.gitkeep
+# Audio source files — currently committed to the repo (7 files, ~194MB)
+# so the static GitHub Pages artifact always ships them. The deploy
+# workflow's "Sync audio (from backup)" step is left in place but is a
+# no-op when AUDIO_SRC is unset (the common case) — `scripts/sync-audio.sh`
+# will warn and skip rather than overwrite the committed files.
+#
+# Future plan (option C): move the MP3s out of git by uploading them as
+# GitHub Release assets on `Franias/djcremosa` and having the workflow
+# download them with `gh release download` before `next build`. That
+# keeps the source repo small without depending on a second private repo.
+#
+# Until that migration lands, the files stay in git; clear them from the
+# index with `git rm --cached public/audio/*.mp3` only after the release
+# pipeline is wired up.
 
 # debug
 npm-debug.log*

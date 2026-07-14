@@ -187,15 +187,7 @@ export function PressStartGate({ children, allowSkip = true }: PressStartGatePro
                 click target. Magenta glow pulses to draw the eye. */}
             <p
               className="win-eyebrow text-center"
-              style={{
-                fontSize: "clamp(28px, 5vw, 44px)",
-                letterSpacing: "0.2em",
-                color: "var(--color-cream)",
-                textShadow:
-                  "0 0 20px rgba(255,111,163,0.9), 0 0 40px rgba(255,111,163,0.55), 0 4px 12px rgba(0,0,0,0.6)",
-              }}
-            >
-              Press anywhere to play
+            >Press anywhere to play
             </p>
             <style>{`
               @keyframes pressstart-pulse {

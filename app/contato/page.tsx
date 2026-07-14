@@ -43,9 +43,8 @@ export default function ContatoPage() {
             <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span> Contato
           </p>
-          <p className="mt-6 max-w-2xl win-body text-cream-dim">
-            Pra proposta de show, festival ou residência, manda direto pelo
-            email. Resposta em até <span className="win-eyebrow-shadow">72h úteis</span>.
+          <p className="mt-6 max-w-2xl win-body">
+            Pra proposta de show, festival ou residência, mande mensagem! Resposta em até <span className="win-eyebrow-shadow">72h úteis</span>.
           </p>
         </div>
       </section>
@@ -115,11 +114,6 @@ export default function ContatoPage() {
             </a>
           </div>
         </Win95Window>
-
-        <p className="mt-8 win-eyebrow text-cream-dim">
-          Formulário completo + captcha entram na fase 2 (Resend + React Email
-          ou Formspree). Por enquanto o mailto resolve.
-        </p>
       </section>
     </>
   );

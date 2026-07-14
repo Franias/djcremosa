@@ -43,7 +43,7 @@ export default function SobrePage() {
             <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span> Sobre
           </p>
-          <p className="mt-6 max-w-2xl win-body text-cream-dim">
+          <p className="mt-6 max-w-2xl win-body">
             Seletora e curadora musical baseada em Porto Alegre. Ativa desde
             2016, construindo pista a partir da música preta global.
           </p>

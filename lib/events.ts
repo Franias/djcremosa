@@ -129,7 +129,7 @@ export const STATUS_TONE: Record<EventStatus, string> = {
   confirmed: "bg-status-ok/15 text-status-ok border-status-ok/40",
   tentative: "bg-status-warn/15 text-status-warn border-status-warn/40",
   "sold-out": "bg-bubble/15 text-bubble border-bubble/40",
-  postponed: "bg-cream-dim/10 text-cream-dim border-cream-dim/30",
+  postponed: "bg-cream-dim/10  border-cream-dim/30",
   cancelled: "bg-status-down/15 text-status-down border-status-down/40 line-through",
 };
 

@@ -339,7 +339,7 @@ export default function MusicaPage() {
                       : "nenhuma faixa carregada — escolha abaixo ou arraste um MP3"}
                   </p>
                   <div className="mt-1.5 flex items-center gap-2">
-                    <span className="win-eyebrow-sm text-cream-dim tabular-nums">
+                    <span className="win-eyebrow-sm tabular-nums">
                       {fmt(currentTime)}
                     </span>
                     {/* Scrubber */}

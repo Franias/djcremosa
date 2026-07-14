@@ -58,7 +58,7 @@ export function AgendaView({ events }: AgendaViewProps) {
           count={events.length}
           active={view === "all"}
         />
-        <span className="ml-auto win-eyebrow-sm text-cream-dim hidden sm:inline">
+        <span className="ml-auto win-eyebrow-sm hidden sm:inline">
           {events.length} shows · ordenado por data
         </span>
       </nav>
@@ -67,7 +67,7 @@ export function AgendaView({ events }: AgendaViewProps) {
       {showUpcoming && (
         <section aria-labelledby="upcoming-heading" className="py-10 sm:py-14">
           <header className="flex items-baseline justify-between gap-4 mb-2">
-            <span className="win-eyebrow-sm text-cream-dim">
+            <span className="win-eyebrow-sm">
               {upcoming.length} {upcoming.length === 1 ? "show" : "shows"}
             </span>
           </header>
@@ -93,7 +93,7 @@ export function AgendaView({ events }: AgendaViewProps) {
       {showPast && (
         <section aria-labelledby="past-heading" className="py-10 sm:py-14">
           <header className="flex items-baseline justify-between gap-4 mb-2">
-            <span className="win-eyebrow-sm text-cream-dim">
+            <span className="win-eyebrow-sm ">
               {past.length} {past.length === 1 ? "show" : "shows"}
             </span>
           </header>

@@ -50,7 +50,7 @@ export function GaleriaGrid() {
             <span aria-hidden>{"//"}</span>
             Início <span className="opacity-60 mx-1">›</span> Galeria
           </p>
-          <p className="mt-6 max-w-2xl win-body text-cream-dim">
+          <p className="mt-6 max-w-2xl win-body">
             Mosaico das fotos de pista, retrato e bastidor. Clique em qualquer
             imagem pra abrir em tela cheia.
           </p>
@@ -81,7 +81,7 @@ export function GaleriaGrid() {
               />
             ),
           )}
-          <span className="ml-auto win-eyebrow-sm text-cream-dim hidden sm:inline">
+          <span className="ml-auto win-eyebrow-sm hidden sm:inline">
             {visible.length} {visible.length === 1 ? "foto" : "fotos"}
           </span>
         </div>
@@ -277,7 +277,7 @@ function Lightbox({
                     Carregando imagem…
                   </p>
                   <Win95ProgressBar value={progress} label="Carregando imagem" />
-                  <p className="win-eyebrow-sm tabular-nums text-cream-dim text-center">
+                  <p className="win-eyebrow-sm tabular-nums text-center">
                     {Math.round(progress).toString().padStart(3, " ")}%
                   </p>
                 </div>

@@ -35,7 +35,7 @@ export function SectionPlaceholder({
           <h1 className="win-display bubble text-[18vw] sm:text-[10rem]">
             {title.toUpperCase()}
           </h1>
-          <p className="mt-6 max-w-2xl win-body text-cream-dim">{blurb}</p>
+          <p className="mt-6 max-w-2xl win-body">{blurb}</p>
         </div>
       </section>
 
@@ -58,7 +58,7 @@ export function SectionPlaceholder({
           </div>
         </Win95Window>
 
-        <p className="mt-10 win-body-sm text-cream-dim">
+        <p className="mt-10 win-body-sm">
           Até lá, confere a{" "}
           <a href="/agenda" className="win-eyebrow-shadow hover:text-bubble-hi">
             agenda
