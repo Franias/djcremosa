@@ -32,7 +32,7 @@ export function SiteFooter() {
         <span className="win95-statusbar-segment grow">
           ● Pronto · {site.brand.location}
         </span>
-        <span className="win95-statusbar-segment grow hidden sm:inline">
+        <span className="win95-statusbar-segment shrink hidden sm:inline">
           {site.brand.name} · desde {site.brand.activeSince}
         </span>
         <span className="win95-statusbar-segment shrink">
