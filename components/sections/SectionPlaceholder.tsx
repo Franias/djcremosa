@@ -1,11 +1,17 @@
 /**
- * Stand-in for sections that are not built yet — keeps every nav link working
- * without empty 404s. Each page sets its own title/blurb/copy direction.
+ * Stand-in for sections that are not built yet — keeps every nav link
+ * working without empty 404s. Each page sets its own title/blurb/copy
+ * direction.
  *
- * Rebranded with the Win95 "folder properties" treatment: a chunky window
- * containing a desktop-icon grid + "Open / Browse / Cancel" buttons.
+ * Rendered as a Win95 "folder properties" dialog: shows what the
+ * future section will contain (comingSoon list) plus links to the
+ * agenda + booking email as a fallback for unimplemented routes.
+ *
+ * No action buttons here — the previous stub had OK/Cancelar that
+ * did nothing. Better to send the user to a real working route than
+ * to add a fake "confirm" they can't act on.
  */
-import { Win95Button, Win95Window } from "@/components/ui/win95";
+import { Win95Window } from "@/components/ui/win95";
 
 interface SectionPlaceholderProps {
   eyebrow: string;
@@ -49,10 +55,6 @@ export function SectionPlaceholder({
                 </li>
               ))}
             </ul>
-            <div className="mt-6 pt-4 border-t border-win-shadow-deep/40 flex flex-wrap gap-2 justify-end">
-              <Win95Button focused>OK</Win95Button>
-              <Win95Button>Cancelar</Win95Button>
-            </div>
           </div>
         </Win95Window>
 

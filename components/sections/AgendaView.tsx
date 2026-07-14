@@ -67,12 +67,6 @@ export function AgendaView({ events }: AgendaViewProps) {
       {showUpcoming && (
         <section aria-labelledby="upcoming-heading" className="py-10 sm:py-14">
           <header className="flex items-baseline justify-between gap-4 mb-2">
-            <h2
-              id="upcoming-heading"
-              className="win-h2 bubble text-3xl sm:text-5xl"
-            >
-              Próximas datas
-            </h2>
             <span className="win-eyebrow-sm text-cream-dim">
               {upcoming.length} {upcoming.length === 1 ? "show" : "shows"}
             </span>
@@ -99,12 +93,6 @@ export function AgendaView({ events }: AgendaViewProps) {
       {showPast && (
         <section aria-labelledby="past-heading" className="py-10 sm:py-14">
           <header className="flex items-baseline justify-between gap-4 mb-2">
-            <h2
-              id="past-heading"
-              className="win-h2 text-cream text-3xl sm:text-5xl"
-            >
-              Histórico
-            </h2>
             <span className="win-eyebrow-sm text-cream-dim">
               {past.length} {past.length === 1 ? "show" : "shows"}
             </span>

@@ -18,7 +18,7 @@ export const site = {
     aliases: ["DJ Cremosa", "CREMESSA"],
     tagline: {
       primary: "Seletora · Curadoria · Discotecagem",
-      secondary: "Música preta global na pista — Porto Alegre desde 2016.",
+      secondary: ".",
     },
     location: "Porto Alegre, RS — Brasil",
     activeSince: 2016,

@@ -29,14 +29,25 @@ interface PressStartGateProps {
 }
 
 export function PressStartGate({ children, allowSkip = true }: PressStartGateProps) {
-  const [decided, setDecided] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
+  // Hydration fix: on the server, window is undefined and the
+  // initialiser returns false → splash renders. On the client mount
+  // we then decide based on `?skipGate=1` and sessionStorage. This
+  // creates a server/client mismatch that React 19 reports as a
+  // hydration error. We side-step it by ALWAYS starting in
+  // "not-decided" state and deciding in an effect instead.
+  const [decided, setDecided] = useState<boolean>(false);
+  useEffect(() => {
     if (allowSkip) {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("skipGate") === "1") return true;
+      if (params.get("skipGate") === "1") {
+        setDecided(true);
+        return;
+      }
     }
-    return window.sessionStorage.getItem(SESSION_KEY) === "1";
-  });
+    if (window.sessionStorage.getItem(SESSION_KEY) === "1") {
+      setDecided(true);
+    }
+  }, [allowSkip]);
   const [fading, setFading] = useState(false);
   const [progress, setProgress] = useState(0);
 

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { AgendaView } from "@/components/sections/AgendaView";
+import { AgendaInstructions } from "@/components/sections/AgendaInstructions";
 
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { events } from "@/content/events";
@@ -39,19 +40,7 @@ export default function AgendaPage() {
           </p>
 
           <div className="mt-2 max-w-3xl">
-            <Win95Window title="agenda — instruções" controls>
-              <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-                <p className="win-body-sm">
-                  Próximos shows, festivais e residências. Ingressos pelo link
-                  de cada data — quando disponível. Usa os filtros acima pra
-                  navegar entre próximas, histórico ou tudo.
-                </p>
-                <div className="flex gap-2 shrink-0">
-                  <Win95Button>Imprimir</Win95Button>
-                  <Win95Button focused>OK</Win95Button>
-                </div>
-              </div>
-            </Win95Window>
+            <AgendaInstructions />
           </div>
         </div>
       </section>

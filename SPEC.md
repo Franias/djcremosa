@@ -39,7 +39,6 @@ funk brasileiro · rap · amapiano · house · pop · R&B
 - **2025** — Co-funda o coletivo **AfroJams**
 - **2026** — Line-up **Planeta Atlântida** via AfroJams
 - **2026** — Residência **BatukBaile**
-- Setup: **Pioneer DDJ-200**
 
 > ⚠️ **Inconsistência detectada no kit**: o telefone listado é `+51 993723158` (código +51 = **Peru**). Ela opera em Porto Alegre/Brasil, então o número correto provavelmente é `+55 51 99372-3158` ou similar. **Validar com Cremosa antes de publicar** — deixei como está no press kit no site, mas a SPEC recomenda corrigir quando confirmar.
 

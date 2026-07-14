@@ -106,6 +106,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col bg-bg text-cream">
         {/* Animated background gradient — slow hue drift */}
         <div className="bg-anim" aria-hidden />
+        <div className="bg-anim-stars" aria-hidden />
         <div className="bg-anim-grain" aria-hidden />
         {/* Boot splash removed — the Press Start gate on / handles first-
             session UX now. Kept the component around for future use. */}

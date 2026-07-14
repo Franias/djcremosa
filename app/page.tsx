@@ -3,6 +3,7 @@ import { Logo } from "@/components/Logo";
 import { EventRow } from "@/components/sections/EventRow";
 import { Sparkle } from "@/components/sections/Sparkle";
 import { Win95Dialog } from "@/components/sections/Win95Dialog";
+import { HomeAbout } from "@/components/sections/HomeAbout";
 import { PressStartGate } from "@/components/PressStartGate";
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { events } from "@/content/events";
@@ -55,12 +56,6 @@ export default function HomePage() {
             Início <span className="opacity-60 mx-1">›</span>{" "}
             {site.brand.tagline.primary}
           </p>
-
-          {/* Big bold heading — Win95.com style */}
-          <h2 className="win-h2 text-4xl sm:text-6xl text-cream">
-            Welcome to <span className="bubble-strong">Cremosa</span>
-            <span className="align-super text-bubble text-2xl">™</span>
-          </h2>
 
           {/* Welcome dialog — 4×3 icon grid (Win95.com pattern) */}
           <div className="mt-10 w-full max-w-4xl">
@@ -156,57 +151,7 @@ export default function HomePage() {
 
       {/* ABOUT DIALOG — manifesto in a Win95 window */}
       <section className="shell py-16 sm:py-24 border-t border-line">
-        <div className="grid lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <Win95Window title="cremosa.txt — readme" controls>
-              <div className="p-5 sm:p-6 bg-win-face text-win-ink">
-                <p className="win-eyebrow mb-3 text-win-shadow-deep">
-                  {`// ${site.brand.location} · desde ${site.brand.activeSince}`}
-                </p>
-                <div className="grid sm:grid-cols-2 gap-5 sm:gap-7">
-                  <p className="win-body-sm">
-                    DJ Cremosa é uma artista da cena de Porto Alegre que atua
-                    desde 2016, conhecida por sets intensos que conectam
-                    diferentes vertentes da{" "}
-                    <strong>música preta global</strong>.
-                  </p>
-                  <p className="win-body-sm">
-                    Sua pesquisa parte do{" "}
-                    <strong>funk brasileiro</strong> e se expande por rap,
-                    amapiano, house, pop e R&amp;B — pistas marcadas por groove,
-                    energia e mistura de estilos.
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t border-win-shadow-deep/40 flex justify-end gap-2">
-                  <Win95Button>Copiar</Win95Button>
-                  <Win95Button focused>Fechar ×</Win95Button>
-                </div>
-              </div>
-            </Win95Window>
-          </div>
-
-          <aside>
-            <Win95Window title="propriedades" controls>
-              <div className="p-4 sm:p-5 bg-win-face text-win-ink win-body-sm">
-                <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-                  <dt className="text-win-shadow-deep">Nome</dt>
-                  <dd>{site.brand.name}</dd>
-                  <dt className="text-win-shadow-deep">Cidade</dt>
-                  <dd>Porto Alegre, RS</dd>
-                  <dt className="text-win-shadow-deep">Ativa desde</dt>
-                  <dd>{site.brand.activeSince}</dd>
-                  <dt className="text-win-shadow-deep">Coletivo</dt>
-                  <dd>AfroJams (2025→)</dd>
-                  <dt className="text-win-shadow-deep">Residência</dt>
-                  <dd>BatukBaile (2026→)</dd>
-                </dl>
-                <div className="mt-4 pt-3 border-t border-win-shadow-deep/40 flex justify-end">
-                  <Win95Button focused>OK</Win95Button>
-                </div>
-              </div>
-            </Win95Window>
-          </aside>
-        </div>
+        <HomeAbout />
       </section>
 
       {/* UPCOMING PREVIEW — keep agenda focus */}
@@ -217,9 +162,6 @@ export default function HomePage() {
             <p className="win-eyebrow text-bubble mb-2">
               {"// próximas datas"}
             </p>
-            <h2 className="win-h2 bubble text-4xl sm:text-6xl leading-none">
-              Em rota
-            </h2>
           </div>
           <Link href="/agenda" className="no-underline">
             <Win95Button>agenda completa →</Win95Button>
@@ -294,9 +236,6 @@ export default function HomePage() {
       {/* SYSTEM FOLDER — contato + onde me achar, lifted from old second footer */}
       <section className="shell py-16 sm:py-24 border-t border-line">
         <p className="win-eyebrow text-bubble mb-2">{"// pasta do sistema"}</p>
-        <h2 className="win-h2 text-cream text-4xl sm:text-5xl leading-tight max-w-2xl mb-10">
-          Contato, agenda e onde me achar.
-        </h2>
 
         <Win95Window title="cremosa — pasta do sistema" controls>
           <div className="p-5 sm:p-6 bg-win-face text-win-ink flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-start">

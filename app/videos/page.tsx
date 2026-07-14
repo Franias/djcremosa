@@ -25,13 +25,8 @@ export default function VideosPage() {
       <section className="relative overflow-hidden grain halftone">
         <div className="shell relative z-10">
           <p className="win-eyebrow text-bubble mb-4">
-            {"// lives · sets filmados · entrevistas"}
+            {"// lives · sets filmados"}
           </p>
-          <div className="relative inline-block">
-            <h1 className="win-display bubble-strong text-[18vw] sm:text-[10rem] leading-[0.85]">
-              VÍDEOS
-            </h1>
-          </div>
 
           {/* Channel header card — banner + avatar + subscribe CTA. */}
           <div className="mt-10 win95-bevel-out bg-win-face p-[2px] max-w-3xl">
@@ -99,11 +94,6 @@ export default function VideosPage() {
               </div>
             </div>
           </div>
-
-          <p className="mt-6 max-w-2xl win-body text-cream-dim">
-            {youtubeVideos.length} sets filmados. Clica em qualquer thumbnail
-            pra tocar dentro do player — ou abre direto no YouTube.
-          </p>
         </div>
       </section>
 
