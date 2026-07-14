@@ -72,6 +72,17 @@ body {
   -webkit-font-smoothing: none;
   font-smooth: never;
   text-rendering: optimizeSpeed;
+  /* Smooth scrolling for hash-anchor jumps inside pages, off on
+     horizontal axes where a stray swipe shouldn't drag the page. */
+  scroll-behavior: smooth;
+}
+
+html {
+  /* Lock horizontal scroll — mobile should never see a sideways
+     rubber-band on the root. Components needing horizontal motion
+     (e.g. the desktop nav row) are isolated in their own overflow
+     containers so they don't push the document. */
+  overflow-x: hidden;
 }
 
 body {
@@ -89,13 +100,19 @@ body {
       #6a2840 100%
     ),
     var(--color-bg);
-  background-size: 220px 220px, 100% 100%, 100% 100%;
+  background-size: 620px 620px, 100% 100%, 100% 100%;
   background-repeat: repeat, no-repeat, no-repeat;
   background-position: 0 0, 0 0, 0 0;
   background-attachment: fixed, fixed, fixed;
   background-blend-mode: soft-light, normal, normal;
   background-color: var(--color-bg);
   position: relative;
+  /* Prevent over-scroll "pull-to-refresh" + horizontal bounce on iOS. */
+  overscroll-behavior-y: contain;
+  overscroll-behavior-x: none;
+  /* Tap highlight color — magenta wash that matches the brand instead
+     of the iOS / Chromium default grayish tap flash. */
+  -webkit-tap-highlight-color: rgba(255, 111, 163, 0.35);
 }
 body::before {
   /* Tile sits on top of body's gradient via a pseudo-element so we
@@ -104,7 +121,7 @@ body::before {
   position: fixed;
   inset: 0;
   background-image: var(--bg-stars);
-  background-size: 220px 220px;
+  background-size: 620px 620px;
   background-repeat: repeat;
   background-position: 0 0;
   background-attachment: fixed;
@@ -198,7 +215,7 @@ body[data-gate-active="true"] header.sticky {
   z-index: 0;
   pointer-events: none;
   background-image: url("/bg/star-halftone.jpg");
-  background-size: 220px 220px;
+  background-size: 620px 620px;
   background-repeat: repeat;
   background-position: 0 0;
   opacity: 0.85;
@@ -466,19 +483,27 @@ body[data-gate-active="true"] header.sticky {
 .cappill {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.85rem 0.5rem 1rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.7rem 0.4rem 0.85rem;
   background: var(--color-magenta);
   color: var(--color-cream);
   border: 1px solid rgba(255, 111, 163, 0.6);
   border-radius: 999px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 9px;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.18em;
   box-shadow: 0 4px 14px rgba(214, 48, 122, 0.35);
   white-space: nowrap;
   transition: transform 200ms ease, box-shadow 200ms ease;
+}
+@media (min-width: 640px) {
+  .cappill {
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem 0.5rem 1rem;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+  }
 }
 .cappill::after {
   content: "";
@@ -508,16 +533,24 @@ body[data-gate-active="true"] header.sticky {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.6rem;
   background: linear-gradient(180deg, #d6cfd7, #b9b1c0);
   color: #1a0a10;
   font-family: var(--font-pixel);
-  font-size: 14px;
+  font-size: 12px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  gap: 0.5rem;
+}
+@media (min-width: 640px) {
+  .notepad-title {
+    padding: 0.35rem 0.75rem;
+    font-size: 14px;
+  }
 }
 .notepad-controls {
   display: inline-flex;
   gap: 4px;
+  flex-shrink: 0;
 }
 .notepad-controls span {
   width: 14px;
@@ -537,20 +570,34 @@ body[data-gate-active="true"] header.sticky {
 }
 .notepad-menu {
   display: flex;
-  gap: 1rem;
-  padding: 0.25rem 0.75rem;
+  gap: 0.6rem;
+  padding: 0.25rem 0.6rem;
   background: #ece6e9;
   color: #1a0a10;
   font-family: var(--font-pixel);
-  font-size: 12px;
+  font-size: 11px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+@media (min-width: 640px) {
+  .notepad-menu {
+    gap: 1rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 12px;
+  }
 }
 .notepad-body {
-  padding: 1rem 1.1rem;
+  padding: 0.85rem 1rem;
   font-family: var(--font-mono);
   font-size: 12.5px;
   line-height: 1.6;
   color: #1a0a10;
+}
+@media (min-width: 640px) {
+  .notepad-body {
+    padding: 1rem 1.1rem;
+  }
 }
 
 /* Vintage Media-Player-style window — page 4 of the kit. Pink chrome
@@ -567,11 +614,18 @@ body[data-gate-active="true"] header.sticky {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.35rem 0.75rem;
+  padding: 0.35rem 0.6rem;
   background: linear-gradient(180deg, #d6307a, #8a0d1f);
   color: #fff7fb;
   font-family: var(--font-pixel);
-  font-size: 14px;
+  font-size: 12px;
+  gap: 0.5rem;
+}
+@media (min-width: 640px) {
+  .player-title {
+    padding: 0.35rem 0.75rem;
+    font-size: 14px;
+  }
 }
 .player-controls {
   display: inline-flex;
@@ -640,11 +694,20 @@ body[data-gate-active="true"] header.sticky {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 0.6rem;
+  padding: 0.4rem 0.5rem;
   background: linear-gradient(180deg, #2a0814, #1a0a10);
   color: var(--color-cream);
   font-family: var(--font-pixel);
-  font-size: 14px;
+  font-size: 12px;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+@media (min-width: 640px) {
+  .player-transport {
+    padding: 0.4rem 0.6rem;
+    font-size: 14px;
+    flex-wrap: nowrap;
+  }
 }
 .player-transport-track {
   flex: 1;
@@ -793,35 +856,53 @@ body[data-gate-active="true"] header.sticky {
     var(--win-title-2) 100%
   );
   color: var(--win-light);
-  padding: 6px 8px;
+  padding: 5px 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 0.02em;
   user-select: none;
-  min-height: 32px;
+  min-height: 30px;
+}
+@media (min-width: 640px) {
+  .win95-title {
+    padding: 6px 8px;
+    font-size: 20px;
+    min-height: 32px;
+  }
 }
 .win95-title-controls {
   display: inline-flex;
   gap: 2px;
+  /* Controls stay anchored to the right and never get squeezed by
+     the title flex item even when the title runs long. */
+  flex-shrink: 0;
 }
 .win95-title-controls span {
-  width: 26px;
-  height: 22px;
+  width: 24px;
+  height: 20px;
   background: var(--win-face);
   color: var(--win-ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-pixel);
-  font-size: 16px;
+  font-size: 14px;
   line-height: 1;
   border-top: 1px solid var(--win-light);
   border-left: 1px solid var(--win-light);
   border-right: 1px solid var(--win-shadow-deep);
   border-bottom: 1px solid var(--win-shadow-deep);
+}
+@media (min-width: 640px) {
+  .win95-title-controls span {
+    width: 26px;
+    height: 22px;
+    font-size: 16px;
+  }
 }
 .win95-title-controls span.close {
   background: var(--win-face);
@@ -830,11 +911,14 @@ body[data-gate-active="true"] header.sticky {
 /* Win95-style button (use with .win95-button on a <button>) */
 .win95-button {
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 16px;
   color: var(--win-ink);
   background: var(--win-face);
-  padding: 8px 18px;
-  min-height: 40px;
+  padding: 8px 14px;
+  /* 44px touch-target minimum — see Apple HIG / WCAG 2.5.5. The
+     padding + min-height keeps the chunky Win95 bevel intact while
+     guaranteeing a finger-friendly tap zone on phones. */
+  min-height: 44px;
   border-top: 1px solid var(--win-light);
   border-left: 1px solid var(--win-light);
   border-right: 1px solid var(--win-shadow-deep);
@@ -843,9 +927,22 @@ body[data-gate-active="true"] header.sticky {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   user-select: none;
   transition: none;
+  -webkit-tap-highlight-color: transparent;
+  text-align: center;
+  /* Don't let long button labels push neighbouring controls off
+     screen — truncate inside the button chrome instead. */
+  max-width: 100%;
+}
+@media (min-width: 640px) {
+  .win95-button {
+    font-size: 20px;
+    padding: 8px 18px;
+    min-height: 40px;
+  }
 }
 .win95-button:hover {
   background: var(--win-face-2);
@@ -858,26 +955,51 @@ body[data-gate-active="true"] header.sticky {
   border-right-color: var(--win-light);
   border-bottom-color: var(--win-light);
   box-shadow: inset 1px 1px 0 var(--win-shadow), inset -1px -1px 0 var(--win-face-2);
-  padding: 9px 17px 7px 19px; /* simulate 1px press */
+  /* Padded offset simulates the 1px press travel without shifting
+     neighbour layout. Same on every viewport. */
+  padding: 9px 13px 7px 15px;
+}
+@media (min-width: 640px) {
+  .win95-button:active,
+  .win95-button[aria-pressed="true"],
+  .win95-button[data-active="true"] {
+    padding: 9px 17px 7px 19px;
+  }
 }
 .win95-button:focus-visible {
   outline: 1px dotted var(--win-ink);
   outline-offset: -4px;
 }
+.win95-button:disabled,
+.win95-button[aria-disabled="true"] {
+  color: var(--win-shadow);
+  text-shadow: 1px 1px 0 var(--win-face-2);
+  cursor: not-allowed;
+  filter: saturate(0.4);
+}
 
-/* Status bar — chunky gray strip across the bottom of the viewport */
+/* Status bar — chunky gray strip across the bottom of the viewport.
+   On phones we shrink the text + padding so the segments stay in one
+   row even with the long location strings ("Pronto · Porto Alegre, RS"). */
 .win95-statusbar {
   background: var(--win-face);
   color: var(--win-ink);
   border-top: 1px solid var(--win-light);
   box-shadow: inset 1px 1px 0 var(--win-face-2);
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   gap: 1px;
-  padding: 4px;
-  min-height: 40px;
+  padding: 3px;
+  min-height: 36px;
+}
+@media (min-width: 640px) {
+  .win95-statusbar {
+    font-size: 20px;
+    padding: 4px;
+    min-height: 40px;
+  }
 }
 .win95-statusbar-segment {
   flex: 1;
@@ -885,16 +1007,51 @@ body[data-gate-active="true"] header.sticky {
   border-left: 1px solid var(--win-shadow-deep);
   border-right: 1px solid var(--win-light);
   border-bottom: 1px solid var(--win-light);
-  padding: 4px 10px;
+  padding: 3px 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+}
+@media (min-width: 640px) {
+  .win95-statusbar-segment {
+    padding: 4px 10px;
+  }
 }
 .win95-statusbar-segment.grow {
   flex: 1 1 auto;
+  min-width: 0;
 }
 .win95-statusbar-segment.shrink {
   flex: 0 0 auto;
+}
+
+/* Override for the page-level footer status bar only.
+ *
+ * The base `.win95-statusbar` rule declares only `border-top` (white)
+ * and an inset face-2 highlight on the top-left — fine for a small
+ * status bar that lives INSIDE a Win95Window (the parent window's
+ * own bevel frames it). But the page-level footer at the very
+ * bottom of the document has no parent window, so the missing
+ * left/right/bottom borders leave it looking "top-bright" and
+ * visually floating against the dark site background.
+ *
+ * This class re-introduces the missing bevel so the bar reads with
+ * the same visual weight as a Win95Window's chrome:
+ *   - top + left  → white  (lit from above-left)
+ *   - right + bottom → gray (anchored)
+ *   - drop the inset face-2 highlight (the double-white effect)
+ *
+ * Applied via `className` on <Win95StatusBar> in SiteFooter only;
+ * the four nested-in-window status bars (player transport,
+ * playlist.exe, gallery footer, mobile drawer) keep their
+ * original top-lit look because their parent window already
+ * provides the dark bottom edge. */
+.win95-statusbar--pinned {
+  box-shadow: none;
+  border-left: 1px solid var(--win-light);
+  border-right: 1px solid var(--win-shadow);
+  border-bottom: 1px solid var(--win-shadow);
 }
 
 /* Menu bar (File / Edit / View / Help) */
@@ -904,14 +1061,31 @@ body[data-gate-active="true"] header.sticky {
   background: var(--win-face);
   color: var(--win-ink);
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 14px;
   padding: 3px 4px;
   border-bottom: 1px solid var(--win-shadow);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+@media (min-width: 640px) {
+  .win95-menubar {
+    font-size: 20px;
+  }
 }
 .win95-menubar-item {
-  padding: 6px 12px;
+  padding: 6px 10px;
   cursor: pointer;
   user-select: none;
+  /* Touch target — denser on phones so the thumb lands the menu cleanly. */
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+@media (min-width: 640px) {
+  .win95-menubar-item {
+    padding: 6px 12px;
+    min-height: 0;
+  }
 }
 .win95-menubar-item:hover,
 .win95-menubar-item[data-open="true"] {
@@ -1032,13 +1206,29 @@ body[data-gate-active="true"] header.sticky {
   line-height: 0.95;
 }
 
+/* Mobile-first typography scale.
+   ─────────────────────────────────────────────────────────────────
+   Win95 typography utilities descend from a 17px base on phones
+   (≥375–639px) and step up to the full 18/20px sizes at 640px+. This
+   keeps line lengths comfortable (40–55 chars on portrait phones)
+   without losing the chunky MS-Sans-Serif feel on desktop. The
+   breakpoints exactly match Tailwind's `sm:` so the markup stays
+   self-documenting (any element using these utilities inherits the
+   same scale). */
+
 .win-eyebrow {
   font-family: var(--font-pixel);
-  font-size: 20px;
-  letter-spacing: 0.22em;
+  font-size: 14px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   font-weight: 400;
   line-height: 1.3;
+}
+@media (min-width: 640px) {
+  .win-eyebrow {
+    font-size: 20px;
+    letter-spacing: 0.22em;
+  }
 }
 
 /* Dense variant — for inline metadata inside compact chrome surfaces
@@ -1047,11 +1237,17 @@ body[data-gate-active="true"] header.sticky {
    down so it fits a 20–32px tall row without breaking alignment. */
 .win-eyebrow-sm {
   font-family: var(--font-pixel);
-  font-size: 12px;
-  letter-spacing: 0.18em;
+  font-size: 11px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   font-weight: 400;
   line-height: 1.2;
+}
+@media (min-width: 640px) {
+  .win-eyebrow-sm {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+  }
 }
 
 /* White text with a soft drop shadow — used for eyebrows and accent
@@ -1067,40 +1263,80 @@ body[data-gate-active="true"] header.sticky {
 
 .win-body {
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 17px;
   line-height: 1.55;
+}
+@media (min-width: 640px) {
+  .win-body {
+    font-size: 20px;
+  }
 }
 
 .win-body-sm {
   font-family: var(--font-pixel);
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1.5;
+}
+@media (min-width: 640px) {
+  .win-body-sm {
+    font-size: 18px;
+  }
 }
 
 .win-caption {
   font-family: var(--font-pixel);
-  font-size: 18px;
-  letter-spacing: 0.18em;
+  font-size: 14px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   line-height: 1.4;
   color: var(--color-cream-dim);
 }
+@media (min-width: 640px) {
+  .win-caption {
+    font-size: 18px;
+    letter-spacing: 0.18em;
+  }
+}
 
 .win-button-text {
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 0.02em;
+}
+@media (min-width: 640px) {
+  .win-button-text {
+    font-size: 20px;
+  }
 }
 
 .win-status-text {
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 16px;
+}
+@media (min-width: 640px) {
+  .win-status-text {
+    font-size: 20px;
+  }
 }
 
 .win-title-text {
   font-family: var(--font-pixel);
-  font-size: 20px;
+  font-size: 16px;
   letter-spacing: 0.02em;
+  /* Long window titles ("cremosa.txt — readme", "Fev 23 · Rap in
+     Cena...") need to truncate cleanly inside the title bar — title
+     bars are 32px tall and live inside a fixed-width flex container,
+     so overflow manifests as broken borders / clipped controls on
+     phones. Combined with `truncate` on the consumer. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+@media (min-width: 640px) {
+  .win-title-text {
+    font-size: 20px;
+  }
 }
 
 /* Monospace — reserved for the Notepad component only. */
@@ -1119,8 +1355,8 @@ body[data-gate-active="true"] header.sticky {
   margin-left: auto;
   margin-right: auto;
   max-width: 72rem; /* 1152px — Tailwind's max-w-6xl */
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
 }
 @media (min-width: 640px) {
   .shell {
@@ -1133,8 +1369,8 @@ body[data-gate-active="true"] header.sticky {
   margin-left: auto;
   margin-right: auto;
   max-width: 48rem; /* 768px — Tailwind's max-w-3xl */
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
 }
 @media (min-width: 640px) {
   .shell-narrow {
@@ -1147,8 +1383,8 @@ body[data-gate-active="true"] header.sticky {
   margin-left: auto;
   margin-right: auto;
   max-width: 100rem; /* 1600px — wider for grids + rails */
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
+  padding-left: 0.875rem;
+  padding-right: 0.875rem;
 }
 @media (min-width: 640px) {
   .shell-wide {
@@ -1163,8 +1399,8 @@ body[data-gate-active="true"] header.sticky {
 .hero {
   position: relative;
   overflow: hidden;
-  padding-top: 4rem;
-  padding-bottom: 3rem;
+  padding-top: 2.25rem;
+  padding-bottom: 1.75rem;
 }
 @media (min-width: 640px) {
   .hero {
@@ -1188,5 +1424,98 @@ body[data-gate-active="true"] header.sticky {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Mobile responsive primitives
+   ────────────────────────────────────────────────────────────────── */
+
+/* Sticky page chrome (SiteNav, SiteFooter) is wrapped in a tiny
+   safe-area gutter on devices with display cutouts (notched phones,
+   Dynamic Island). The `viewport-fit=cover` flag in layout.tsx
+   activates the env() values; without that they're zero. */
+.safe-x {
+  padding-left: max(0.875rem, env(safe-area-inset-left));
+  padding-right: max(0.875rem, env(safe-area-inset-right));
+}
+@media (min-width: 640px) {
+  .safe-x {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+  }
+}
+.safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+.safe-bottom {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+/* Tap target guard — guarantees interactive chips remain Apple HIG /
+   Material Design compliant (≥44×44 CSS pixels). Use on any element
+   that is a primary action but visually small (the home icon button,
+   the booking chip, etc.). */
+.tap-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Hide scrollbar but keep scroll — used by the mobile nav drawer
+   when items overflow vertically. Looks like a pop-up menu instead
+   of a scrollable list, while staying accessible to scrollable
+   interfaces if content is taller than the viewport. */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Disable long-press OS-level menus and image drag on the welcome
+   desktop icons — they're meant to behave like buttons, not photos. */
+.no-context {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* Optional companion to `.no-underline` to make links behave like
+   buttons (no draggable selection on the label). */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Suspend hover-only behaviors on touch / coarse-pointer devices.
+   The CSS tooltips on desktop icons use `:hover` + `:focus-visible`
+   which can't fire on a tap — without this rule the tooltip arrow
+   would be visible to assistive tech but never accessible. Pointer
+   detection means laptop trackpads still get the hover affordance. */
+@media (hover: none) {
+  /* The yellow Win95 tooltip — hidden because there's no reliable
+     way to invoke it on touch and showing it would obscure the
+     label. We rely on the `title` attribute as fallback for AT. */
+  .win95-icon::after {
+    display: none;
+  }
+}
+
+/* Larger focus ring on touch devices to compensate for absent
+   hover. Highlights which control a tap will land on. */
+@media (hover: none) {
+  .win95-button:focus-visible {
+    outline: 2px solid var(--color-bubble);
+    outline-offset: -5px;
+  }
+}
+
+/* React to very short heights (landscape phones, foldables) — pull
+   hero padding down so the hero isn't twice the viewport tall. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero {
+    padding-top: 1.25rem;
+    padding-bottom: 1rem;
   }
 }
