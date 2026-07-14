@@ -73,9 +73,36 @@ export const metadata: Metadata = {
     images: [{ url: site.brand.logo.hero, alt: site.brand.logo.alt }],
   },
   icons: {
-    // Favicons ainda usam o default do Next; um logo transparente vai ser
-    // adicionado na fase 2.
-    icon: [{ url: "/favicon.ico" }],
+    // Browser tab + bookmark icon. We use the brand logo as the
+    // primary favicon and the Y2K halftone bg tile as a secondary
+    // 'any size' alternative — browsers pick the smallest one that
+    // fits the requested size. Both are basePath-aware so they
+    // resolve correctly on GitHub Pages.
+    icon: [
+      {
+        url: `${site.basePath}/logo/cremosa-240.png`,
+        type: "image/png",
+        sizes: "240x240",
+        rel: "icon",
+      },
+      {
+        url: `${site.basePath}/logo/cremosa-600.png`,
+        type: "image/png",
+        sizes: "600x600",
+        rel: "icon",
+      },
+      {
+        url: `${site.basePath}/bg/star-halftone.jpg`,
+        type: "image/jpeg",
+        sizes: "any",
+        rel: "icon",
+      },
+    ],
+    apple: {
+      url: `${site.basePath}/logo/cremosa-600.png`,
+      sizes: "600x600",
+      type: "image/png",
+    },
   },
   // Enable cross-route View Transitions (Chrome 124+, Safari 18+).
   // Browsers without support ignore the meta tag — navigation still works.
