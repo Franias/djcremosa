@@ -25,7 +25,7 @@ export function GenrePills({ spread = true }: GenrePillsProps) {
     >
       {PILLS.map((g) => (
         <li key={g}>
-          <span className="cappill">{g}</span>
+          {/* <span className="cappill">{g}</span> */}
         </li>
       ))}
     </ul>

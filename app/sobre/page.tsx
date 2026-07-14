@@ -15,7 +15,7 @@ const TIMELINE = [
   { year: "2016", body: "Início da carreira em Porto Alegre. A cena noturna da capital é o lugar onde a pista se forma." },
   {
     year: "2023",
-    body: "Primeiro destaque nacional: Rap in Cena ao lado do rapper D'Lock.",
+    body: "Primeiro destaque nacional: Rap in Cena ao lado do rapper D'Lock em 2023.",
     accent: true,
   },
   {
@@ -53,21 +53,19 @@ export default function SobrePage() {
       {/* PINK MANIFESTO SECTION — kept as the kit's pink mode */}
       <section className="pink-mode halftone">
         <div className="relative shell py-16 sm:py-24">
-          <GenrePills spread={false} />
-
           <div className="relative z-10 grid lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <p className="win-eyebrow mb-4 ink-dim">
                 {"// manifesto · 2026"}
               </p>
               <h2 className="win-h2 ink text-4xl sm:text-6xl">
-                Música preta global na pista.
+                Música preta na pista.
               </h2>
               <div className="mt-10 grid sm:grid-cols-2 gap-8">
                 <p className="win-body ink">
                   DJ Cremosa é uma artista da cena de Porto Alegre que atua
                   desde 2016, conhecida por sets intensos que conectam
-                  diferentes vertentes da música preta global.
+                  diferentes vertentes de músicas ao seu repertório.
                 </p>
                 <p className="win-body ink">
                   Sua pesquisa parte do funk brasileiro e se expande por rap,
@@ -117,7 +115,7 @@ export default function SobrePage() {
         </div>
       </section>
 
-      {/* CAREER NOTEPADS — kit page 3 reference */}
+      {/* CAREER NOTEPADS — kit page 3 reference
       <section className="shell py-16 sm:py-24">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">{"// trajetória"}</p>
         <h2 className="win-h2 text-cream text-4xl sm:text-5xl leading-tight mb-12 max-w-2xl">
@@ -141,7 +139,7 @@ export default function SobrePage() {
             e assumiu residência na festa <strong>BatukBaile</strong>.
           </Notepad>
         </div>
-      </section>
+      </section> */}
 
       {/* TIMELINE — file-explorer grid in Win95 windows */}
       <section className="shell py-16 sm:py-24 border-t border-line">

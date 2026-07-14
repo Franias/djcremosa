@@ -25,9 +25,9 @@ export default function VideosPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative overflow-hidden grain halftone">
+      <section className="hero grain halftone">
         <div className="shell relative z-10">
-          <p className="win-eyebrow win-eyebrow-shadow mb-4">
+          <p className="win-eyebrow win-eyebrow-shadow mb-6">
             {"// lives · sets filmados"}
           </p>
 

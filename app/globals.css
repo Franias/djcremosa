@@ -1461,8 +1461,8 @@ body[data-gate-active="true"] header.sticky {
 }
 @media (min-width: 640px) {
   .hero {
-    padding-top: 2.5rem;
-    padding-bottom: 2rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.25rem;
   }
 }
 
