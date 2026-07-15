@@ -142,7 +142,7 @@ export default function SobrePage() {
       </section> */}
 
       {/* TIMELINE — file-explorer grid in Win95 windows */}
-      <section className="shell py-16 sm:py-24 border-t border-line">
+      <section className="shell py-16 sm:py-24 ">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">
           {"// linha do tempo · 2016 → hoje"}
         </p>

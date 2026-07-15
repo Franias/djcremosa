@@ -399,7 +399,7 @@ export default function MusicaPage() {
       </section>
 
       {/* PLAYLIST — Win95 list view below the visualizer */}
-      <section className="shell py-10 sm:py-14 border-t border-line">
+      <section className="shell py-10 sm:py-14">
         <p className="win-eyebrow win-eyebrow-shadow mb-4">
           {"// clica pra tocar"}
         </p>
