@@ -18,6 +18,7 @@ const PAGES = [
   { path: "/sobre/", name: "sobre" },
   { path: "/contato/", name: "contato" },
   { path: "/musica/", name: "musica" },
+  { path: "/dj-verbosa/", name: "dj-verbosa" },
   { path: "/videos/", name: "videos" },
   { path: "/galeria/", name: "galeria" },
 ] as const;

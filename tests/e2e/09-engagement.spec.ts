@@ -66,7 +66,7 @@ test.describe("09a — Footer countdown", () => {
     expect(href).toMatch(/\/agenda\/?$/);
   });
 
-  test("countdown shows a dd:hh:mm-shaped value after hydration", async ({
+  test("countdown shows a dd:hh:mm:ss-shaped value after hydration", async ({
     page,
   }) => {
     await page.goto("/?skipGate=1");
@@ -74,7 +74,9 @@ test.describe("09a — Footer countdown", () => {
     // Allow up to 2 ticks (≈ 60s) for the countdown to swap the
     // placeholder. In practice the first tick happens within ~30s
     // of page load, but we extend the timeout to keep CI stable.
-    await expect(link).toHaveText(/^\d{2}:\d{2}:\d{2}$/, { timeout: 90_000 });
+    await expect(link).toHaveText(/^\d{2}:\d{2}:\d{2}:\d{2}$/, {
+      timeout: 90_000,
+    });
   });
 
   test("countdown is hidden on small viewports to protect footer rhythm", async ({

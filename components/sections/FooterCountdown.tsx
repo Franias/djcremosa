@@ -10,14 +10,14 @@ import {
 } from "@/lib/events";
 
 /**
- * FooterCountdown — compact `dd:hh:mm` timer placed in the fixed
+ * FooterCountdown — compact `dd:hh:mm:ss` timer placed in the fixed
  * page-level Win95 status bar (SiteFooter).
  *
  * The site is a static export to GitHub Pages, so the timer runs
  * entirely on the client. It picks the next confirmed/non-cancelled
  * event from `content/events.ts` (mock entries are skipped — see
- * `getNextEvent`) and ticks every 30s. The minute-precision display
- * `dd:hh:mm` is derived from a single `deltaMs` in state.
+ * `getNextEvent`) and ticks every 1s. The second-precision display
+ * `dd:hh:mm:ss` is derived from a single `deltaMs` in state.
  *
  * Architecture notes:
  *
@@ -34,9 +34,10 @@ import {
  * The whole segment is wrapped in a Link to `/agenda/` so clicking
  * the timer takes the visitor straight to the agenda page.
  *
- * SSR safety: the server renders `--:--` (5 chars, same column
- * count as `01:23:45`) so hydration never complains about
- * mismatched text.
+ * SSR safety: the server renders `00:00:00:00` (11 chars, same
+ * column count as the post-tick `01d:02h:03m:04s` shape) so
+ * hydration never complains about mismatched text and the segment
+ * doesn't reflow.
  *
  * Empty state: when there's no upcoming event we render `—` so the
  * segment still occupies its column and the status bar rhythm
@@ -64,11 +65,10 @@ export function FooterCountdown({ events }: { events: CremosaEvent[] }) {
   if (!next) {
     timer = "—";
   } else if (deltaMs === null) {
-    // Placeholder matches the post-tick width (8 chars, `dd:hh:mm`)
-    // so the status-bar segment doesn't reflow when the real value
-    // lands. `formatCountdown().compact` produces the same 8-char
-    // shape after hydration.
-    timer = "00:00:00";
+    // Placeholder matches the post-tick width (11 chars,
+    // `dd:hh:mm:ss`) so the status-bar segment doesn't reflow when
+    // the real value lands.
+    timer = "00:00:00:00";
   } else if (deltaMs <= 0) {
     timer = "agora";
   } else {

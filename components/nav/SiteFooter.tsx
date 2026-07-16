@@ -45,6 +45,7 @@ export function SiteFooter() {
           {site.brand.name} · desde {site.brand.activeSince}
         </span>
         <span className="win95-statusbar-segment shrink hidden md:inline">
+          Next event countdown  · 
           <FooterCountdown events={events} />
         </span>
         <span className="win95-statusbar-segment shrink">

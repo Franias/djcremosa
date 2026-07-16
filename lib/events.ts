@@ -140,14 +140,19 @@ export function getNextEvent(
 
 /**
  * Format a millisecond delta as a countdown, in two flavors:
- *   - `compact`: `dd:hh:mm:ss` — fixed-width, used in status bars
- *   - `full`:    `XXd XXh XXm XXs`  — used in the (former)
- *                NextEventCountdown hero block
+ *
+ *   - `compact`: `dd:hh:mm:ss` — fixed-width, 11 chars, used by
+ *                the footer status bar (visits every page).
+ *   - `full`:    `01d 02h 03m 04s` — used by the home-page
+ *                NextEventCountdown block where vertical/horizontal
+ *                space is plentiful.
+ *
+ * Both flavors tick at 1s precision (the FooterCountdown and
+ * NextEventCountdown components run a 1s interval so the seconds
+ * digit visibly counts down).
  *
  * Negative or zero deltas clamp to zero so the UI never shows an
  * awkward `-1d -2h` countdown.
- *
- * NOTE: stub — relies on the user finishing the spec.
  */
 export function formatCountdown(deltaMs: number): {
   compact: string;
@@ -168,11 +173,10 @@ export function formatCountdown(deltaMs: number): {
   const m = pad(minutes);
   const s = pad(seconds);
   return {
-    // Footer-size compact: `dd:hh:mm` (3 segments, 8 chars) — fits
-    // the fixed bottom status bar without re-flowing. FooterCountdown
-    // ticks every 1s but only displays minute precision; the seconds
-    // digit is dropped here so the segment stays the same width.
-    compact: `${d}:${h}:${m}`,
+    // Footer-size compact: `dd:hh:mm:ss` (4 segments, 11 chars).
+    // Width matches the placeholder so the status-bar segment
+    // doesn't reflow when the real value lands.
+    compact: `${d}:${h}:${m}:${s}`,
     full: `${d}d ${h}h ${m}m ${s}s`,
     days: d,
     hours: h,

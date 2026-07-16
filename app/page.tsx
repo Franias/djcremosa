@@ -82,7 +82,7 @@ export default function HomePage() {
               (black) on a transparent Win95 bevel so it visually
               anchors the hero row instead of competing with the
               flanking pixel icons. */}
-          
+
           {/* Hero — figure in the middle, desktop icons on the two sides.
               On `md+` the row is `icons-left | figure | icons-right`. We
               use CSS Grid (3 explicit tracks, `1fr auto 1fr`) instead

@@ -845,6 +845,15 @@ body[data-gate-active="true"] header.sticky {
   to   { background-position: 19.8px 0; }
 }
 
+/* Marching-ants marquee for the DJ Verbosa /dj-verbosa Paint
+   canvas selection border. The classic Win95 "selected region"
+   effect — 2-step keyframe swapping the border between solid and
+   transparent so the dashes appear to march around the rectangle. */
+@keyframes paint-march {
+  from { border-color: #000; }
+  to   { border-color: transparent; }
+}
+
 /* Chunky 3D beveled border — for the splash title bar */
 .win95-bevel-out {
   border-top: 2px solid var(--win-light);

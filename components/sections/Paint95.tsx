@@ -179,6 +179,7 @@ export function Paint95({ initialSlug }: Paint95Props) {
   const charCount = pattern.code.length;
 
   return (
+    
     <Win95Window
       title="DJ Verbosa - Paint (verbosa.exe)"
       controls
@@ -321,25 +322,40 @@ export function Paint95({ initialSlug }: Paint95Props) {
             paint.png). The pattern source is the PNG that PIL
             generated from the same `pattern.code` string we
             ship in `content/strudel.ts`, so the image and the
-            "copiar código" button are always in sync. */}
+            "copiar código" button are always in sync.
+
+            The image is generated at 2× scale (1166×1704 px) so the
+            code reads at ~20pt on retina displays. We render it
+            at its natural size so the code stays legible — the
+            `<Win95Window>` chrome around the canvas wraps to the
+            image's intrinsic width. If the viewport is narrower
+            than the image, the canvas adds a horizontal scrollbar
+            so the user can still pan over to read the right edge. */}
         <div className="flex-1 min-w-0 win95-bevel-in bg-[#808080] p-1">
-          <div className="win95-bevel-deep-in bg-white flex flex-col">
-            <div className="relative flex" style={{ minHeight: "420px" }}>
+          <div className="win95-bevel-deep-in bg-white flex flex-col overflow-auto">
               {/* The CODE — painted onto the white blank. The image
                   carries the Strudel code for the active pattern, so
                   the "first frame" of the Paint95 window matches the
                   MS Paint reference exactly. Clicking still hits the
                   same `handleCopy` on the parent <button>, but the
-                  `copiar código` button is the primary action. */}
+                  `copiar código` button is the primary action. The
+                  PNG is generated at 2x scale (1166×1704) so the
+                  code reads at ~20pt on retina displays. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={`${site.basePath}/dj-verbosa/strudel-on-paint.png`}
                 alt={`Strudel code for ${pattern.title}, painted in MS Paint`}
                 title={`${pattern.title} — ${pattern.code.length} chars / ${pattern.code.split("\n").length} lines`}
-                className="grow m-0 w-full h-auto select-text block"
-                style={{ imageRendering: "pixelated", objectFit: "contain", maxHeight: "420px" }}
+                className="shrink-0 select-text block"
+                style={{
+                  imageRendering: "pixelated",
+                  height: "auto",
+                  maxWidth: "none",
+                  display: "block",
+                }}
                 draggable={false}
               />
+              
 
               {/* Right vertical scrollbar — decorative, matches
                   jspaint.app's right-side canvas scrollbar. */}
@@ -363,9 +379,8 @@ export function Paint95({ initialSlug }: Paint95Props) {
               <span className="grow mx-0.5 mt-0.5 mb-0.5 win95-bevel-out bg-win-face" />
               <span aria-hidden className="win95-button justify-center px-0 shrink-0" style={{ width: "16px", pointerEvents: "none" }}>▶</span>
             </div>
+            </div>
           </div>
-        </div>
-      </div>
 
       {/* ──── Color palette row ────
           FG/BG overlap preview on the left, then a 2 × 8 grid

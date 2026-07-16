@@ -16,6 +16,7 @@ export interface NavLink {
 }
 
 export const NAV_LINKS: ReadonlyArray<NavLink> = [
+  { href: "/dj-verbosa/", label: "DJ Verbosa" },
   { href: "/agenda/", label: "Agenda" },
   { href: "/musica/", label: "Música" },
   { href: "/galeria/", label: "Galeria" },
