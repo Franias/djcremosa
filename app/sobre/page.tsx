@@ -158,7 +158,7 @@ export default function SobrePage() {
       </section>
 
       {/* CTA — Win95 dialog */}
-      <section className="shell pb-24">
+      <section className="shell pb-24 hero ">
         <Win95Window title="booking.exe — confirmar" controls>
           <div className="p-6 sm:p-8 bg-win-face text-win-ink text-center">
             <p className="win-eyebrow mb-3">

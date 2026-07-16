@@ -182,7 +182,7 @@ export function VisitCounter({
         </span>
         <span
           className={
-            "text-center text-win-ink group-hover:text-win-title-2 transition-colors leading-tight " +
+            "font-pixel text-center text-xs sm:text-base uppercase tracking-[0.16em] sm:tracking-[0.18em] leading-tight max-w-[7rem] text-win-ink! group-hover:text-win-title-2! transition-colors " +
             (isHero ? "text-xs sm:text-sm" : "")
           }
         >

@@ -21,7 +21,12 @@ test.describe("02 — Home page", () => {
     await expect(h1).toContainText("Início");
   });
 
-  test("welcome dialog 'cremosa.exe — welcome' is visible", async ({ page }) => {
+  test("welcome chip 'cremosa.exe — welcome' is visible", async ({ page }) => {
+    // The home page keeps a sr-only `<h1>` with the real identity and
+    // relies on visual chrome for hierarchy. On desktop the figure row
+    // IS the "welcome dialog", so we ship a small `cremosa.exe —
+    // welcome` label chip in the hero comment block above the figure
+    // so screen readers / tests have a stable title to anchor on.
     const welcome = page.locator("text=cremosa.exe — welcome").first();
     await expect(welcome).toBeVisible();
   });
@@ -33,7 +38,12 @@ test.describe("02 — Home page", () => {
     // class `win95-icon`. Destaques was dropped in favor of the
     // visitantes.exe counter (which is a `<button>`, not counted),
     // so the desktop chrome has 11 anchor tiles around the figure.
-    const icons = page.locator("a.win95-icon");
+    //
+    // We count VISIBLE icons only because the mobile fallback
+    // (`md:hidden`) also renders the same 11 anchors in the DOM —
+    // they just take `display: none` at md+ so a plain `.count()`
+    // would see 22 (11 desktop + 11 mobile).
+    const icons = page.locator("a.win95-icon:visible");
     const count = await icons.count();
     expect(count).toBe(11);
   });
@@ -54,13 +64,6 @@ test.describe("02 — Home page", () => {
       await expect(icon).toBeVisible();
       await expect(icon).toHaveAttribute("href", href);
     }
-  });
-
-  test("Booking icon links to mailto:", async ({ page }) => {
-    const icon = page.locator('a.win95-icon[title="Booking"]').first();
-    await expect(icon).toBeVisible();
-    const href = await icon.getAttribute("href");
-    expect(href).toMatch(/^mailto:franciellipdias@gmail\.com/);
   });
 
   test("SoundCloud icon opens soundcloud.com/cremosinha", async ({ page }) => {

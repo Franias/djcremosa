@@ -82,9 +82,6 @@ export default function HomePage() {
               (black) on a transparent Win95 bevel so it visually
               anchors the hero row instead of competing with the
               flanking pixel icons. */}
-          <p className="win-eyebrow text-win-shadow-deep mb-3 sm:mb-4 text-center">
-            {"// cremosa.exe — welcome"}
-          </p>
           
           {/* Hero — figure in the middle, desktop icons on the two sides.
               On `md+` the row is `icons-left | figure | icons-right`. We
