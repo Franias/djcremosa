@@ -72,28 +72,49 @@ export default function HomePage() {
               figure; `h-auto` preserves the 480×281 aspect ratio. AT-
               invisible because the page already has an sr-only h1 with
               the site's real identity ("Cremosa — Início"). */}
+
+          {/* Desktop welcome chip — small AT-readable label that echoes
+              the Win9x title-bar motif so the home page has a stable
+              "cremosa.exe — welcome" anchor visible across all
+              breakpoints. The mobile `md:hidden` Win95Window above
+              (which contains the same text in its title-bar) takes
+              over on phones. We deliberately keep this `text-win-ink`
+              (black) on a transparent Win95 bevel so it visually
+              anchors the hero row instead of competing with the
+              flanking pixel icons. */}
+          <p className="win-eyebrow text-win-shadow-deep mb-3 sm:mb-4 text-center">
+            {"// cremosa.exe — welcome"}
+          </p>
           
           {/* Hero — figure in the middle, desktop icons on the two sides.
-              On `md+` the row is `icons-left | figure | icons-right`. The
-              `visitantes.exe` tile (VisitCounter) is the FIRST item on
-              the right column, just below the top-right corner — same
-              slot a real Win95 desktop puts counter / Stat / clock
-              widgets in, so the counter reads as a top-of-column
-              bookend instead of a middle slot. On phones the row
+              On `md+` the row is `icons-left | figure | icons-right`. We
+              use CSS Grid (3 explicit tracks, `1fr auto 1fr`) instead
+              of flexbox so the figure column stays anchored to the
+              viewport center even when the two icon columns have
+              different intrinsic widths (the right column is wider
+              because `visitantes.exe` + `SoundCloud` push it past the
+              left column's `Galeria / Vídeos / Sobre`). With flex,
+              `flex-1` lets the figure absorb leftover space asymmet-
+              rically and the visual center drifts leftward; with
+              grid, both `1fr` tracks take equal share and the `auto`
+              figure sits exactly between them. VisitCounter opens
+              the right column at the TOP (top-of-column bookend,
+              classic Win95 counter position). On phones the row
               collapses to a stacked column (figure first) and the
               icons fall into a 3-col grid below — flanking would be
               unreadable on a portrait viewport. */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 lg:gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 md:gap-4 lg:gap-6 w-full">
             {/* Left side — the 6 page shortcuts that point inside the
-                site. Wrapped in a flex column with the same gap as the
-                right column so the two sides mirror. */}
-            <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3">
+                site. `justify-self-end` right-aligns the column inside
+                its 1fr track so the figure stays geometric-centered
+                even when this column is narrower than the right. */}
+            <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3 justify-self-end">
               {WELCOME_ICONS.filter((icon) => icon.leftSide).map((icon) => (
                 <WelcomeIcon key={icon.label} {...icon} />
               ))}
             </div>
 
-            <figure className="p-6 w-full md:flex-1 md:min-w-0 md:max-w-5xl">
+            <figure className="p-6 w-full md:w-auto md:max-w-5xl mx-auto">
               <div className="win95-bevel-out bg-win-face p-[2px] overflow-hidden">
                 <Image
                   src={`${site.basePath}/photos/cremosa-home.jpg`}
@@ -110,11 +131,11 @@ export default function HomePage() {
             {/* Right side — `visitantes.exe` (VisitCounter, replaces the
                 old Destaques entry) opens the column at the TOP, then
                 the 5 `rightSide` shortcuts follow (Sets first, then
-                SoundCloud, Instagram, Twitch, TikTok). The VisitCounter
-                button is mounted inline so it sits next to its pixel-
-                art siblings and the modal trigger follows the same
-                hover rhythm as the rest of the column. */}
-            <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3">
+                SoundCloud, Instagram, Twitch, TikTok). `justify-self-
+                start` left-aligns the column inside its 1fr track so
+                the figure stays geometric-centered between two equal
+                side tracks. */}
+            <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3 justify-self-start">
               <VisitCounter size="hero" />
               {WELCOME_ICONS.filter((icon) => !icon.leftSide).map((icon) => (
                 <WelcomeIcon key={icon.label} {...icon} />
