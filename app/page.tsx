@@ -64,7 +64,7 @@ export default function HomePage() {
   return (
     <PressStartGate>
       {/* HERO — Windows95.com-inspired welcome dialog with 4×3 icon grid */}
-      <section className="hero grain halftone">
+      <section className=" grain halftone">
         <div className="shell relative z-10 flex flex-col items-center text-center">
           <h1 className="sr-only">Cremosa — Início</h1>
           {/* Welcome banner — decorative Y2K-style glitter header above
@@ -103,12 +103,35 @@ export default function HomePage() {
               collapses to a stacked column (figure first) and the
               icons fall into a 3-col grid below — flanking would be
               unreadable on a portrait viewport. */}
-          <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 md:gap-4 lg:gap-6 w-full">
+          {/* Hero — figure in the middle, desktop icons on the two sides.
+              Three CSS Grid tracks, all explicit so the columns stay
+              symmetric regardless of their content width:
+
+              - left:   `8rem` (128px) on `lg+`, `7rem` (112px) on `md`
+              - figure: `minmax(0, 1fr)` (fills leftover, capped at
+                        `max-w-5xl` by the figure's own class)
+              - right:  same width as left, mirrored
+
+              Both side columns get the same `w-*` class so the figure
+              always sits at the geometric center of the row. The
+              previous `1fr auto 1fr` layout was letting the columns
+              overflow the tracks asymmetrically — the right column
+              grew to 192px (because VisitCounter's `w-32` set the
+              column's intrinsic width) while the left column stayed
+              at 65px (just the icon's width). With explicit equal
+              widths, the figure stays centered at every breakpoint
+              from md to 8K.
+
+              Below `md` the row collapses to a single column and
+              the mobile stacked grid below takes over (already
+              responsive: 2/3/4 cols at 320/380/640px). */}
+          <div className="grid grid-cols-1 md:grid-cols-[7rem_minmax(0,1fr)_7rem] lg:grid-cols-[8rem_minmax(0,1fr)_8rem] items-center gap-3 md:gap-4 lg:gap-6 w-full">
             {/* Left side — the 6 page shortcuts that point inside the
-                site. `justify-self-end` right-aligns the column inside
-                its 1fr track so the figure stays geometric-centered
-                even when this column is narrower than the right. */}
-            <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3 justify-self-end">
+                site. `justify-self-stretch` + the explicit `7rem` /
+                `8rem` track makes the column's BOX the same width
+                on both sides; `items-center` inside the column
+                centers each icon. */}
+            <div className="hidden md:flex flex-col items-center gap-2 lg:gap-3 justify-self-stretch w-full">
               {WELCOME_ICONS.filter((icon) => icon.leftSide).map((icon) => (
                 <WelcomeIcon key={icon.label} {...icon} />
               ))}
@@ -131,11 +154,10 @@ export default function HomePage() {
             {/* Right side — `visitantes.exe` (VisitCounter, replaces the
                 old Destaques entry) opens the column at the TOP, then
                 the 5 `rightSide` shortcuts follow (Sets first, then
-                SoundCloud, Instagram, Twitch, TikTok). `justify-self-
-                start` left-aligns the column inside its 1fr track so
-                the figure stays geometric-centered between two equal
-                side tracks. */}
-            <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3 justify-self-start">
+                SoundCloud, Instagram, Twitch, TikTok). Same
+                `justify-self-stretch w-full` so the column box is
+                visually identical to the left side. */}
+            <div className="hidden md:flex flex-col items-center gap-2 lg:gap-3 justify-self-stretch w-full">
               <VisitCounter size="hero" />
               {WELCOME_ICONS.filter((icon) => !icon.leftSide).map((icon) => (
                 <WelcomeIcon key={icon.label} {...icon} />
