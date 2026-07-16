@@ -82,9 +82,9 @@ export default function HomePage() {
               (black) on a transparent Win95 bevel so it visually
               anchors the hero row instead of competing with the
               flanking pixel icons. */}
-          <p className="win-eyebrow text-win-shadow-deep mb-3 sm:mb-4 text-center">
+          {/* <p className="win-eyebrow text-win-shadow-deep mb-3 sm:mb-4 text-center">
             {"// cremosa.exe — welcome"}
-          </p>
+          </p> */}
           
           {/* Hero — figure in the middle, desktop icons on the two sides.
               On `md+` the row is `icons-left | figure | icons-right`. We
@@ -144,52 +144,50 @@ export default function HomePage() {
           </div>
 
           {/* Mobile icon grid — phones can't fit an icon-column beside
-              the figure, so we show the icons in a 3-col grid right
-              below the figure. Order mirrors the desktop columns: 6
-              left-side icons first, then the right-side sequence. The
-              VisitCounter tile is rendered FIRST in the right-side
-              sequence so the counter sits in the same relative slot
-              as on desktop (top of right column). The modal is
-              reachable from any breakpoint. md+ keeps the grid hidden
-              because those icons are already flanking the figure
-              above. */}
-          <div className="md:hidden w-full max-w-4xl mt-6">
-            <Win95Window title="cremosa.exe — welcome" controls>
-              <div className="bg-win-face p-4 text-win-ink">
-                <p className="win-eyebrow text-win-shadow-deep mb-4 text-center">
-                  {"// 11 atalhos + visitantes.exe · toque pra abrir"}
-                </p>
-                <ul className="grid grid-cols-3 gap-x-2 gap-y-5 list-none p-0">
-                  {/* Left side anchors first (Agenda → Contato) */}
-                  {WELCOME_ICONS.filter((i) => i.leftSide).map((icon) => (
-                    <li key={icon.label} className="flex flex-col items-center">
-                      <WelcomeIcon {...icon} />
-                    </li>
-                  ))}
-                  {/* Right side starts with visitantes.exe (counter) —
-                      same visual slot as on desktop, just stacked into
-                      the 3-col grid for portrait viewports. */}
-                  <li className="flex flex-col items-center w-full">
-                    <VisitCounter size="compact-hero" />
-                  </li>
-                  {/* Then the remaining 5 right-side anchors (Sets, then
-                      SoundCloud → TikTok). */}
-                  {WELCOME_ICONS.filter((i) => !i.leftSide).map((icon) => (
-                    <li key={icon.label} className="flex flex-col items-center">
-                      <WelcomeIcon {...icon} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="win95-statusbar mt-2">
-                <span className="win95-statusbar-segment grow">
-                  © 2026 {site.brand.name} · POA, RS
-                </span>
-                <span className="win95-statusbar-segment shrink">
-                  v1.0 · 2026
-                </span>
-              </div>
-            </Win95Window>
+              the figure, so we show the icons in a responsive grid
+              right below the figure. Order mirrors the desktop
+              columns: 6 left-side icons first, then the right-side
+              sequence (visitantes.exe → Sets → SoundCloud → …).
+              VisitCounter is the FIRST right-side item so the
+              counter sits in the same relative slot as on desktop.
+
+              The grid sits DIRECTLY on the pink halftone background
+              (no Win95Window wrapper, no `bg-win-face`) so the
+              icons keep their transparent backgrounds — exactly the
+              same look as the desktop flanking columns. A small
+              eyebrow chip repeats the `cremosa.exe — welcome` title
+              above the grid for symmetry with the desktop hero chip.
+
+              Responsive column count:
+              - 320px → 2 cols (Galaxy Fold cover, iPhone SE 1)
+              - 380px → 3 cols (iPhone 12, 13, 14)
+              - sm (640px) → 4 cols (large phones, small tablets)
+              - md (768px) → hidden, desktop flanking takes over */}
+          <div className="md:hidden w-full mt-6 hero">
+            <p className="win-eyebrow text-win-shadow-deep mb-3 text-center">
+              {"// 12 atalhos"}
+            </p>
+            <ul className="grid grid-cols-2 min-[380px]:grid-cols-3 sm:grid-cols-4 gap-x-2 sm:gap-x-4 gap-y-5 sm:gap-y-6 list-none p-0">
+              {/* Left side anchors first (Agenda → Contato) */}
+              {WELCOME_ICONS.filter((i) => i.leftSide).map((icon) => (
+                <li key={icon.label} className="flex flex-col items-center">
+                  <WelcomeIcon {...icon} />
+                </li>
+              ))}
+              {/* Right side starts with visitantes.exe (counter) —
+                  same visual slot as on desktop, just stacked into
+                  the responsive grid for portrait viewports. */}
+              <li className="flex flex-col items-center w-full">
+                <VisitCounter size="compact-hero" />
+              </li>
+              {/* Then the remaining 5 right-side anchors (Sets, then
+                  SoundCloud → TikTok). */}
+              {WELCOME_ICONS.filter((i) => !i.leftSide).map((icon) => (
+                <li key={icon.label} className="flex flex-col items-center">
+                  <WelcomeIcon {...icon} />
+                </li>
+              ))}
+            </ul>
           </div>
           {/* Breadcrumb — the page indicator */}
           <section className="shell">
