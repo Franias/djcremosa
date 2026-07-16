@@ -56,7 +56,10 @@ jobs:
           # next.config.ts reads NEXT_PUBLIC_BASE_PATH to set the
           # asset prefix for production (matches GitHub Pages path).
           # Leave unset for custom-domain deploys.
-          NEXT_PUBLIC_BASE_PATH: /djcremosa
+          # Repo moved to Franias/djcremosa.exe on 2026-07-16, so
+          # the GitHub Pages URL is now https://francias.github.io/djcremosa.exe/
+          # and the basePath tracks the new repo slug.
+          NEXT_PUBLIC_BASE_PATH: /djcremosa.exe
           # Set the public site URL so Next.js generates absolute OG/Twitter
           # Set the public site URL so Next.js generates absolute OG/Twitter
           # meta URLs correctly. Override in repo Settings → Secrets if you

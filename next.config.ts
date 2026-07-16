@@ -21,9 +21,12 @@ import type { NextConfig } from "next";
  * handled by a client component using `useSearchParams`.
  */
 const isDev = process.env.NODE_ENV === "development";
+// Default fallback matches the GitHub Pages repo slug. Update
+// both this and the deploy workflow's NEXT_PUBLIC_BASE_PATH
+// when the repo is renamed. 2026-07-16: moved to djcremosa.exe.
 const basePath = isDev
   ? ""
-  : (process.env.NEXT_PUBLIC_BASE_PATH ?? "/djcremosa");
+  : (process.env.NEXT_PUBLIC_BASE_PATH ?? "/djcremosa.exe");
 
 const nextConfig: NextConfig = {
   output: "export",
