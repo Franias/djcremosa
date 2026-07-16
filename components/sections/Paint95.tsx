@@ -354,6 +354,14 @@ export function Paint95({ initialSlug }: Paint95Props) {
                   display: "block",
                 }}
                 draggable={false}
+                onLoad={(e) => {
+                  // After the image loads, scroll the canvas so the
+                  // first line of code (at y≈140px in the 1704-tall
+                  // image) is at the top of the visible area. The
+                  // user lands on the code, not the title bar.
+                  const wrap = e.currentTarget.parentElement;
+                  if (wrap) wrap.scrollTop = 90;
+                }}
               />
               
 

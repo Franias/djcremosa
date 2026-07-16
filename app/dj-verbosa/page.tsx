@@ -153,59 +153,10 @@ export default function DjVerbosaPage() {
               </ol>
             </div>
           </Win95Window>
-
-          <Win95Window title="chrome — paint-layout.cfg" controls>
-            <div className="p-4 sm:p-5 bg-win-face text-win-ink">
-              <p className="win-eyebrow mb-2 text-win-shadow-deep">
-                {"// anatomia do Paint"}
-              </p>
-              <p className="win-body-sm mb-3">
-                O layout segue o jspaint.app (português) — a versão
-                que o repositório{" "}
-                <a
-                  href="https://github.com/hawwokitty/my-portfolio"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="win-eyebrow-shadow hover:text-bubble-hi"
-                >
-                  hawwokitty/my-portfolio
-                </a>{" "}
-                embute num modal:
-              </p>
-              <ul className="list-none p-0 m-0 grid gap-1 win-body-sm">
-                <li>▸ Title bar vinho + min/max/close</li>
-                <li>▸ Menu bar: <em>Ficheiro · Editar · Ver · Padrão · Ajuda</em></li>
-                <li>▸ Barra de ação rápida (padrão + copiar + abrir)</li>
-                <li>▸ Toolbar esquerda: 15 ferramentas (3 × 5)</li>
-                <li>▸ Canvas branco com a fonte monoespaçada</li>
-                <li>▸ Paleta de 16 cores + FG/BG</li>
-                <li>▸ Barra de status com ferramenta + chars + bpm</li>
-              </ul>
-              <p className="win-body-sm mt-3 text-win-shadow-deep">
-                Clica nas ferramentas ou nas cores — só pra sentir
-                o chrome. O Strudel roda no{" "}
-                <a
-                  href="https://strudel.cc/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="win-eyebrow-shadow hover:text-bubble-hi"
-                >
-                  strudel.cc
-                </a>
-                .
-              </p>
-            </div>
-          </Win95Window>
-        </div>
-
-        {/* Footer CTA — keep the user inside the site if they want
-            to see what Verbosa paints in the physical world (the
-            sets, mixes and photos over in Música + Galeria). */}
-        <div className="mt-8 sm:mt-10">
-          <Win95Window title="explorar.exe — voltar pra pista" controls>
+<Win95Window title="explorar.exe — voltar pra pista" controls>
             <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
               <p className="win-body-sm max-w-2xl">
-                Verbosa é Verbosa, mas a Cremosa também toca com discos.
+                Verbosa é Verbosa, mas a Cremosa também toca.
                 Confere os sets finalizados e os vídeos das pistas.
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -219,6 +170,10 @@ export default function DjVerbosaPage() {
             </div>
           </Win95Window>
         </div>
+
+        {/* Footer CTA — keep the user inside the site if they want
+            to see what Verbosa paints in the physical world (the
+            sets, mixes and photos over in Música + Galeria). */}
       </section>
     </>
   );
