@@ -23,6 +23,11 @@ import { site } from "@/lib/site";
  *   - `leftSide: true`  → placed on the LEFT of the figure
  *   - `leftSide: false` → placed on the RIGHT of the figure
  *
+ * The "visitantes.exe" VisitCounter tile is rendered EXPLICITLY in
+ * the right column (replacing the old Destaques entry) so its
+ * modal-trigger button sits in the desktop chrome right alongside
+ * the other Win95 pixel icons — not at the top of the left column.
+ *
  * The icons themselves come from `@react95/icons` (the same set
  * used by react95.io). Sourced on disk so the static export stays
  * dependency-free — the PNGs are 32×32 native Win95 .ico art.
@@ -35,7 +40,6 @@ const WELCOME_ICONS = [
   { icon: `${site.basePath}/icons/win95/help-book.png`,   label: "Sobre",      href: "/sobre/",                            external: false, leftSide: true  },
   { icon: `${site.basePath}/icons/win95/mail.png`,        label: "Contato",    href: "/contato/",                          external: false, leftSide: true  },
   { icon: `${site.basePath}/icons/win95/media-cd.png`,    label: "Sets",       href: "/musica/",                           external: false, leftSide: false },
-  { icon: `${site.basePath}/icons/win95/star.png`,        label: "Destaques",  href: "/#destaques",                        external: false, leftSide: false },
   { icon: `${site.basePath}/icons/win95/media-audio.png`, label: "SoundCloud", href: "https://soundcloud.com/cremosinha",   external: true,  leftSide: false },
   { icon: `${site.basePath}/icons/win95/camera.png`,      label: "Instagram",  href: site.social.instagram?.url ?? "#",    external: true,  leftSide: false },
   { icon: `${site.basePath}/icons/win95/joystick.png`,    label: "Twitch",     href: site.social.twitch?.url ?? "#",       external: true,  leftSide: false },
@@ -70,18 +74,19 @@ export default function HomePage() {
               the site's real identity ("Cremosa — Início"). */}
           
           {/* Hero — figure in the middle, desktop icons on the two sides.
-              On `md+` the row is `icons-left | figure | icons-right`, with
-              VisitCounter at the top of the left column so it sits above
-              the photo when there's room. On phones the row collapses to
-              a stacked column (figure first) and the icons fall into a
+              On `md+` the row is `icons-left | figure | icons-right`. The
+              `visitantes.exe` tile (VisitCounter) sits in the SECOND slot
+              of the right column — where Destaques used to be — so the
+              counter reads as part of the desktop chrome rather than a
+              standalone left-column bookend. On phones the row collapses
+              to a stacked column (figure first) and the icons fall into a
               3-col grid below — flanking would be unreadable on a
               portrait viewport. */}
           <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 lg:gap-6 w-full">
-            {/* Left side — VisitCounter + the 6 page shortcuts that
-                point inside the site. Wrapped in a flex column with the
-                same gap as the right column so the two sides mirror. */}
+            {/* Left side — the 6 page shortcuts that point inside the
+                site. Wrapped in a flex column with the same gap as the
+                right column so the two sides mirror. */}
             <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3">
-              <VisitCounter size="hero" />
               {WELCOME_ICONS.filter((icon) => icon.leftSide).map((icon) => (
                 <WelcomeIcon key={icon.label} {...icon} />
               ))}
@@ -101,31 +106,51 @@ export default function HomePage() {
               </div>
             </figure>
 
-            {/* Right side — the 6 external + sets/destaques shortcuts.
-                Same gap rhythm as the left column for visual symmetry.
-                On `md` (where the column gets tight) the icon size
-                shrinks so the figure still has room to breathe. */}
+            {/* Right side — Sets, then `visitantes.exe` (VisitCounter,
+                replaces the old Destaques entry), then the 5 external
+                shortcuts. The VisitCounter button is mounted inline so
+                it sits next to its pixel-art siblings and the modal
+                trigger follows the same hover rhythm as the rest of
+                the column. */}
             <div className="hidden md:flex shrink-0 flex-col items-center gap-2 lg:gap-3">
-              {WELCOME_ICONS.filter((icon) => !icon.leftSide).map((icon) => (
+              <WelcomeIcon {...WELCOME_ICONS.find((i) => i.label === "Sets")!} />
+              <VisitCounter size="hero" />
+              {WELCOME_ICONS.filter((icon) => !icon.leftSide && icon.label !== "Sets").map((icon) => (
                 <WelcomeIcon key={icon.label} {...icon} />
               ))}
             </div>
           </div>
 
           {/* Mobile icon grid — phones can't fit an icon-column beside
-              the figure, so we show the full 12-icon set in a 3-col
-              grid right below the figure. Visually identical to the
-              Win95.com "12 atalhos · toque pra abrir" desktop but
-              stacked instead of flanking. md+ keeps it hidden because
-              those icons are already flanking the figure above. */}
+              the figure, so we show the icons in a 3-col grid right
+              below the figure. The VisitCounter tile is also rendered
+              here at the position that matches its desktop slot
+              (after Sets) so visitors on phones see the same
+              counter shortcut — the modal is reachable from any
+              breakpoint. md+ keeps the grid hidden because those
+              icons are already flanking the figure above. */}
           <div className="md:hidden w-full max-w-4xl mt-6">
             <Win95Window title="cremosa.exe — welcome" controls>
               <div className="bg-win-face p-4 text-win-ink">
                 <p className="win-eyebrow text-win-shadow-deep mb-4 text-center">
-                  {"// 12 atalhos · toque pra abrir"}
+                  {"// 11 atalhos + visitantes.exe · toque pra abrir"}
                 </p>
                 <ul className="grid grid-cols-3 gap-x-2 gap-y-5 list-none p-0">
-                  {WELCOME_ICONS.map((icon) => (
+                  {/* Same left-then-right ordering as the desktop
+                      columns, so a switch from mobile to desktop (or
+                      vice-versa) keeps the visual sequence stable. */}
+                  {WELCOME_ICONS.filter((i) => i.leftSide).map((icon) => (
+                    <li key={icon.label} className="flex flex-col items-center">
+                      <WelcomeIcon {...icon} />
+                    </li>
+                  ))}
+                  <li className="flex flex-col items-center">
+                    <WelcomeIcon {...WELCOME_ICONS.find((i) => i.label === "Sets")!} />
+                  </li>
+                  <li className="flex flex-col items-center w-full">
+                    <VisitCounter size="compact-hero" />
+                  </li>
+                  {WELCOME_ICONS.filter((i) => !i.leftSide && i.label !== "Sets").map((icon) => (
                     <li key={icon.label} className="flex flex-col items-center">
                       <WelcomeIcon {...icon} />
                     </li>
@@ -444,11 +469,16 @@ function WelcomeIcon({ icon, label, href, external }: WelcomeIconProps) {
   );
   // No gray bevel frame — same look as `<VisitCounter size="hero">`,
   // so the desktop chrome reads as one consistent set of pixel
-  // icons flanking the figure. Hover bumps the PNG up a couple of
-  // pixels and bumps the label to `text-crimson`, like the
-  // VisitCounter hover state.
+  // icons flanking the figure. Label color matches the VisitCounter
+  // visitors.exe pattern: black (`text-win-ink`) by default, classic
+  // Win95 title-blue (`text-win-title-2` = #1084d0) on hover.
+  //
+  // We deliberately AVOID `.win-caption` here: that utility sets
+  // `color: var(--color-cream-dim)` and is unlayered in globals.css,
+  // which beats Tailwind v4's `@layer utilities` cascade. The
+  // `!important` (`!`) modifier forces the win-ink color to land.
   const labelClass =
-    "win-caption text-center text-win-ink group-hover:text-crimson transition-colors leading-tight max-w-[7rem]";
+    "font-pixel text-center text-xs sm:text-base uppercase tracking-[0.16em] sm:tracking-[0.18em] leading-tight max-w-[7rem] text-win-ink! group-hover:text-win-title-2! transition-colors";
 
   const body = (
     <>

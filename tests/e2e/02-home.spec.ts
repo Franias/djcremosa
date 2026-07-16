@@ -26,15 +26,16 @@ test.describe("02 — Home page", () => {
     await expect(welcome).toBeVisible();
   });
 
-  test("welcome dialog has 14 desktop icons (4x4 grid w/ partial last row)", async ({
+  test("welcome dialog has 11 desktop icons flanking the figure", async ({
     page,
   }) => {
-    // Each icon is an <a> with class "win95-icon" inside the welcome grid.
-    // 6 page routes + 2 sets/notes/destaques + 5 external (Booking, SoundCloud,
-    // Instagram, Twitch, TikTok) = 14.
+    // Each desktop icon (besides VisitCounter) renders as an `<a>` with
+    // class `win95-icon`. Destaques was dropped in favor of the
+    // visitantes.exe counter (which is a `<button>`, not counted),
+    // so the desktop chrome has 11 anchor tiles around the figure.
     const icons = page.locator("a.win95-icon");
     const count = await icons.count();
-    expect(count).toBe(14);
+    expect(count).toBe(11);
   });
 
   test("all 6 page icons link to the correct routes", async ({ page }) => {

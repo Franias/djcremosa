@@ -51,18 +51,23 @@ import { site } from "@/lib/site";
  * número; quem volta no dia seguinte soma +1.
  *
  * Sizing:
- *   - `size="default"` (compact): emoji text-3xl → text-5xl, label
+ *   - `size="default"` (compact): react95 PNG at h-10 w-10, label
  *     below, with a Win95 beveled gray frame behind the icon.
+ *     `w-full` so it fills the parent column.
  *     Used in tight spots like the HomeAbout aside.
- *   - `size="hero"` (oversized, frameless): emoji text-6xl →
- *     text-7xl (~20% smaller than the original party-GIF column)
- *     with no beveled frame, so the icon stands alone. Used to
- *     flank the hero figure (replaces `party-like-its-2002.gif`).
+ *   - `size="hero"` (oversized, frameless): react95 PNG at h-12 w-12
+ *     (h-14 on sm+) with no beveled frame. Fixed `w-32` (climbs to
+ *     w-40 / w-48 on lg/xl). Lives next to the figure on desktop
+ *     where it has dedicated horizontal room.
+ *   - `size="compact-hero"` (frameless + fills column): no gray
+ *     frame, but `w-full` so it fits a 3-col mobile icon grid.
+ *     Same icon size as `hero` — just a different width strategy.
+ *     Used in the mobile Win95 welcome dialog.
  */
 export function VisitCounter({
   size = "default",
 }: {
-  size?: "default" | "hero";
+  size?: "default" | "hero" | "compact-hero";
 } = {}) {
   const [count, setCount] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
@@ -127,6 +132,8 @@ export function VisitCounter({
   }, []);
 
   const isHero = size === "hero";
+  const isCompactHero = size === "compact-hero";
+  const noFrame = isHero || isCompactHero;
 
   return (
     <>
@@ -148,10 +155,10 @@ export function VisitCounter({
         <span
           aria-hidden
           className={
-            // Hero: no gray frame, ~20% smaller than the original
-            // party-GIF column. Default: Win95 beveled gray frame
-            // around the icon (matches the WelcomeIcon style).
-            (isHero
+            // Hero & compact-hero: no gray frame, transparent
+            // background (matches the WelcomeIcon style). Default:
+            // Win95 beveled gray frame around the icon.
+            (noFrame
               ? "p-2 sm:p-3"
               : "win95-bevel-out bg-win-face-2 group-hover:bg-win-light transition-colors p-1.5 sm:p-2")
           }
@@ -169,13 +176,13 @@ export function VisitCounter({
             height={32}
             loading="lazy"
             decoding="async"
-            className={isHero ? "block h-12 w-12 sm:h-14 sm:w-14" : "block h-10 w-10"}
+            className={noFrame ? "block h-12 w-12 sm:h-14 sm:w-14" : "block h-10 w-10"}
             style={{ imageRendering: "pixelated" }}
           />
         </span>
         <span
           className={
-            "text-win-shadow-deep text-center text-win-ink group-hover:text-crimson transition-colors leading-tight " +
+            "text-center text-win-ink group-hover:text-win-title-2 transition-colors leading-tight " +
             (isHero ? "text-xs sm:text-sm" : "")
           }
         >
