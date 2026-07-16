@@ -115,6 +115,68 @@ export function formatDate(iso: string): { day: string; month: string; year: str
   return { day, month, year, full: `${day} ${month} ${year}` };
 }
 
+/**
+ * Pick the next confirmed/non-cancelled event from a list (sorted by
+ * date asc). Returns `null` when there's nothing upcoming — callers
+ * can render an empty state. Mock entries (`slug` starts with
+ * `"mock-"`) are skipped so test fixtures don't leak into prod UI.
+ *
+ * NOTE: this is a stub — the user was mid-development on this. The
+ * footer countdown and (former) NextEventCountdown both use it.
+ */
+export function getNextEvent(
+  events: CremosaEvent[],
+  now: Date = new Date(),
+): CremosaEvent | null {
+  const isReal = (e: CremosaEvent) => !e.slug.startsWith("mock-");
+  return (
+    events
+      .filter(isReal)
+      .filter((e) => isUpcoming(e, now) && e.status !== "cancelled")
+      .sort((a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime())[0] ??
+    null
+  );
+}
+
+/**
+ * Format a millisecond delta as a countdown, in two flavors:
+ *   - `compact`: `dd:hh:mm:ss` — fixed-width, used in status bars
+ *   - `full`:    `XXd XXh XXm XXs`  — used in the (former)
+ *                NextEventCountdown hero block
+ *
+ * Negative or zero deltas clamp to zero so the UI never shows an
+ * awkward `-1d -2h` countdown.
+ *
+ * NOTE: stub — relies on the user finishing the spec.
+ */
+export function formatCountdown(deltaMs: number): {
+  compact: string;
+  full: string;
+  days: string;
+  hours: string;
+  minutes: string;
+  seconds: string;
+} {
+  const total = Math.max(0, Math.floor(deltaMs / 1000));
+  const days = Math.floor(total / 86_400);
+  const hours = Math.floor((total % 86_400) / 3_600);
+  const minutes = Math.floor((total % 3_600) / 60);
+  const seconds = total % 60;
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  const d = pad(days);
+  const h = pad(hours);
+  const m = pad(minutes);
+  const s = pad(seconds);
+  return {
+    compact: `${d}:${h}:${m}:${s}`,
+    full: `${d}d ${h}h ${m}m ${s}s`,
+    days: d,
+    hours: h,
+    minutes: m,
+    seconds: s,
+  };
+}
+
 /* ----------- status badge config (drives UI colors) ----------- */
 
 export const STATUS_LABEL: Record<EventStatus, string> = {
