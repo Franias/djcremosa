@@ -341,28 +341,28 @@ export function Paint95({ initialSlug }: Paint95Props) {
                   `copiar código` button is the primary action. The
                   PNG is generated at 2x scale (1166×1704) so the
                   code reads at ~20pt on retina displays. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${site.basePath}/dj-verbosa/strudel-on-paint.png`}
-                alt={`Strudel code for ${pattern.title}, painted in MS Paint`}
-                title={`${pattern.title} — ${pattern.code.length} chars / ${pattern.code.split("\n").length} lines`}
-                className="shrink-0 select-text block"
-                style={{
-                  imageRendering: "pixelated",
-                  height: "auto",
-                  maxWidth: "none",
-                  display: "block",
-                }}
-                draggable={false}
-                onLoad={(e) => {
-                  // After the image loads, scroll the canvas so the
-                  // first line of code (at y≈140px in the 1704-tall
-                  // image) is at the top of the visible area. The
-                  // user lands on the code, not the title bar.
-                  const wrap = e.currentTarget.parentElement;
-                  if (wrap) wrap.scrollTop = 90;
-                }}
-              />
+              {/* The CODE — real, selectable, copyable text. The user
+                  complaint was that the baked PNG (2× MS Paint,
+                  17pt) rendered too small inside the page chrome
+                  — even at 17pt native, CSS scaling at the
+                  responsive container's actual width made the
+                  text too small to read. Real <pre> text with
+                  text-2xl monospace + leading-relaxed renders at
+                  exactly the size the user can see in the
+                  viewport — no scaling, no aliasing, just
+                  readable text. Selectable + Cmd-C work natively. */}
+              <pre
+                role="img"
+                aria-label={`Strudel code for ${pattern.title}`}
+                className={cn(
+                  "grow m-0 font-mono text-[18px] sm:text-[20px] md:text-[22px]",
+                  "leading-[1.6] whitespace-pre overflow-auto",
+                  "p-6 sm:p-8 select-text",
+                )}
+                style={{ color: inkColor }}
+              >
+                {pattern.code}
+              </pre>
               
 
               {/* Right vertical scrollbar — decorative, matches
