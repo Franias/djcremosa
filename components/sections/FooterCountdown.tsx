@@ -70,7 +70,7 @@ export function FooterCountdown({ events }: { events: CremosaEvent[] }) {
     // the real value lands.
     timer = "00:00:00:00";
   } else if (deltaMs <= 0) {
-    timer = "agora";
+    timer = " Hoje!";
   } else {
     timer = formatCountdown(deltaMs).compact;
   }

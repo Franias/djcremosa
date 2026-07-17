@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Paint95 } from "@/components/sections/Paint95";
+import { Paint95TextEditor } from "@/components/sections/Paint95TextEditor";
 import { Win95Button, Win95Window } from "@/components/ui/win95";
 import { site } from "@/lib/site";
 
@@ -57,15 +57,14 @@ export default function DjVerbosaPage() {
       </section>
 
       {/* PAINT95 SECTION — the focal point of the page.
-          Full-width within the shell, big enough to show the
-          Strudel code comfortably with the full jspaint.app
-          chrome around it (title bar, Padrão selector + copy
-          buttons, menu bar, 2-col toolbox, canvas, color
-          palette, status bar). The component renders the code
-          as a real <pre> at 18–22pt monospace, selectable +
-          copyable, so the user can read it at any zoom. */}
+          Static MS Paint 95 image as background, with an
+          editable <textarea> overlaid on the white canvas
+          area (the user types/edits the Strudel code right
+          inside the Paint canvas). No buttons, no toolbar,
+          no palette interactions — just the image + a
+          text editor, exactly as the user asked. */}
       <section className="shell py-8 sm:py-12">
-        <Paint95 />
+        <Paint95TextEditor />
       </section>
 
       {/* ABOUT / HOW-TO / SHORTCUTS — three info cards like

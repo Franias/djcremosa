@@ -3,19 +3,13 @@ import { test, expect } from "@playwright/test";
 /**
  * 10 — DJ Verbosa (/dj-verbosa/)
  *
- * Sister persona of Cremosa — live-coding with Strudel. The page
- * follows the standard dj-cremosa layout (hero + Paint95 section
- * + 3 info cards + footer CTA) but the focal Paint95 component
- * reproduces the jspaint.app chrome faithfully (matches the
- * `hawwokitty/my-portfolio` PaintComp reference):
+ * The page renders the MS Paint 95 reference image as a static
+ * background and overlays an editable <textarea> on the white
+ * canvas area. The user can type/edit the Strudel code directly
+ * inside the Paint canvas. No buttons, no interactive chrome.
  *
- *   - Wine-colored title bar (`#8a0d1f → #d6307a`)
- *   - Menu bar: Ficheiro / Editar / Ver / Padrão / Ajuda
- *   - Quick action row: padrão + 📋 copiar + abrir no strudel.cc
- *   - Left toolbar: 15 paint tools in 3×5 grid
- *   - White canvas with the Strudel code, scrollbar decorations
- *   - 2-row × 8-col color palette + FG/BG overlap preview
- *   - Status bar: tool hint + chars + linhas + bpm + clock
+ * The image used is `/img/paint95-bg.png` (1089×759, copied from
+ * the user's reference screenshot).
  */
 
 test.describe("10 — DJ Verbosa", () => {
@@ -40,140 +34,95 @@ test.describe("10 — DJ Verbosa", () => {
     await expect(page).toHaveURL(/\/dj-verbosa\/?$/);
   });
 
-  test("renders the Strudel pattern inside the Paint canvas", async ({
-    page,
-  }) => {
-    const canvas = page.getByRole("img", { name: /Strudel code for/i });
-    await expect(canvas).toBeVisible();
-    await expect(canvas).toContainText("setcpm(130/4)");
-    await expect(canvas).toContainText("samples('github:yaxu/clean-breaks')");
-    await expect(canvas).toContainText("._punchcard()");
-    await expect(canvas).toContainText("$: s(\"hh!1\")");
+  test("renders the static MS Paint 95 background image", async ({ page }) => {
+    const bg = page.locator('img[src*="paint95-bg.png"]');
+    await expect(bg).toBeAttached();
+    // The image is decorative — it carries no alt text (the
+    // textarea is the real accessible element for the canvas).
+    await expect(bg).toHaveAttribute("aria-hidden", "true");
+    // Natural aspect ratio of the source (1089 × 759) is preserved
+    // so the textarea overlay stays aligned at any width.
+    const aspect = await bg.evaluate(
+      (el) => getComputedStyle(el.parentElement!).aspectRatio,
+    );
+    expect(aspect).toBe("1089 / 759");
   });
 
-  test("title bar shows the Paint-style window title", async ({ page }) => {
-    await expect(
-      page.getByText(/DJ Verbosa - Paint/i),
-    ).toBeVisible();
-  });
-
-  test("title bar uses the wine palette (matches jspaint.app)", async ({
+  test("renders the editable textarea in the Paint canvas", async ({
     page,
   }) => {
-    const bgImage = await page.evaluate(() => {
-      const titleEls = Array.from(
-        document.querySelectorAll(".win-title-text"),
-      );
-      const titleEl = titleEls.find((el) =>
-        /DJ Verbosa - Paint/.test(el.textContent ?? ""),
-      );
-      const titleBar = titleEl?.closest(".win95-title") as HTMLElement | null;
-      return titleBar ? getComputedStyle(titleBar).backgroundImage : "";
+    const editor = page.getByRole("textbox", {
+      name: /editor de código strudel dentro do canvas do paint 95/i,
     });
-    expect(bgImage).toMatch(/rgb\(138,\s*13,\s*31\)/); // #8a0d1f
-    expect(bgImage).toMatch(/rgb\(214,\s*48,\s*122\)/); // #d6307a
+    await expect(editor).toBeVisible();
+    // Initial value is the first registered Strudel pattern.
+    await expect(editor).toHaveValue(/setcpm\(130\/4\)/);
+    await expect(editor).toHaveValue(/samples\('github:yaxu\/clean-breaks'\)/);
+    await expect(editor).toHaveValue(/\._punchcard\(\)/);
   });
 
-  test("shows the full Paint95 chrome — menu bar + toolbar + palette", async ({
+  test("user can edit the Strudel code inside the canvas", async ({
     page,
   }) => {
-    // Menu bar items (Portuguese like jspaint.app)
-    const menubar = page.getByRole("menubar").first();
-    await expect(menubar.getByText("Ficheiro")).toBeVisible();
-    await expect(menubar.getByText("Editar")).toBeVisible();
-    await expect(menubar.getByText("Ver")).toBeVisible();
-    await expect(menubar.getByText("Padrão")).toBeVisible();
-    await expect(menubar.getByText("Ajuda")).toBeVisible();
-
-    // Toolbar tools
-    await expect(
-      page.getByRole("button", { name: /^Lápis$/ }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: /^Borracha$/ }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: /^Preencher$/ }),
-    ).toBeVisible();
-    await expect(page.getByRole("button", { name: /^Pincel$/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: /^Texto$/ })).toBeVisible();
-
-    // Color palette
-    const palette = page.getByRole("group", { name: /paleta de cores/i });
-    await expect(palette).toBeVisible();
-    await expect(palette.getByLabel(/Preto/)).toBeVisible();
-    await expect(palette.getByLabel(/Branco/)).toBeVisible();
-
-    // Status bar — active tool + bpm
-    const status = page.getByRole("status").first();
-    await expect(status.getByText(/Ferramenta:/)).toBeVisible();
-    await expect(status.getByText(/\d+\s*bpm/i)).toBeVisible();
-  });
-
-  test("toolbar tool selection swaps the active tool + status hint", async ({
-    page,
-  }) => {
-    await page.getByRole("button", { name: /^Borracha$/ }).click();
-    const status = page.getByRole("status").first();
-    await expect(status.getByText(/Borracha/)).toBeVisible();
-  });
-
-  test("palette swatch click changes the ink color", async ({ page }) => {
-    await page.getByLabel(/Vermelho\. Tinta\.$/).click();
-    const color = await page.evaluate(() => {
-      const pre = document.querySelector(
-        "pre[role='img']",
-      ) as HTMLElement | null;
-      return pre?.style.color ?? "";
+    const editor = page.getByRole("textbox", {
+      name: /editor de código strudel dentro do canvas do paint 95/i,
     });
-    expect(color).toBe("rgb(255, 0, 0)");
+    await editor.click();
+    // Append a comment + new line to the existing code
+    await editor.press("End");
+    await editor.press("Control+End");
+    await editor.press("Enter");
+    await editor.type("// hello from the paint canvas");
+    await expect(editor).toHaveValue(/\/\/ hello from the paint canvas/);
   });
 
-  test("copy button writes the pattern code to the clipboard", async ({
-    page,
-    context,
-    browserName,
-  }) => {
-    if (browserName !== "chromium") {
-      test.skip(true, "Clipboard assertions require chromium permissions");
-    }
-    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-    await page.getByRole("button", { name: /copiar código/i }).click();
-    await expect(page.getByRole("button", { name: /copiado/i })).toBeVisible();
-    const clip = await page.evaluate(() => navigator.clipboard.readText());
-    expect(clip).toContain("setcpm(130/4)");
-    expect(clip).toContain("samples('github:yaxu/clean-breaks')");
-  });
-
-  test("open-in-strudel button links to strudel.cc in a new tab", async ({
+  test("Tab key inserts two spaces inside the textarea", async ({
     page,
   }) => {
-    const link = page.getByRole("link", {
-      name: /abrir no strudel\.cc/i,
+    const editor = page.getByRole("textbox", {
+      name: /editor de código strudel dentro do canvas do paint 95/i,
     });
-    await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute("href", "https://strudel.cc/");
-    await expect(link).toHaveAttribute("target", "_blank");
+    // Place the caret at the very start so the 2 spaces land at
+    // the end of the value (which has a trailing newline from the
+    // pattern code — the assertion checks the trailing chars).
+    await editor.click();
+    await editor.evaluate((el: HTMLTextAreaElement) => {
+      el.selectionStart = 0;
+      el.selectionEnd = 0;
+    });
+    const before = await editor.inputValue();
+    await editor.press("Tab");
+    await page.waitForTimeout(50);
+    const after = await editor.inputValue();
+    expect(after.length).toBe(before.length + 2);
+    expect(after.startsWith("  ")).toBe(true);
   });
 
-  test("page renders the standard sections below the Paint canvas", async ({
+  test("no interactive buttons are rendered in the paint section", async ({
+    page,
+  }) => {
+    // Per the user's spec — no Copy, no Open, no Padrão selector,
+    // no toolbar interactions. The image is static.
+    await expect(page.getByRole("button", { name: /copiar código/i }))
+      .toHaveCount(0);
+    await expect(page.getByRole("link", { name: /abrir no strudel/i }))
+      .toHaveCount(0);
+  });
+
+  test("page renders the standard sections below the editor", async ({
     page,
   }) => {
     // 3 info cards
     await expect(page.getByText(/verbosa\.txt/i).first()).toBeVisible();
     await expect(page.getByText(/como usar/i).first()).toBeVisible();
-    await expect(page.getByText(/chrome — paint-layout/i)).toBeVisible();
-
-    // Footer CTA
+    await expect(page.getByText(/chrome — explorar/i).first()).toBeVisible();
+    // Música + Vídeos links
     await expect(
-      page.getByText(/explorar\.exe.*voltar pra pista/i),
+      page.getByRole("link", { name: /Música →/ }),
     ).toBeVisible();
-  });
-
-  test("pattern selector switches the rendered code", async ({ page }) => {
-    const select = page.getByLabel(/padrão strudel/i);
-    await expect(select).toBeVisible();
-    await expect(select).toHaveValue("clean-breaks-think");
+    await expect(
+      page.getByRole("link", { name: /Vídeos →/ }),
+    ).toBeVisible();
   });
 
   test("mobile drawer includes the DJ Verbosa entry", async ({ page }) => {
