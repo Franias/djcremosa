@@ -21,7 +21,7 @@ Site pessoal de **Cremosa** — seletora de Porto Alegre, ativa desde 2016. Apre
 | **Pilares textuais** | SELETORA · CURADORIA · DISCOTECAGEM |
 | **Manifesto curto** | "Música preta global na pista." |
 | **Tagline curta** | "Sua curadoria musical valoriza a potência da música preta na pista e cria sets dinâmicos que transitam entre diferentes épocas, ritmos e influências." |
-| **Cores** | Crimson `#c8152e`, Magenta `#d6307a`, Bubble pink `#ff6fa3`, Cream `#f4e7d3`, BG `#0a0606` |
+| **Cores** | Crimson `#c8152e`, Magenta `#d6307a`, Bubble pink `#ff6fa3`, Cream `##fffefe`, BG `#0a0606` |
 | **Tipografia display** | **Bagel Fat One** (Google Fonts) — bubble Y2K chunky, usada em headings de seção (AGENDA, CONTATO etc.) |
 | **Tipografia corpo** | Geist Sans · Geist Mono |
 | **Tratamento visual** | Film grain overlay (CSS), gloss duplo nas letras-display, scroll vertical sem scroll-jank |
@@ -135,7 +135,7 @@ status bar com relógio, splash de boot, ícones de desktop).
 
 ```
 Surfaces:    bg #0a0606, surface #14090b, surface-2 #1f1014, line #2c1620
-Foreground:  cream #f4e7d3, cream-dim #b9a995
+Foreground:  cream #fffefe, cream-dim #b9a995
 Brand:       crimson #c8152e, crimson-deep #8a0d1f, magenta #d6307a,
              bubble #ff6fa3, bubble-hi #ffb3cf
 Win95 chrome (registrados em `@theme`):

@@ -854,6 +854,36 @@ body[data-gate-active="true"] header.sticky {
   to   { border-color: transparent; }
 }
 
+/* Hard on/off blink for the DJ Verbosa code canvas — toggled by
+   the Star toolbar button. 800ms cycle with `steps(1, end)` for
+   a sharp cursor-style flash rather than a smooth fade. */
+@keyframes paint-blink {
+  0%, 49%   { opacity: 1; }
+  50%, 100% { opacity: 0.18; }
+}
+.animate-paint-blink {
+  animation: paint-blink 0.8s steps(1, end) infinite;
+}
+
+/* Slow pulse for the active toolbar button (Star / Tinter). Used
+   as a subtle "this tool is on" affordance — a faint magenta ring
+   around the icon, no animation movement. */
+.tool-active-ring {
+  box-shadow:
+    inset 0 0 0 2px var(--magenta, #d6307a),
+    inset 0 0 0 4px rgba(214, 48, 122, 0.25);
+}
+
+/* Spray (Row 5, Col 1) — active-line highlight mode. The textarea
+   already does per-line text rendering; a 1px inset box-shadow in
+   the same magenta as the active-ring signals the mode is on
+   without affecting the underlying text layout. */
+.paint-line-highlight {
+  box-shadow:
+    inset 0 0 0 1px rgba(214, 48, 122, 0.45),
+    inset 0 0 8px 0 rgba(214, 48, 122, 0.12);
+}
+
 /* Chunky 3D beveled border — for the splash title bar */
 .win95-bevel-out {
   border-top: 2px solid var(--win-light);

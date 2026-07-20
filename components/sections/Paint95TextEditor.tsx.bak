@@ -1,0 +1,277 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { site } from "@/lib/site";
+import { STRUDEL_PATTERNS } from "@/content/strudel";
+
+/**
+ * Paint95TextEditor — DJ Verbosa section body.
+ *
+ * Renders the MS Paint 95 reference image as a static background
+ * (`${site.basePath}/img/paint95-bg.png`, 1089×759 — copied verbatim
+ * from the user's reference) and overlays a transparent `<textarea>`
+ * in the white canvas area. No buttons, no toolbar, no palette
+ * interactions — the image is static and the canvas is a plain
+ * text editor with the Strudel code as the initial value.
+ *
+ * NOTE: the src uses `site.basePath` (not a bare `/img/...`) because
+ * Next.js only auto-prefixes basePath for `_next/*` assets and `<Link>`
+ * hrefs. Raw `<img>` tags pointing at the `public/` folder need the
+ * prefix manually, otherwise the asset 404s on GitHub Pages
+ * (see https://franias.github.io/djcremosa.exe/dj-verbosa/ bug).
+ *
+ * Palette interaction (added 2026-07-19):
+ *   • The static MS Paint palette (15 columns × 2 rows of color cells)
+ *     is now a transparent `<button>` overlay. Clicking a cell samples
+ *     the exact pixel from an offscreen canvas copy of the image and
+ *     updates the textarea's text color. The colors stay in sync with
+ *     the PNG — no hardcoded color array to drift from the asset.
+ *
+ *   • Palette region measured from the 1089×759 source:
+ *       top row:    y = 635..658  (83.66% .. 86.69%)
+ *       bottom row: y = 667..690  (87.88% .. 90.91%)
+ *       x range:    135..506     (12.40% .. 46.46%)
+ *     The FG/BG indicator sits left of x=12.40% and is left alone.
+ *
+ *   • Textarea height shrunk from 84.3% → 75% so its bottom edge
+ *     (y ≈ 82%) clears the palette top (y ≈ 83.66%). Otherwise the
+ *     textarea would swallow palette clicks.
+ *
+ *   • `onMouseDown` on the palette button preventDefaults the focus
+ *     shift so the caret stays inside the textarea — the user can
+ *     keep typing immediately after picking a color.
+ *
+ *   • Saturation filter (`isPickedColor`) rejects near-grays so
+ *     clicks on the row gap or the cell borders don't reset the
+ *     color to a meaningless gray.
+ *
+ *   Layout (paint chrome outside the textarea is the static image):
+ *
+ *   ┌──────────────────────────────────────────────────────────┐
+ *   │  File  Edit  View  Image  Options  Help                  │ ← menu (outside textarea)
+ *   ├──────┬───────────────────────────────────────────────────┤
+ *   │ ▢ ▢ │                                                   │
+ *   │ 🪣🖌│   ╔═══════════════════════════════════════════╗   │
+ *   │ 🔍 A│   ║                                           ║   │
+ *   │ ✏  │   ║   setcpm(130/4)                           ║   │
+ *   │ ⌒ ╱│   ║   samples('github:yaxu/clean-breaks')     ║   │  ← textarea overlay
+ *   │ ▭ ▭│   ║   ...                                       ║   │     (editable)
+ *   │ ◯ ▢│   ║                                           ║   │
+ *   │      │   ╚═══════════════════════════════════════════╝   │
+ *   ├──────┴───────────────────────────────────────────────────┤
+ *   │ ▣FG/BG  ▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪  (palette — click target)   │
+ *   ├──────────────────────────────────────────────────────────┤
+ *   │ For Help, click Help Topics on the Help Menu.            │ ← status (outside)
+ *   └──────────────────────────────────────────────────────────┘
+ *
+ *   textarea: top 7% · left 12.2% · width 88.5% · height 75%
+ *   palette:  top 83.66% · left 12.4% · width 34.06% · height 7.25%
+ */
+
+const INITIAL_CODE = STRUDEL_PATTERNS[0]?.code ?? "";
+
+// Palette region as fractions of the source image (1089 × 759).
+// Keep these in sync with the JSDoc above — measured with Python+PIL
+// from /public/img/paint95-bg.png.
+const PALETTE_REGION = {
+  left: 0.124,
+  top: 0.8366,
+  right: 0.4646,
+  bottom: 0.9091,
+} as const;
+
+// Reject near-grays (palette row gap, cell borders, FG/BG swatch
+// edges) so a stray click doesn't quietly switch the ink to gray.
+function isPickedColor(r: number, g: number, b: number): boolean {
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  if (max - min < 35) return false; // near-gray
+  if (max < 40) return false; // too dark — guards the borders
+  return true;
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  return `#${[r, g, b]
+    .map((v) => v.toString(16).padStart(2, "0"))
+    .join("")}`;
+}
+
+export function Paint95TextEditor() {
+  const [code, setCode] = useState<string>(INITIAL_CODE);
+  const [inkColor, setInkColor] = useState<string>("#000000");
+  const imgRef = useRef<HTMLImageElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const sampleReady = useRef(false);
+
+  // Bake the static image into an offscreen canvas once it loads so
+  // palette clicks can sample the exact pixel under the cursor. Using
+  // a canvas (instead of a hardcoded color array) keeps the pickable
+  // colors in sync with the PNG — if the asset is ever re-rendered,
+  // the colors follow automatically.
+  useEffect(() => {
+    const img = imgRef.current;
+    const canvas = canvasRef.current;
+    if (!img || !canvas) return;
+
+    const draw = () => {
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return;
+      ctx.drawImage(img, 0, 0);
+      sampleReady.current = true;
+    };
+
+    if (img.complete && img.naturalWidth > 0) draw();
+    else img.addEventListener("load", draw);
+    return () => img.removeEventListener("load", draw);
+  }, []);
+
+  const handlePalettePick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("[DEBUG] palette click, ready=" + sampleReady.current); if (!sampleReady.current) return;
+    const btn = e.currentTarget;
+    const img = imgRef.current;
+    const canvas = canvasRef.current;
+    if (!img || !canvas) return;
+
+    const rect = btn.getBoundingClientRect();
+    // Click position as a fraction of the displayed button (which is
+    // the same area as the underlying image region).
+    const fx = (e.clientX - rect.left) / rect.width;
+    const fy = (e.clientY - rect.top) / rect.height;
+    // Scale to the image's natural dimensions so the canvas sample
+    // lands on the exact pixel the user sees.
+    const x = fx * img.naturalWidth;
+    const y = fy * img.naturalHeight;
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+    try {
+      const data = ctx.getImageData(x, y, 1, 1).data;
+      const [r, g, b] = data;
+      if (!isPickedColor(r, g, b)) return; // row gap / border — skip
+      setInkColor(rgbToHex(r, g, b));
+    } catch {
+      // getImageData throws if the canvas is tainted (CORS). Shouldn't
+      // happen here since the image is local and same-origin.
+    }
+  };
+
+  return (
+    <div
+      className="relative w-full mx-auto select-none"
+      style={{
+        // Aspect ratio matches the source image so the % overlays
+        // stay aligned at any container width.
+        aspectRatio: "1089 / 759",
+        // Cap the width so it doesn't dwarf the rest of the page
+        // on ultra-wide monitors. The source is 1089px wide.
+        maxWidth: "min(100%, 1400px)",
+      }}
+    >
+      {/*
+       * Static MS Paint 95 image. `pointer-events: none` so clicks
+       * fall through (canvas → textarea, palette → button overlay).
+       * `aria-hidden` because the textarea is the real accessible
+       * element for the canvas content.
+       */}
+      <img
+        ref={imgRef}
+        src={`${site.basePath}/img/paint95-bg.png`}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="absolute inset-0 w-full h-full select-none pointer-events-none"
+      />
+
+      {/*
+       * The editable canvas. Transparent background so the image's
+       * white canvas shows through. Monospace, color follows the
+       * picked ink color. Height shrunk from 84.3% → 75% so the
+       * bottom edge clears the palette region (otherwise it would
+       * swallow palette clicks).
+       */}
+      <textarea
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        spellCheck={false}
+        aria-label="Editor de código Strudel dentro do canvas do Paint 95"
+        // Insert two spaces on Tab instead of moving focus — basic
+        // editor affordance for Strudel indentation.
+        onKeyDown={(e) => {
+          if (e.key === "Tab") {
+            e.preventDefault();
+            const target = e.currentTarget;
+            const start = target.selectionStart;
+            const end = target.selectionEnd;
+            const next = code.slice(0, start) + "  " + code.slice(end);
+            setCode(next);
+            requestAnimationFrame(() => {
+              target.selectionStart = target.selectionEnd = start + 2;
+            });
+          }
+        }}
+        className="absolute leading-[1.5] outline-none border-0 resize-none"
+        style={{
+          // Aligned to the white canvas in the image (px measured
+          // from the 1089×759 source: left ≈ 78px, top ≈ 30px,
+          // right ≈ 1042px, bottom ≈ 670px).
+          left: "12.2%",
+          top: "7%",
+          width: "88.5%",
+          height: "75%",
+          background: "transparent",
+          color: inkColor,
+          caretColor: inkColor,
+          padding: "0.5rem 0.6rem",
+          fontFamily: "var(--font-mono)",
+          fontSize: "clamp(10px, 1.1vw, 14px)",
+          // Strip the default browser styling so the textarea
+          // blends seamlessly with the canvas.
+          appearance: "none",
+          WebkitAppearance: "none",
+          boxShadow: "none",
+          tabSize: 2,
+          // Smooth color transition when the user picks a new ink.
+          transition: "color 120ms linear, caret-color 120ms linear",
+        }}
+      />
+
+      {/*
+       * Palette click target — transparent button positioned over
+       * the 15×2 color cells. `onMouseDown` preventDefault keeps the
+       * caret focused on the textarea so the user can keep typing
+       * after picking a color without re-clicking back into the
+       * canvas. Keyboard focus still works (Tab) for screen readers.
+       */}
+      <button
+        type="button"
+        onClick={handlePalettePick}
+        onMouseDown={(e) => e.preventDefault()}
+        aria-label={`Paleta de cores do Paint 95 — clica pra trocar a cor do código. Cor atual ${inkColor}.`}
+        className="absolute cursor-crosshair"
+        style={{
+          left: `${PALETTE_REGION.left * 100}%`,
+          top: `${PALETTE_REGION.top * 100}%`,
+          width: `${(PALETTE_REGION.right - PALETTE_REGION.left) * 100}%`,
+          height: `${(PALETTE_REGION.bottom - PALETTE_REGION.top) * 100}%`,
+          background: "transparent",
+          border: 0,
+          padding: 0,
+          margin: 0,
+        }}
+      />
+
+      {/*
+       * Offscreen canvas — the static image is drawn here once it
+       * loads so palette clicks can sample the exact pixel under the
+       * cursor. Hidden from view and assistive tech.
+       */}
+      <canvas
+        ref={canvasRef}
+        aria-hidden
+        style={{ display: "none" }}
+      />
+    </div>
+  );
+}
