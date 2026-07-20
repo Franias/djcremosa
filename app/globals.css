@@ -14,7 +14,7 @@
   --color-line: #7a3450;
 
   /* Foreground */
-  --color-cream: #f4e7d3;
+  --color-cream: #fffefe;
   --color-cream-dim: #b9a995;
 
   /* Brand accents */
@@ -870,18 +870,8 @@ body[data-gate-active="true"] header.sticky {
    around the icon, no animation movement. */
 .tool-active-ring {
   box-shadow:
-    inset 0 0 0 2px var(--magenta, #d6307a),
+    inset 0 0 0 2px var(--magenta, #000000),
     inset 0 0 0 4px rgba(214, 48, 122, 0.25);
-}
-
-/* Spray (Row 5, Col 1) — active-line highlight mode. The textarea
-   already does per-line text rendering; a 1px inset box-shadow in
-   the same magenta as the active-ring signals the mode is on
-   without affecting the underlying text layout. */
-.paint-line-highlight {
-  box-shadow:
-    inset 0 0 0 1px rgba(214, 48, 122, 0.45),
-    inset 0 0 8px 0 rgba(214, 48, 122, 0.12);
 }
 
 /* Chunky 3D beveled border — for the splash title bar */

@@ -347,24 +347,7 @@ export default function DjVerbosaPage() {
       {/* FOOTER CTA — keep the user inside the site if they want
           to see what Verbosa paints in the physical world (the
           sets, mixes and photos over in Música + Vídeos). */}
-      <section className="shell pb-16 sm:pb-24">
-        <Win95Window title="verbosa.exe — about" controls>
-          <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
-            <p className="win-body-sm max-w-2xl">
-              Verbosa é Verbosa, mas a Cremosa também toca.
-              Confere os sets finalizados e os vídeos das pistas.
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              <Link href="/musica/" className="no-underline">
-                <Win95Button>Música →</Win95Button>
-              </Link>
-              <Link href="/videos/" className="no-underline">
-                <Win95Button>Vídeos →</Win95Button>
-              </Link>
-            </div>
-          </div>
-        </Win95Window>
-      </section>
+  
     </>
   );
 }
