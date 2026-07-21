@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { site } from "@/lib/site";
 import { STRUDEL_PATTERNS } from "@/content/strudel";
+import { TEXT_FILES, type TextFile } from "@/content/text-files";
 
 /**
  * Paint95TextEditor — DJ Verbosa section body.
@@ -21,6 +22,13 @@ import { STRUDEL_PATTERNS } from "@/content/strudel";
  * ─────────────────────────────────────────────────────────────────
  *  INVISIBLE OVERLAYS (click targets)
  * ─────────────────────────────────────────────────────────────────
+ *
+ *  0. **File menu** — the "File" text in the top menu bar is a
+ *     real button. Clicking it opens a Win95-style dropdown listing
+ *     every .txt file from `content/text-files.ts`; selecting one
+ *     fetches the file from `/public/text-files/` and loads its
+ *     contents into the textarea (replacing the current code,
+ *     mirroring how Paint 95's File → Open replaces the document).
  *
  *  1. **Palette** — the 14×2 color grid at the bottom. Clicking a
  *     cell samples the pixel from an offscreen canvas copy of the
@@ -48,13 +56,18 @@ import { STRUDEL_PATTERNS } from "@/content/strudel";
  * ─────────────────────────────────────────────────────────────────
  *  STATE
  * ─────────────────────────────────────────────────────────────────
- *   • code         — the textarea contents (Strudel pattern + edits)
- *   • inkColor     — current font color, set by palette clicks
- *   • savedCode    — last non-empty code value (used by eraser to restore)
- *   • darkMode     — true when the canvas should be black with white text
- *   • blinking     — true when the textarea should animate `paint-blink`
- *   • isCleared    — true when the eraser has emptied the textarea
- *                    (so the next eraser click knows to restore, not clear)
+ *   • code           — the textarea contents (Strudel pattern + edits)
+ *   • inkColor       — current font color, set by palette clicks
+ *   • savedCode      — last non-empty code value (used by eraser to restore)
+ *   • darkMode       — true when the canvas should be black with white text
+ *   • blinking       — true when the textarea should animate `paint-blink`
+ *   • isCleared      — true when the eraser has emptied the textarea
+ *                      (so the next eraser click knows to restore, not clear)
+ *   • fileMenuOpen   — true while the File dropdown is visible
+ *   • loadingFileSlug— slug of the file currently being fetched
+ *   • fileError      — last fetch error message, shown in the dropdown's
+ *                      status row so the user can retry without losing
+ *                      their draft (we don't clobber `code` on failure)
  *
  * ─────────────────────────────────────────────────────────────────
  *  LAYOUT
@@ -88,6 +101,20 @@ const PALETTE_REGION = {
   top: 0.8366,
   right: 0.4646,
   bottom: 0.9091,
+} as const;
+
+// File menu region (top-left "File" label in the static MS Paint
+// 95 menu bar). The "File" text sits at image px x=15..51, y=11..29
+// (see obs-2026-07-19 menu-bar pixel scan). We give the click
+// target ~10px of horizontal padding on each side so the user
+// doesn't have to land precisely on the text, mirroring the real
+// Win95 menu hitbox. Menu-bar height in the source PNG: ~32px
+// (4.22% of 759). Width: 60px (5.5% of 1089).
+const FILE_MENU_REGION = {
+  left: 0.0046,
+  top: 0.0,
+  right: 0.0596,
+  bottom: 0.0422,
 } as const;
 
 // Toolbar button positions. Each is a rectangle in image-fraction
@@ -423,8 +450,22 @@ export function Paint95TextEditor() {
   // increase; capped at FONT_SIZE_MAX so the code can't outgrow the
   // canvas.
   const [fontSize, setFontSize] = useState<number>(FONT_SIZE_BASE);
+  // File menu — open/closed toggle, current load slug (for "Loading…"
+  // feedback), and last error message. Kept separate from `code` so
+  // a failed fetch doesn't clobber the user's existing draft.
+  const [fileMenuOpen, setFileMenuOpen] = useState<boolean>(false);
+  const [loadingFileSlug, setLoadingFileSlug] = useState<string | null>(
+    null,
+  );
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const imgRef = useRef<HTMLImageElement>(null);
+  // File menu refs — used by the global mousedown listener to close
+  // the dropdown when the user clicks outside it (and outside the
+  // File button itself, so clicking the button doesn't immediately
+  // re-open the menu after a click-outside fires).
+  const fileButtonRef = useRef<HTMLButtonElement>(null);
+  const fileMenuRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const sampleReady = useRef(false);
@@ -468,6 +509,39 @@ export function Paint95TextEditor() {
       // back to INITIAL_CODE and skip preset behavior.
     }
   }, []);
+
+  // File-menu outside-click closer. Only listens while the menu is
+  // open; the cleanup removes the listener on close so we don't
+  // pay the per-mousemove cost on every page. Excludes the File
+  // button + the dropdown panel itself so clicking the button to
+  // re-open after a click-outside doesn't fight with itself.
+  useEffect(() => {
+    if (!fileMenuOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node | null;
+      if (!target) return;
+      if (fileButtonRef.current?.contains(target)) return;
+      if (fileMenuRef.current?.contains(target)) return;
+      setFileMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [fileMenuOpen]);
+
+  // File-menu ESC closer — mirrors the Win95 convention of
+  // dismissing a popup with Esc. Also clears the last error so the
+  // next open starts fresh.
+  useEffect(() => {
+    if (!fileMenuOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setFileMenuOpen(false);
+        setFileError(null);
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [fileMenuOpen]);
 
   // ── Palette handler ─────────────────────────────────────────
   const handlePalettePick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -878,6 +952,41 @@ export function Paint95TextEditor() {
   // to horizontal scrolling for very long lines.
   const handlePolygonClick = () => setWordWrap((w) => !w);
 
+  // File menu — fetch a .txt file from /public/text-files/ and load
+  // it into the textarea. Mirrors the way real Win95 "File → Open"
+  // replaces the current document with the picked one. On error we
+  // keep `code` intact and surface the error in the dropdown's
+  // status row so the user can retry without losing their draft.
+  //
+  // basePath handling: site.basePath is set to "/djcremosa" in
+  // production (GitHub Pages) and "" in dev. fetch() needs the
+  // prefix to find the static asset under a subpath. We also clear
+  // isCleared if the load succeeds — otherwise the eraser button
+  // gets confused about what's "current" vs "saved".
+  const handleFileSelect = async (file: TextFile) => {
+    setLoadingFileSlug(file.slug);
+    setFileError(null);
+    try {
+      const url = `${site.basePath}/${file.path}`;
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      const text = await res.text();
+      setCode(text);
+      if (isCleared) setIsCleared(false);
+      // Close on success — keep open on error so the user sees
+      // the message and can retry / pick another file.
+      setFileMenuOpen(false);
+    } catch (err) {
+      setFileError(
+        err instanceof Error ? err.message : "Erro desconhecido",
+      );
+    } finally {
+      setLoadingFileSlug(null);
+    }
+  };
+
   // Active toolbar ids that need an "is on" visual ring.
   const activeTools = new Set<ToolId>();
   if (blinking) activeTools.add("star");
@@ -1019,6 +1128,41 @@ export function Paint95TextEditor() {
         }}
       />
 
+      {/* File menu button — overlay on the "File" text in the static
+          MS Paint 95 menu bar (image px ≈ x=15..51, y=11..29, padded
+          out to a real Win95 hitbox). Click toggles the dropdown;
+          keyboard focus is preserved on the textarea via
+          onMouseDown preventDefault. Highlight when the menu is
+          open (Win95 active-menu-item look: blue bg + white text). */}
+      <button
+        ref={fileButtonRef}
+        type="button"
+        onClick={() => {
+          setFileMenuOpen((o) => !o);
+          setFileError(null);
+        }}
+        onMouseDown={(e) => e.preventDefault()}
+        aria-haspopup="menu"
+        aria-expanded={fileMenuOpen}
+        aria-label="Menu Arquivo — abre a lista de arquivos .txt pra carregar no canvas"
+        className={`absolute cursor-pointer flex items-center justify-center font-pixel text-[10px] sm:text-xs text-win-ink hover:bg-win-title-1 hover:text-win-light transition-colors${
+          fileMenuOpen ? " bg-win-title-1 text-win-light" : ""
+        }`}
+        style={{
+          top: `${FILE_MENU_REGION.top * 100}%`,
+          left: `${FILE_MENU_REGION.left * 100}%`,
+          width: `${(FILE_MENU_REGION.right - FILE_MENU_REGION.left) * 100}%`,
+          height: `${(FILE_MENU_REGION.bottom - FILE_MENU_REGION.top) * 100}%`,
+          background: "transparent",
+          border: 0,
+          padding: 0,
+          margin: 0,
+        }}
+      >
+        <span className="leading-none">
+        </span>
+      </button>
+
       {/* Toolbar buttons — transparent overlays on specific MS Paint
           icons. onMouseDown preventDefault keeps focus on the textarea. */}
       {TOOLBAR_BUTTONS.map((btn) => {
@@ -1108,10 +1252,90 @@ export function Paint95TextEditor() {
         style={{ display: "none" }}
       />
 
+      {/* File menu dropdown — Win95-styled panel that lists every
+          .txt file in the manifest. Positioned just below the "File"
+          button (which sits in the top-left menu bar of the static
+          image). Anchored to the File button's left edge + width so
+          the dropdown aligns under the menu bar visually.
+
+          z-50 ensures it floats above every other overlay (toolbar
+          buttons, palette, textarea) — the file picker must be the
+          topmost interactive surface while it's open. Pointer events
+          are on by default; the click-outside effect below is what
+          dismisses it when the user clicks anywhere else. */}
+      {fileMenuOpen && (
+        <div
+          ref={fileMenuRef}
+          role="menu"
+          aria-label="Lista de arquivos .txt pra carregar no canvas"
+          className="absolute z-50 win95-bevel-out bg-win-face p-[2px]"
+          style={{
+            top: `${FILE_MENU_REGION.bottom * 100}%`,
+            left: `${FILE_MENU_REGION.left * 100}%`,
+            width: "26%",
+            minWidth: "160px",
+            maxWidth: "260px",
+          }}
+        >
+          <div className="win95-bevel-deep-in bg-win-face">
+            {/* Header strip — Win95 popup menus open with a single
+                label row; we use "Arquivos" so it reads as a folder
+                listing, not the full Paint File menu. Eyebrow-sm
+                keeps it visually subordinate to the file rows. */}
+            <div className="px-2 py-1 win-eyebrow-sm text-win-ink border-b border-win-shadow bg-win-face">
+              Arquivos (.txt)
+            </div>
+            {/* File rows — each one a real <button role="menuitem">
+                so keyboard users can Tab through them. Active state
+                shows the Win95 selected look (blue bg + white text).
+                Bytes column is a quick scan affordance — the user
+                can see how heavy each file is before opening. */}
+            <ul className="text-win-ink font-pixel">
+              {TEXT_FILES.map((file) => {
+                const isLoading = loadingFileSlug === file.slug;
+                return (
+                  <li key={file.slug}>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => handleFileSelect(file)}
+                      disabled={loadingFileSlug !== null}
+                      aria-label={`Carregar ${file.title} — ${file.note}`}
+                      className="w-full text-left px-2 py-1 flex items-start justify-between gap-2 hover:bg-win-title-1 hover:text-win-light focus:bg-win-title-1 focus:text-win-light focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="win-button-text leading-tight truncate">
+                          {isLoading ? "carregando…" : file.title}
+                        </div>
+                        <div className="text-[10px] sm:text-[11px] opacity-80 leading-tight truncate">
+                          {file.note}
+                        </div>
+                      </div>
+                      <div className="win-eyebrow-sm opacity-60 shrink-0 pt-0.5">
+                        {file.bytes}B
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            {/* Status row — shows the last fetch error so the user
+                can retry without losing context. Hidden when there's
+                no error so the menu stays compact on the happy path. */}
+            {fileError && (
+              <div className="px-2 py-1 win-eyebrow-sm text-[var(--color-status-down,#ff6477)] border-t border-win-shadow bg-win-face">
+                Erro: {fileError}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Screen-reader live region announcing the current state of
-          the toggle tools (eraser cleared, dark mode, blink). The
-          rectangle button is one-shot and announces its own copy
-          result via the implicit "Copied" feedback in the selection. */}
+          the toggle tools (eraser cleared, dark mode, blink) plus
+          the File menu open state and any load error. The rectangle
+          button is one-shot and announces its own copy result via
+          the implicit "Copied" feedback in the selection. */}
       <div
         aria-live="polite"
         className="sr-only"
@@ -1129,6 +1353,11 @@ export function Paint95TextEditor() {
           : ""}
         {darkMode ? "Modo escuro ativo." : ""}
         {blinking ? "Piscada do código ativa." : ""}
+        {fileMenuOpen ? "Menu Arquivo aberto." : ""}
+        {loadingFileSlug
+          ? `Carregando ${loadingFileSlug}.`
+          : ""}
+        {fileError ? `Erro ao carregar arquivo: ${fileError}.` : ""}
       </div>
     </div>
   );

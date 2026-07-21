@@ -983,4 +983,106 @@ test.describe("10 — DJ Verbosa", () => {
     const drawer = page.getByRole("dialog", { name: /menu de navegação/i });
     await expect(drawer.getByText("DJ Verbosa")).toBeVisible();
   });
+
+  // ────────────────────────────────────────────────────────────────
+  // File menu (top-left menu bar "File" → dropdown of .txt files)
+  // ────────────────────────────────────────────────────────────────
+  //
+  // The File menu is a real <button> overlaid on the static "File"
+  // text in the menu bar of /public/img/paint95-bg.png. Clicking it
+  // opens a Win95-style dropdown listing every .txt file from
+  // /content/text-files.ts. Selecting a file fetches it from
+  // /public/text-files/ and replaces the textarea contents.
+  //
+  // The test uses accessible roles + names so it survives the visual
+  // font and label tweaks (e.g. "afro-jams" is matched by partial
+  // text in the menuitem label).
+
+  test("File menu button opens dropdown listing all .txt files", async ({
+    page,
+  }) => {
+    const fileBtn = page.getByRole("button", { name: /menu arquivo/i });
+    // Closed at first
+    await expect(fileBtn).toHaveAttribute("aria-expanded", "false");
+    await expect(fileBtn).toHaveAttribute("aria-haspopup", "menu");
+
+    await fileBtn.click();
+    await expect(fileBtn).toHaveAttribute("aria-expanded", "true");
+
+    // The dropdown should be visible with all 6 files
+    const menu = page.getByRole("menu", { name: /lista de arquivos/i });
+    await expect(menu).toBeVisible();
+    // 6 file rows from content/text-files.ts
+    const items = menu.getByRole("menuitem");
+    await expect(items).toHaveCount(6);
+
+    // Spot-check filenames
+    await expect(menu.getByText(/clean-breaks/i)).toBeVisible();
+    await expect(menu.getByText(/amapiano-vibe/i)).toBeVisible();
+    await expect(menu.getByText(/afro-jams/i)).toBeVisible();
+    await expect(menu.getByText(/blank-canvas/i)).toBeVisible();
+  });
+
+  test("selecting a file loads its contents into the textarea", async ({
+    page,
+  }) => {
+    const editor = page.getByRole("textbox", {
+      name: /editor de código strudel dentro do canvas do paint 95/i,
+    });
+    const initial = await editor.inputValue();
+    expect(initial).not.toContain("AfroJams");
+
+    await page.getByRole("button", { name: /menu arquivo/i }).click();
+    await page
+      .getByRole("menuitem", { name: /carregar afro-jams/i })
+      .click();
+
+    // Menu auto-closes on successful load
+    await expect(
+      page.getByRole("menu", { name: /lista de arquivos/i }),
+    ).toHaveCount(0);
+
+    // Code was replaced with the file's content
+    const after = await editor.inputValue();
+    expect(after).toContain("AfroJams");
+    expect(after).toContain("setcpm(120/4)");
+    expect(after).toContain("djembe");
+  });
+
+  test("clicking outside the dropdown closes the File menu", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: /menu arquivo/i }).click();
+    await expect(
+      page.getByRole("menu", { name: /lista de arquivos/i }),
+    ).toBeVisible();
+
+    // Click on the right side of the page (outside the dropdown)
+    await page.mouse.click(1200, 800);
+    await expect(
+      page.getByRole("menu", { name: /lista de arquivos/i }),
+    ).toHaveCount(0);
+  });
+
+  test("pressing Escape closes the File menu", async ({ page }) => {
+    await page.getByRole("button", { name: /menu arquivo/i }).click();
+    await expect(
+      page.getByRole("menu", { name: /lista de arquivos/i }),
+    ).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await expect(
+      page.getByRole("menu", { name: /lista de arquivos/i }),
+    ).toHaveCount(0);
+  });
+
+  test("clicking the File button twice toggles the dropdown", async ({
+    page,
+  }) => {
+    const fileBtn = page.getByRole("button", { name: /menu arquivo/i });
+    await fileBtn.click();
+    await expect(fileBtn).toHaveAttribute("aria-expanded", "true");
+    await fileBtn.click();
+    await expect(fileBtn).toHaveAttribute("aria-expanded", "false");
+  });
 });

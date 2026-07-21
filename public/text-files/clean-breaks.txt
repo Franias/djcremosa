@@ -1,0 +1,5 @@
+// Clean Breaks — minimal house pattern
+setcpm(130/4)
+samples('github:yaxu/clean-breaks')
+$: n("0 1 2 3").s("breaks").chop(8)
+$: s("bd*4, sd*2, hh*8").gain(0.4)

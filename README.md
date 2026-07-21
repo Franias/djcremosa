@@ -49,6 +49,17 @@ GitHub Pages no plano **free** só permite domínio custom em repos **públicos*
 - **GitHub Pro** (~$4/mês), ou
 - Hospedar `out/` em outro lugar (Cloudflare Pages, Netlify, Surge.sh — todos têm free tier com domínios custom).
 
+## 👀 Visitantes em tempo real
+
+O tile `visitantes.exe` usa [`playhtml`](https://playhtml.fun/docs/) com a sala pública fixa `dj-cremosa-site`:
+
+- `site-visitor-count` é **page data persistente** e guarda o total de visitantes.
+- `site-visitor-presence` é **presence efêmera** e alimenta o número "online agora".
+- `lib/visitorStats.ts` importa o runtime dinamicamente no navegador, porque o playhtml usa APIs do DOM e o site é exportado estaticamente.
+- `cremosa-visit-recorded-at` no `localStorage` limita cada navegador a um incremento por 24 horas.
+
+O serviço PartyKit hospedado pelo playhtml é público e não criptografado por padrão. Isso é aceitável para métricas públicas, mas não armazene dados privados nessa sala. O plugin de Claude do repositório é opcional e serve para gerar código; a aplicação usa diretamente o pacote npm `playhtml`.
+
 ## 📁 Estrutura
 
 ```

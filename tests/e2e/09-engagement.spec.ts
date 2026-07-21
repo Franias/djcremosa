@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 /**
  * 09 — Engagement widgets (footer countdown + visit counter)
@@ -7,15 +7,13 @@ import { test, expect, type Page } from "@playwright/test";
  * shared `Win95StatusBar`. It picks the next confirmed/non-cancelled
  * event from `content/events.ts` and ticks every 30 s.
  *
- * The visit counter is rendered by `<VisitCounter>` from inside the
- * propriedades dialog on the home page. It calls
- * `NEXT_PUBLIC_VISIT_COUNTER_URL` (GET/POST) and falls back to
- * `VISITAS: ----` when the env var is missing or the endpoint is
- * unreachable.
+ * The visit counter is rendered by `<VisitCounter>` on the home page.
+ * It uses playhtml page data for the persistent total and playhtml presence
+ * for the live "online agora" value. The browser-local timestamp prevents
+ * duplicate increments within 24 hours.
  *
- * Both widgets are SSR-safe: the server renders the placeholder and
- * the client hydrates with the real value, so the first paint must
- * match. We assert the placeholder first, then await the real value.
+ * Both widgets are SSR-safe: the visitor runtime loads playhtml only after
+ * hydration, while the modal remains usable if the cloud service is down.
  */
 
 const COUNTDOWN_SELECTOR = '[data-testid="footer-countdown"]';
@@ -23,35 +21,6 @@ const COUNTER_SELECTOR = '[data-testid="visit-counter"]';
 const COUNTER_VALUE_SELECTOR = '[data-testid="visit-counter-value"]';
 const COUNTER_WELCOME_SELECTOR = '[data-testid="visit-counter-welcome"]';
 const COUNTER_MESSAGE_SELECTOR = '[data-testid="visit-counter-message"]';
-
-/**
- * Some environments expose the env var through a .env.local that
- * Playwright does not load by default. We mock the counter endpoint
- * via `page.route` and force-bump the localStorage flag so the
- * component treats this session as a fresh visitor and POSTs.
- */
-async function mockCounterEndpoint(
-  page: Page,
-  options: { get?: number; post?: number } = {},
-): Promise<void> {
-  let total = options.get ?? 0;
-  await page.route("**/counter.test/**", async (route, request) => {
-    if (request.method() === "POST") {
-      total = (options.post ?? total + 1);
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ count: total }),
-      });
-      return;
-    }
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ count: total }),
-    });
-  });
-}
 
 test.describe("09a — Footer countdown", () => {
   test("footer renders a countdown link that points to /agenda/", async ({
@@ -100,147 +69,95 @@ test.describe("09a — Footer countdown", () => {
 });
 
 test.describe("09b — Visit counter", () => {
-  test("renders the welcome + congratulations copy and a placeholder value when env var is unset", async ({
+  test("opens visitantes.exe with persistent total and live online count", async ({
     page,
   }) => {
-    // The test runner does not set NEXT_PUBLIC_VISIT_COUNTER_URL,
-    // so the component must render the placeholder and never POST.
-    let postSeen = false;
-    await page.route("**/counter.test/**", async (route, request) => {
-      if (request.method() === "POST") postSeen = true;
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ count: 0 }),
-      });
-    });
     await page.goto("/?skipGate=1");
     const counter = page.locator(COUNTER_SELECTOR).first();
-    const welcome = page.locator(COUNTER_WELCOME_SELECTOR).first();
-    const message = page.locator(COUNTER_MESSAGE_SELECTOR).first();
-    const value = page.locator(COUNTER_VALUE_SELECTOR).first();
     await expect(counter).toBeVisible();
-    await expect(welcome).toHaveText(/bem vindo ao meu site/i);
-    await expect(message).toContainText(/Parabéns! Você é meu visitante nº:/i);
-    await expect(value).toHaveText(/^---$/);
-    // Welcome message renders statically, so it's visible immediately
-    // without waiting for any endpoint.
-    expect(postSeen).toBe(false);
+
+    await counter.click();
+    const modal = page.locator('[data-testid="visit-counter-modal"]');
+    await expect(modal).toBeVisible();
+    await expect(
+      page.locator(COUNTER_WELCOME_SELECTOR),
+    ).toHaveText(/bem vindo ao meu site/i);
+    await expect(
+      page.locator(COUNTER_MESSAGE_SELECTOR),
+    ).toContainText(/Parabéns! Você é meu visitante de nº:/i);
+    await expect(
+      page.locator(COUNTER_VALUE_SELECTOR),
+    ).toHaveText(/^\d{6}$/);
+    await expect(
+      page.locator('[data-testid="visit-counter-online"]'),
+    ).toHaveText(/online agora:\s+\d{2}/i);
   });
 
-  test("renders the visitor number as 000123 after the endpoint returns a number", async ({
+  test("does not increment again while the browser is inside the 24h window", async ({
     page,
   }) => {
-    await mockCounterEndpoint(page, { get: 123, post: 124 });
-    // We can't directly inject the env var into the page, but the
-    // component only calls fetch when `process.env.NEXT_PUBLIC_*` is
-    // truthy. Stub `window.process` to simulate that condition.
-    // Pre-seed the localStorage flag so the component treats this
-    // session as a returning visitor and does a plain GET (skipping
-    // the POST that would otherwise bump to 124).
     await page.addInitScript(() => {
-      // @ts-expect-error -- intentional dev-only shim
-      window.process = { env: { NEXT_PUBLIC_VISIT_COUNTER_URL: "https://counter.test/visits" } };
       window.localStorage.setItem(
         "cremosa-visit-recorded-at",
         String(Date.now()),
       );
     });
     await page.goto("/?skipGate=1");
-    const value = page.locator(COUNTER_VALUE_SELECTOR).first();
-    await expect(value).toHaveText(/^000123$/, { timeout: 10_000 });
+    await page.locator(COUNTER_SELECTOR).first().click();
+    await expect(
+      page.locator(COUNTER_VALUE_SELECTOR),
+    ).toHaveText(/^\d{6}$/);
   });
 
-  test("does not POST twice within the 24h window for the same browser", async ({
-    page,
+  test("shows two live presences when two browser tabs are open", async ({
+    browser,
   }) => {
-    await mockCounterEndpoint(page, { get: 7, post: 8 });
-    await page.addInitScript(() => {
-      // @ts-expect-error -- intentional dev-only shim
-      window.process = { env: { NEXT_PUBLIC_VISIT_COUNTER_URL: "https://counter.test/visits" } };
-      // Pre-seed the localStorage flag so the component treats this
-      // session as a returning visitor (within the 24h window).
-      window.localStorage.setItem(
-        "cremosa-visit-recorded-at",
-        String(Date.now()),
-      );
-    });
-    let posts = 0;
-    await page.route("**/counter.test/**", async (route, request) => {
-      if (request.method() === "POST") posts += 1;
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ count: 7 }),
-      });
-    });
-    await page.goto("/?skipGate=1");
-    await page.waitForTimeout(1500); // allow any rogue POST to fire
-    expect(posts).toBe(0);
+    const firstContext = await browser.newContext();
+    const secondContext = await browser.newContext();
+    const first = await firstContext.newPage();
+    const second = await secondContext.newPage();
+    await Promise.all([
+      first.goto("/?skipGate=1"),
+      second.goto("/?skipGate=1"),
+    ]);
+    await first.waitForTimeout(3500);
+    await second.waitForTimeout(1000);
+
+    await first.locator(COUNTER_SELECTOR).first().click();
+    await expect(
+      first.locator('[data-testid="visit-counter-online"]'),
+    ).toHaveText(/online agora:\s+0[2-9]/i);
+    await firstContext.close();
+    await secondContext.close();
   });
 
-  test("POSTs when the localStorage flag is older than 24h", async ({
+  test("keeps the visitor modal usable when the cloud service is unavailable", async ({
     page,
   }) => {
-    await page.addInitScript(() => {
-      // @ts-expect-error -- intentional dev-only shim
-      window.process = { env: { NEXT_PUBLIC_VISIT_COUNTER_URL: "https://counter.test/visits" } };
-      const ONE_DAY = 24 * 60 * 60 * 1000;
-      window.localStorage.setItem(
-        "cremosa-visit-recorded-at",
-        String(Date.now() - ONE_DAY * 2),
-      );
-    });
-    let posts = 0;
-    await page.route("**/counter.test/**", async (route, request) => {
-      if (request.method() === "POST") posts += 1;
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify({ count: 42 }),
-      });
-    });
-    await page.goto("/?skipGate=1");
-    await expect
-      .poll(() => posts, { timeout: 10_000 })
-      .toBeGreaterThanOrEqual(1);
-  });
-
-  test("endpoint failures keep the placeholder and never throw to the console", async ({
-    page,
-  }) => {
-    await page.addInitScript(() => {
-      // @ts-expect-error -- intentional dev-only shim
-      window.process = { env: { NEXT_PUBLIC_VISIT_COUNTER_URL: "https://counter.test/visits" } };
-    });
     const consoleErrors: string[] = [];
     page.on("console", (msg) => {
       if (msg.type() === "error") consoleErrors.push(msg.text());
     });
-    await page.route("**/counter.test/**", (route) => route.abort("failed"));
+    await page.route("https://api.playhtml.fun/**", (route) =>
+      route.abort("failed"),
+    );
     await page.goto("/?skipGate=1");
-    const value = page.locator(COUNTER_VALUE_SELECTOR).first();
-    await expect(value).toHaveText(/^----$/);
+    await page.locator(COUNTER_SELECTOR).first().click();
+    await expect(
+      page.locator('[data-testid="visit-counter-modal"]'),
+    ).toBeVisible();
     expect(
-      consoleErrors.filter((e) => /counter|visit/i.test(e)),
-      `unexpected console errors:\n${consoleErrors.join("\n")}`,
+      consoleErrors.filter((error) => /visitor|playhtml|realtime/i.test(error)),
+      `unexpected realtime console errors:\n${consoleErrors.join("\n")}`,
     ).toEqual([]);
   });
 
-  test("counter sits below the propriedades dialog on the home page", async ({
+  test("renders the visitor counter tile on the home page", async ({
     page,
   }) => {
     await page.goto("/?skipGate=1");
-    // The propriedades dialog and the counter share the same <aside>.
-    const aside = page.locator("aside").filter({ hasText: "propriedades" }).first();
-    await aside.scrollIntoViewIfNeeded();
-    // The counter lives AFTER the dialog title in DOM order.
-    const title = aside.locator("text=cremosa — propriedades").first();
-    const counter = aside.locator(COUNTER_SELECTOR).first();
-    const titleBox = await title.boundingBox();
-    const counterBox = await counter.boundingBox();
-    expect(titleBox, "propriedades title box").not.toBeNull();
-    expect(counterBox, "counter box").not.toBeNull();
-    expect(counterBox!.y).toBeGreaterThan(titleBox!.y);
+    const counters = page.locator(COUNTER_SELECTOR);
+    await expect(counters.first()).toBeVisible();
+    await expect(counters).toHaveCount(2);
   });
 });

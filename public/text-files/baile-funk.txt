@@ -1,0 +1,6 @@
+// Baile Funk — 150bpm Brazilian bass
+setcpm(150/4)
+samples('github:funkybob/baile')
+$: n("<0 [0 2] 1 [0 3]>").s("favela").chop(4)
+$: s("~ sd, bd*2 [~ bd], [~ bd] sd*2").gain(0.5)
+$: s("hh*8").gain(0.22)

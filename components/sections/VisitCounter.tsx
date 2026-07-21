@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { useBodyScrollLock } from "@/lib/hooks/useBodyScrollLock";
 import { useFocusTrap } from "@/lib/hooks/useFocusTrap";
 import { Win95Window } from "@/components/ui/win95";
+import { useVisitorStats } from "@/lib/visitorStats";
 import { site } from "@/lib/site";
 
 /**
@@ -37,18 +38,14 @@ import { site } from "@/lib/site";
  *     `MobileNavDrawer` pattern (see `lib/hooks/`).
  *   - Clicking the backdrop or the × button closes the modal.
  *
- * Site is a static export to GitHub Pages, so the persistent total
- * lives in an external serverless endpoint (a Cloudflare Worker,
- * Supabase Edge Function, etc.). The endpoint URL is wired through
- * `process.env.NEXT_PUBLIC_VISIT_COUNTER_URL` and read at runtime.
+ * The static site uses playhtml's hosted PartyKit room for this state:
  *
- *   GET  <url>     → { "count": 1248 }
- *   POST <url>     → { "count": 1249 }
+ *   - `site-visitor-count` is persistent page data (`{ total }`)
+ *   - `site-visitor-presence` is ephemeral realtime presence
  *
- * Counting rule: **one increment per browser every 24h**, gated by
- * a timestamp in `localStorage` (`cremosa-visit-recorded-at`).
- * Recargas entre páginas e navegações internas não inflam o
- * número; quem volta no dia seguinte soma +1.
+ * `lib/visitorStats.ts` keeps one fixed room shared by every route. A
+ * browser-local timestamp (`cremosa-visit-recorded-at`) allows one increment
+ * every 24h, while the online number comes from the live presence Map.
  *
  * Sizing:
  *   - `size="default"` (compact): react95 PNG at h-10 w-10, label
@@ -69,67 +66,8 @@ export function VisitCounter({
 }: {
   size?: "default" | "hero" | "compact-hero";
 } = {}) {
-  const [count, setCount] = useState<number | null>(null);
+  const { count, online } = useVisitorStats();
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const url = process.env.NEXT_PUBLIC_VISIT_COUNTER_URL;
-    if (!url) return;
-
-    const STORAGE_KEY = "cremosa-visit-recorded-at";
-    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-    const last = Number(window.localStorage.getItem(STORAGE_KEY) ?? 0);
-    const shouldCount = !last || Date.now() - last > ONE_DAY_MS;
-
-    const headers = { "Content-Type": "application/json" };
-
-    async function refresh(): Promise<void> {
-      try {
-        const res = await fetch(url as string, {
-          method: "GET",
-          cache: "no-store",
-          headers,
-        });
-        if (!res.ok) return;
-        const json = (await res.json()) as { count?: number };
-        if (typeof json.count === "number" && Number.isFinite(json.count)) {
-          setCount(json.count);
-        }
-      } catch {
-        /* offline / CORS / endpoint down — keep placeholder */
-      }
-    }
-
-    async function bump(): Promise<void> {
-      try {
-        const res = await fetch(url as string, {
-          method: "POST",
-          cache: "no-store",
-          headers,
-        });
-        if (res.ok) {
-          window.localStorage.setItem(STORAGE_KEY, String(Date.now()));
-          const json = (await res.json()) as { count?: number };
-          if (
-            typeof json.count === "number" &&
-            Number.isFinite(json.count)
-          ) {
-            setCount(json.count);
-            return;
-          }
-        }
-      } catch {
-        /* fall through to plain GET */
-      }
-      await refresh();
-    }
-
-    if (shouldCount) {
-      void bump();
-    } else {
-      void refresh();
-    }
-  }, []);
 
   const isHero = size === "hero";
   const isCompactHero = size === "compact-hero";
@@ -141,7 +79,7 @@ export function VisitCounter({
         type="button"
         onClick={() => setOpen(true)}
         data-testid="visit-counter"
-        data-visit-count={count ?? "loading"}
+        data-visit-count={count}
         aria-label="Abrir contador de visitantes"
         data-tooltip="nº visitantes"
         title="visitantes.exe"
@@ -190,7 +128,12 @@ export function VisitCounter({
         </span>
       </button>
 
-      <Modal open={open} count={count} onClose={() => setOpen(false)} />
+      <Modal
+        open={open}
+        count={count}
+        online={online}
+        onClose={() => setOpen(false)}
+      />
     </>
   );
 }
@@ -199,11 +142,12 @@ export function VisitCounter({
 
 interface ModalProps {
   open: boolean;
-  count: number | null;
+  count: number;
+  online: number;
   onClose: () => void;
 }
 
-function Modal({ open, count, onClose }: ModalProps) {
+function Modal({ open, count, online, onClose }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -224,8 +168,8 @@ function Modal({ open, count, onClose }: ModalProps) {
   // and the portal mounts normally.
   if (!open || typeof document === "undefined") return null;
 
-  const display =
-    count === null ? "----" : count.toString().padStart(6, "0");
+  const display = count.toString().padStart(6, "0");
+  const onlineDisplay = online.toString().padStart(2, "0");
 
   return createPortal(
     <div
@@ -270,7 +214,7 @@ function Modal({ open, count, onClose }: ModalProps) {
               data-testid="visit-counter-message"
               className="win-body-sm text-win-ink leading-snug"
             >
-              Parabéns! Você é meu visitante de nº:{" "}
+              Parabéns! Você é meu visitante de nº: {" "}
               <span
                 data-testid="visit-counter-value"
                 className="tabular-nums font-pixel"
@@ -278,6 +222,13 @@ function Modal({ open, count, onClose }: ModalProps) {
               >
                 {display}
               </span>
+            </span>
+            <span
+              data-testid="visit-counter-online"
+              className="win-body-sm text-win-ink leading-snug"
+            >
+              online agora: {" "}
+              <span className="tabular-nums font-pixel">{onlineDisplay}</span>
             </span>
           </div>
         </Win95Window>

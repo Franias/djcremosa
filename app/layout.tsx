@@ -3,6 +3,7 @@ import { Bagel_Fat_One, Geist, Geist_Mono, VT323 } from "next/font/google";
 import { SiteNav } from "@/components/nav/SiteNav";
 import { SiteFooter } from "@/components/nav/SiteFooter";
 import { VerticalRails } from "@/components/sections/VerticalRails";
+import { SiteVisitorRuntime } from "@/components/SiteVisitorRuntime";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -154,6 +155,7 @@ export default function RootLayout({
         <div className="bg-anim-grain" aria-hidden />
         {/* Boot splash removed — the Press Start gate on / handles first-
             session UX now. Kept the component around for future use. */}
+        <SiteVisitorRuntime />
         <SiteNav />
         {/* Vertical side rails echoing the Midia Kit editorial frame */}
         <main className="flex-1 relative z-10 pb-16 safe-bottom sm:pb-20">{children}</main>
