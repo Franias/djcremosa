@@ -732,7 +732,7 @@ test.describe("10 — DJ Verbosa", () => {
     }
   });
 
-  test("Spray button toggles the active-line highlight class", async ({
+  test("Spray button toggles the active-line highlight (class + magenta inset)", async ({
     page,
   }) => {
     // `^spray` to disambiguate from any other label containing "spray".
@@ -742,26 +742,44 @@ test.describe("10 — DJ Verbosa", () => {
       name: /editor de código strudel dentro do canvas do paint 95/i,
     });
 
-    // Initially no highlight class.
+    // Snapshot the resolved box-shadow so the test catches the
+    // common regression where the class is added but the CSS rule
+    // is missing (the toggle "does nothing" visually).
+    const shadow = () =>
+      editor.evaluate(
+        (el: HTMLTextAreaElement) => getComputedStyle(el).boxShadow,
+      );
+
+    const beforeShadow = await shadow();
+    // Baseline state has no paint-line-highlight class AND a
+    // transparent box-shadow (none / rgba(..., 0)).
     expect(
       (await editor.getAttribute("class")) ?? "",
     ).not.toContain("paint-line-highlight");
+    expect(beforeShadow === "none" || /rgba\(.*,\s*0\)/.test(beforeShadow)).toBe(true);
 
-    // Click → adds the class.
+    // Click → adds the class AND resolves to a magenta inset ring.
     await spray.click();
     await page.waitForTimeout(50);
     expect(
       (await editor.getAttribute("class")) ?? "",
     ).toContain("paint-line-highlight");
     await expect(spray).toHaveAttribute("aria-pressed", "true");
+    const onShadow = await shadow();
+    // Must contain a magenta-tinted rgba (the `--color-magenta`
+    // #d6307a = rgb(214, 48, 122)). Loose match — accepts any
+    // opacity — so the test survives future palette tweaks.
+    expect(onShadow).toMatch(/214,\s*48,\s*122/);
 
-    // Click again → removes the class (2-click reset).
+    // Click again → removes the class AND the ring disappears.
     await spray.click();
     await page.waitForTimeout(50);
     expect(
       (await editor.getAttribute("class")) ?? "",
     ).not.toContain("paint-line-highlight");
     await expect(spray).toHaveAttribute("aria-pressed", "false");
+    const offShadow = await shadow();
+    expect(offShadow === "none" || /rgba\(.*,\s*0\)/.test(offShadow)).toBe(true);
   });
 
   test("Font button toggles bold on the textarea (font-weight 400 ↔ 700)", async ({

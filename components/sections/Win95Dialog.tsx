@@ -58,7 +58,7 @@ export function Win95Dialog({
 }: Win95DialogProps) {
   const icon = VARIANT_ICONS[variant];
   return (
-    <Win95Window title={title} controls className={className}>
+    <Win95Window title={title} controls closeable className={className}>
       <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col gap-4">
         <div className="flex items-start gap-4">
           <div

@@ -40,7 +40,7 @@ export function SectionPlaceholder({
       </section>
 
       <section className="shell py-16">
-        <Win95Window title={`${title.toLowerCase()} — propriedades`} controls>
+        <Win95Window title={`${title.toLowerCase()} — propriedades`} controls closeable>
           <div className="p-5 sm:p-6 bg-win-face text-win-ink">
             <p className="win-eyebrow mb-3">{"// em construção"}</p>
             <p className="win-body-sm mb-4">

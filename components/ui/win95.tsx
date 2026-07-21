@@ -34,10 +34,17 @@ interface Win95WindowProps extends HTMLAttributes<HTMLDivElement> {
   /** Optional node to render in the title-bar slot beside the title. */
   titleExtras?: ReactNode;
   /**
-   * Promote the title-bar × to a real <button> that fires `onClose`.
-   * Use when the window is interactive (e.g. a modal drawer or a
-   * dismissible card). Leave `controls=true` for visual only.
-   * Implies controls are shown. The first two (─, □) stay decorative.
+   * Promote the title-bar × to a real <button>.
+   *
+   * Two modes:
+   * - With `onClose`: parent owns visibility (e.g. modal drawers). The
+   *   button just calls `onClose` — the parent hides the window.
+   * - Without `onClose`: the window self-manages. Clicking × collapses
+   *   the window into a `<title> (fechado) · reabrir` button (mirrors
+   *   the HomeAbout pattern). Clicking "reabrir" brings the window
+   *   back. This is the default behavior for every standalone section.
+   *
+   * Implies `controls=true`. The first two (─, □) stay decorative.
    */
   closeable?: boolean;
   /** Fires when the user clicks the title-bar ×. */
@@ -60,6 +67,42 @@ export function Win95Window({
   // `closeable` implies controls are visible. Keep the visual ─ / □
   // glyphs from `.win95-title-controls`; only the final × is wired.
   const showControls = controls || closeable;
+
+  // Self-managed open/closed state. Only used when the consumer
+  // passes `closeable` without an `onClose` — i.e. they want the
+  // default "click × → swap for reabrir" behavior. Externally
+  // managed windows (modals) keep using `onClose` and ignore this.
+  const [selfOpen, setSelfOpen] = useState(true);
+  const isSelfManaged = closeable && !onClose;
+
+  // When the self-managed window is closed, replace the whole
+  // window with a reabrir button that matches the HomeAbout
+  // pattern exactly. Returning early keeps the markup identical
+  // to a hand-rolled reabrir strip — no leftover title bar.
+  if (isSelfManaged && !selfOpen) {
+    const label = title ?? "Janela";
+    return (
+      <button
+        type="button"
+        onClick={() => setSelfOpen(true)}
+        aria-label={`Reabrir ${label}`}
+        className={cn(
+          "win95-bevel-out bg-win-face p-[2px] w-full text-left block",
+          className,
+        )}
+      >
+        <div className="win95-bevel-deep-in bg-win-face px-4 py-3 text-win-ink win-eyebrow hover:bg-bubble/10">
+          {label} <span className="opacity-60">(fechado)</span> · reabrir
+        </div>
+      </button>
+    );
+  }
+
+  const handleCloseClick = () => {
+    if (onClose) onClose();
+    else setSelfOpen(false);
+  };
+
   return (
     <div
       className={cn("win95-bevel-out bg-win-face p-[2px]", className)}
@@ -84,7 +127,7 @@ export function Win95Window({
                     <span aria-hidden>□</span>
                     <button
                       type="button"
-                      onClick={onClose}
+                      onClick={handleCloseClick}
                       aria-label={closeLabel ?? "Fechar"}
                       className="close"
                     >

@@ -986,9 +986,9 @@ export function Paint95TextEditor() {
         // spread it onto the <textarea> directly. Polygon's toggle
         // flips this between "soft" (default) and "off".
         style={{
-          left: "12.2%",
+          left: "11.7%",
           top: "7%",
-          width: "88.5%",
+          width: "86.4%",
           height: "75%",
           // Dark mode swaps the canvas to a black ink-block; the
           // picked inkColor is overridden with white so the code
@@ -1007,7 +1007,12 @@ export function Paint95TextEditor() {
           fontWeight: bold ? 700 : 400,
           appearance: "none",
           WebkitAppearance: "none",
-          boxShadow: "none",
+          // Suppress the browser's default text-area ring/inset shadow
+          // UNLESS the Spray tool is active — then the
+          // `.paint-line-highlight` class provides the magenta inset
+          // ring as the visual "mode is on" affordance. Inline styles
+          // win over class selectors, so we have to opt out here.
+          boxShadow: highlightLine ? undefined : "none",
           tabSize: 2,
           transition:
             "color 120ms linear, caret-color 120ms linear, background-color 120ms linear",
@@ -1059,7 +1064,7 @@ export function Paint95TextEditor() {
             aria-label={btn.ariaLabel}
             aria-pressed={isActive}
             data-active={isActive ? "true" : undefined}
-            className={`absolute cursor-pointer hover:bg-white/15 active:bg-white/30`}transition-colors
+            className={`absolute cursor-pointer hover:bg-white/15 active:bg-white/30 transition-colors`}
             style={{
               top: `${btn.rect.top * 100}%`,
               left: `${btn.rect.left * 100}%`,

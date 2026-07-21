@@ -184,14 +184,19 @@ test.describe("02 — Home page", () => {
   test("'Fechar ×' on readme dialog hides it and shows a reopen button", async ({
     page,
   }) => {
-    await page
-      .locator("text=cremosa.txt — readme")
-      .first()
-      .scrollIntoViewIfNeeded();
-    await expect(
-      page.locator("text=cremosa.txt — readme").first(),
-    ).toBeVisible();
-    await page.getByRole("button", { name: /fechar/i }).first().click();
+    // Scope the click to the readme dialog itself — now that the
+    // page's other Win95Windows (booking.exe, pasta do sistema)
+    // have functional title-bar × buttons, a page-wide
+    // `getByRole("button", { name: /fechar/i })` would grab the
+    // first one in DOM order instead of the HomeAbout one.
+    const readmeDialog = page
+      .locator("div.win95-bevel-out", {
+        has: page.locator("text=cremosa.txt — readme"),
+      })
+      .first();
+    await readmeDialog.scrollIntoViewIfNeeded();
+    await expect(readmeDialog).toBeVisible();
+    await readmeDialog.getByRole("button", { name: /fechar/i }).click();
     await expect(
       page.locator("text=cremosa.txt — readme (fechado)").first(),
     ).toBeVisible();

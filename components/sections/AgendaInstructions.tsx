@@ -22,7 +22,7 @@ export function AgendaInstructions() {
   }
 
   return (
-    <Win95Window title="agenda — instruções" controls>
+    <Win95Window title="agenda — instruções" controls closeable>
       <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
         <p className="win-body-sm">
           Próximos shows, festivais e residências. Ingressos pelo link de cada

@@ -269,7 +269,7 @@ export default function VideosPage() {
 
       {/* FOOTER NOTE — about the channel */}
       <section className="shell pb-24">
-        <Win95Window title="cremosa — youtube channel" controls>
+        <Win95Window title="cremosa — youtube channel" controls closeable>
           <div className="p-5 bg-win-face text-win-ink">
             <p className="win-eyebrow mb-2 text-win-shadow-deep">
               {"// sobre o canal"}
@@ -317,63 +317,54 @@ export default function VideosPage() {
  * mirrors the Playlist component on /musica so the two pages rhyme.
  * Each row is an anchor that opens the video inside the playlist on
  * YouTube (so the listener keeps watching from that point).
+ *
+ * Uses Win95Window with `closeable` so the title-bar × collapses
+ * the whole tracklist into a "fechado · reabrir" strip — same
+ * pattern as HomeAbout / the rest of the site.
  */
 function PlayListWindow({ playlist }: { playlist: YouTubePlaylist }) {
   const tracks = playlist.tracks;
+  const title = `afrojams-temp.txt — ${tracks.length} faixas`;
   return (
-    <div className="win95-bevel-out bg-win-face p-[2px]">
-      <div className="win95-bevel-deep-in bg-win-face">
-        {/* Title bar */}
-        <div className="win95-title" role="presentation">
-          <span className="win-title-text">
-            {`afrojams-temp.txt — ${tracks.length} faixas`}
-          </span>
-          <span className="win95-title-controls" aria-hidden>
-            <span>─</span>
-            <span>□</span>
-            <span className="close">×</span>
-          </span>
-        </div>
-
-        {/* Column headers */}
-        <div
-          className="grid items-center gap-2 px-3 py-1.5 bg-[#d4d0c8] border-b border-win-shadow-deep/40 win-eyebrow text-win-shadow-deep"
-          style={{ gridTemplateColumns: "32px 1fr 56px" }}
-        >
-          <span className="text-right">#</span>
-          <span>Título</span>
-          <span className="text-right">↗</span>
-        </div>
-
-        {/* Track rows — each opens the video inside the playlist. */}
-        <ol className="list-none p-0 m-0">
-          {tracks.map((t, i) => (
-            <li key={t.id}>
-              <a
-                href={`https://www.youtube.com/watch?v=${t.id}&list=${playlist.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full text-left grid items-center gap-2 px-3 py-1.5 win-body-sm tabular-nums transition-colors bg-win-face text-win-ink hover:bg-[#dde9f5] no-underline"
-                style={{ gridTemplateColumns: "32px 1fr 56px" }}
-              >
-                <span className="text-right opacity-70">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="truncate">{t.title}</span>
-                <span className="text-right win-eyebrow-shadow">▶</span>
-              </a>
-            </li>
-          ))}
-        </ol>
-
-        {/* Status bar */}
-        <div className="win95-statusbar mt-1">
-          <span className="win95-statusbar-segment grow">
-            {`${tracks.length} sets · ${playlist.channel.handle}`}
-          </span>
-          <span className="win95-statusbar-segment shrink">playlist</span>
-        </div>
+    <Win95Window title={title} controls closeable>
+      {/* Column headers */}
+      <div
+        className="grid items-center gap-2 px-3 py-1.5 bg-[#d4d0c8] border-b border-win-shadow-deep/40 win-eyebrow text-win-shadow-deep"
+        style={{ gridTemplateColumns: "32px 1fr 56px" }}
+      >
+        <span className="text-right">#</span>
+        <span>Título</span>
+        <span className="text-right">↗</span>
       </div>
-    </div>
+
+      {/* Track rows — each opens the video inside the playlist. */}
+      <ol className="list-none p-0 m-0">
+        {tracks.map((t, i) => (
+          <li key={t.id}>
+            <a
+              href={`https://www.youtube.com/watch?v=${t.id}&list=${playlist.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full text-left grid items-center gap-2 px-3 py-1.5 win-body-sm tabular-nums transition-colors bg-win-face text-win-ink hover:bg-[#dde9f5] no-underline"
+              style={{ gridTemplateColumns: "32px 1fr 56px" }}
+            >
+              <span className="text-right opacity-70">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span className="truncate">{t.title}</span>
+              <span className="text-right win-eyebrow-shadow">▶</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+
+      {/* Status bar */}
+      <div className="win95-statusbar mt-1">
+        <span className="win95-statusbar-segment grow">
+          {`${tracks.length} sets · ${playlist.channel.handle}`}
+        </span>
+        <span className="win95-statusbar-segment shrink">playlist</span>
+      </div>
+    </Win95Window>
   );
 }

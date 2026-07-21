@@ -287,6 +287,7 @@ export default function MusicaPage() {
         <Win95Window
           title="cremosa — visualizador.exe"
           controls
+          closeable
           titleExtras={
             <span className="win-eyebrow-sm opacity-80">
               {nowPlaying
@@ -414,7 +415,7 @@ export default function MusicaPage() {
 
       {/* FOOTER NOTE — how it works */}
       <section className="shell pb-24">
-        <Win95Window title="about — visualizador" controls>
+        <Win95Window title="about — visualizador" controls closeable>
           <div className="p-5 bg-win-face text-win-ink">
             <p className="win-eyebrow mb-3 text-win-shadow-deep">
               {"// como funciona"}
@@ -470,100 +471,89 @@ function Playlist({ tracks, currentSlug, isPlaying, onPlay }: PlaylistProps) {
     0,
   );
 
+  // Title pre-computed so the reabrir strip shows the same label.
+  const title = `playlist.txt — ${tracks.length} faixas · ${fmt(totalSec)} total`;
+
   return (
-    <div className="win95-bevel-out bg-win-face p-[2px]">
-      <div className="win95-bevel-deep-in bg-win-face">
-        {/* Title bar */}
-        <div className="win95-title" role="presentation">
-          <span className="win-title-text">
-            playlist.txt — {tracks.length} faixas · {fmt(totalSec)} total
-          </span>
-          <span className="win95-title-controls" aria-hidden>
-            <span>─</span>
-            <span>□</span>
-            <span className="close">×</span>
-          </span>
-        </div>
-
-        {/* Column headers */}
-        <div
-          className="grid items-center gap-2 px-3 py-1.5 bg-[#d4d0c8] border-b border-win-shadow-deep/40 win-eyebrow text-win-shadow-deep"
-          style={{ gridTemplateColumns: "32px 24px 1fr 80px 56px" }}
-        >
-          <span className="text-right">#</span>
-          <span />
-          <span>Título</span>
-          <span>Gênero</span>
-          <span className="text-right tabular-nums">Dur.</span>
-        </div>
-
-        {/* Track rows */}
-        <ol className="list-none p-0 m-0">
-          {tracks.map((t, i) => {
-            const active = t.slug === currentSlug;
-            return (
-              <li key={t.slug}>
-                <button
-                  type="button"
-                  onClick={() => onPlay(t)}
-                  aria-current={active ? "true" : undefined}
-                  className={[
-                    "w-full text-left grid items-center gap-2 px-3 py-1.5",
-                    "win-body-sm tabular-nums transition-colors",
-                    active
-                      ? "bg-magenta text-cream"
-                      : "bg-win-face text-win-ink hover:bg-[#dde9f5]",
-                  ].join(" ")}
-                  style={{ gridTemplateColumns: "32px 24px 1fr 80px 56px" }}
-                >
-                  <span className="text-right opacity-70">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span
-                    className={[
-                      "text-center",
-                      active
-                        ? "text-cream animate-pulse"
-                        : "win-eyebrow-shadow opacity-0 group-hover:opacity-100",
-                    ].join(" ")}
-                    aria-hidden
-                  >
-                    {active ? (isPlaying ? "▶" : "❚❚") : "▶"}
-                  </span>
-                  <span className="truncate lowercase">
-                    {t.title}
-                  </span>
-                  <span className="win-caption text-win-shadow-deep truncate">
-                    {t.context}
-                  </span>
-                  <span
-                    className={[
-                      "text-right tabular-nums",
-                      active ? "text-cream" : "text-win-shadow-deep",
-                    ].join(" ")}
-                  >
-                    {fmt(t.durationSec ?? 0)}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ol>
-
-        {/* Footer status */}
-        <div className="win95-statusbar mt-1">
-          <span className="win95-statusbar-segment grow">
-            {tracks.length} tracks · {fmt(totalSec)} · soundcloud
-          </span>
-          <span className="win95-statusbar-segment shrink">
-            {currentSlug
-              ? isPlaying
-                ? "▶ playing"
-                : "❚❚ paused"
-              : "idle"}
-          </span>
-        </div>
+    <Win95Window title={title} controls closeable>
+      {/* Column headers */}
+      <div
+        className="grid items-center gap-2 px-3 py-1.5 bg-[#d4d0c8] border-b border-win-shadow-deep/40 win-eyebrow text-win-shadow-deep"
+        style={{ gridTemplateColumns: "32px 24px 1fr 80px 56px" }}
+      >
+        <span className="text-right">#</span>
+        <span />
+        <span>Título</span>
+        <span>Gênero</span>
+        <span className="text-right tabular-nums">Dur.</span>
       </div>
-    </div>
+
+      {/* Track rows */}
+      <ol className="list-none p-0 m-0">
+        {tracks.map((t, i) => {
+          const active = t.slug === currentSlug;
+          return (
+            <li key={t.slug}>
+              <button
+                type="button"
+                onClick={() => onPlay(t)}
+                aria-current={active ? "true" : undefined}
+                className={[
+                  "w-full text-left grid items-center gap-2 px-3 py-1.5",
+                  "win-body-sm tabular-nums transition-colors",
+                  active
+                    ? "bg-magenta text-cream"
+                    : "bg-win-face text-win-ink hover:bg-[#dde9f5]",
+                ].join(" ")}
+                style={{ gridTemplateColumns: "32px 24px 1fr 80px 56px" }}
+              >
+                <span className="text-right opacity-70">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span
+                  className={[
+                    "text-center",
+                    active
+                      ? "text-cream animate-pulse"
+                      : "win-eyebrow-shadow opacity-0 group-hover:opacity-100",
+                  ].join(" ")}
+                  aria-hidden
+                >
+                  {active ? (isPlaying ? "▶" : "❚❚") : "▶"}
+                </span>
+                <span className="truncate lowercase">
+                  {t.title}
+                </span>
+                <span className="win-caption text-win-shadow-deep truncate">
+                  {t.context}
+                </span>
+                <span
+                  className={[
+                    "text-right tabular-nums",
+                    active ? "text-cream" : "text-win-shadow-deep",
+                  ].join(" ")}
+                >
+                  {fmt(t.durationSec ?? 0)}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+
+      {/* Footer status */}
+      <div className="win95-statusbar mt-1">
+        <span className="win95-statusbar-segment grow">
+          {tracks.length} tracks · {fmt(totalSec)} · soundcloud
+        </span>
+        <span className="win95-statusbar-segment shrink">
+          {currentSlug
+            ? isPlaying
+              ? "▶ playing"
+              : "❚❚ paused"
+            : "idle"}
+        </span>
+      </div>
+    </Win95Window>
   );
 }

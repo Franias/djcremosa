@@ -27,7 +27,7 @@ export function YouTubePlayer({ video, title }: YouTubePlayerProps) {
   const winTitle = title ?? `youtube.exe — ${truncate(video.title, 40)}`;
 
   return (
-    <Win95Window title={winTitle} controls>
+    <Win95Window title={winTitle} controls closeable>
       <div className="bg-bg p-1">
         {/* 16:9 aspect-ratio container so the thumbnail / iframe
             sizes consistently. */}

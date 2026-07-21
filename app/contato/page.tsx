@@ -141,7 +141,7 @@ export default function ContatoPage() {
 
       {/* PRESS KIT REQUEST — Win95 dialog */}
       <section className="shell pb-24">
-        <Win95Window title="Solicitar press kit.exe" controls>
+        <Win95Window title="Solicitar press kit.exe" controls closeable>
           <div className="p-5 sm:p-6 bg-win-face text-win-ink flex flex-col sm:flex-row gap-5 sm:items-center sm:justify-between">
             <div>
               <p className="win-eyebrow mb-1">{"// mídia kit 2026"}</p>

@@ -210,7 +210,7 @@ export default function HomePage() {
           </div>
           {/* Breadcrumb — the page indicator */}
           <section className="shell">
-            <Win95Window title="booking.exe — confirmar" controls>
+            <Win95Window title="booking.exe — confirmar" controls closeable>
               <div className="p-6 sm:p-8 bg-win-face text-win-ink text-center">
                 <p className="win-eyebrow mb-3">
                   {"// quer levar a Cremosa pra sua pista?"}
@@ -379,7 +379,7 @@ export default function HomePage() {
       <section className="shell py-12 sm:py-16">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">{"// pasta do sistema"}</p>
 
-        <Win95Window title="cremosa — pasta do sistema" controls>
+        <Win95Window title="cremosa — pasta do sistema" controls closeable>
           <div className="p-4 sm:p-6 bg-win-face text-win-ink flex flex-col gap-6 sm:flex-row sm:justify-between sm:items-start">
             <div>
               <Logo size="footer" />

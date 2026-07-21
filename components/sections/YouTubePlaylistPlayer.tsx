@@ -34,7 +34,7 @@ export function YouTubePlaylistPlayer({
   const coverThumbnail = `https://i.ytimg.com/vi/${playlist.coverVideoId}/mqdefault.jpg`;
 
   return (
-    <Win95Window title={winTitle} controls>
+    <Win95Window title={winTitle} controls closeable>
       <div className="bg-bg p-1">
         <div className="relative aspect-video bg-black win95-bevel-deep-in overflow-hidden">
           {playing ? (

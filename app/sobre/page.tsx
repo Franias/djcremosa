@@ -75,41 +75,34 @@ export default function SobrePage() {
               </div>
             </div>
 
-            {/* Sidebar — quick facts in a Win95 properties dialog */}
+            {/* Sidebar — quick facts in a Win95 properties dialog.
+                Wrapped in Win95Window so the title-bar × triggers the
+                same "fechado · reabrir" dynamic as the rest of the
+                site's Win95 chrome. */}
             <aside>
-              <div className="win95-bevel-out bg-[#c0c0c0] p-[2px]">
-                <div className="win95-bevel-deep-in bg-[#c0c0c0]">
-                  <div className="win95-title">
-                    <span>cremosa — propriedades</span>
-                    <span className="win95-title-controls" aria-hidden>
-                      <span>─</span>
-                      <span>□</span>
-                      <span className="close">×</span>
-                    </span>
-                  </div>
-                  <div className="win95-bevel-deep-in bg-[#c0c0c0] p-4 text-win-ink">
-                    <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 win-body-sm">
-                      <dt className="text-win-shadow-deep">Nome:</dt>
-                      <dd>Cremosa</dd>
-                      <dt className="text-win-shadow-deep">Cidade:</dt>
-                      <dd>Porto Alegre, RS</dd>
-                      <dt className="text-win-shadow-deep">Desde:</dt>
-                      <dd>2016</dd>
-                      <dt className="text-win-shadow-deep">Coletivo:</dt>
-                      <dd>AfroJams</dd>
-                      <dt className="text-win-shadow-deep">Residência:</dt>
-                      <dd>BatukBaile</dd>
-                    </dl>
-                    <div className="mt-4 pt-3 border-t border-win-shadow-deep/40 flex justify-end">
-                      <Link href="/contato" className="no-underline">
-                        <span className="win95-button win-button-text">
-                          Booking →
-                        </span>
-                      </Link>
-                    </div>
+              <Win95Window title="cremosa — propriedades" controls closeable>
+                <div className="p-4 text-win-ink">
+                  <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 win-body-sm">
+                    <dt className="text-win-shadow-deep">Nome:</dt>
+                    <dd>Cremosa</dd>
+                    <dt className="text-win-shadow-deep">Cidade:</dt>
+                    <dd>Porto Alegre, RS</dd>
+                    <dt className="text-win-shadow-deep">Desde:</dt>
+                    <dd>2016</dd>
+                    <dt className="text-win-shadow-deep">Coletivo:</dt>
+                    <dd>AfroJams</dd>
+                    <dt className="text-win-shadow-deep">Residência:</dt>
+                    <dd>BatukBaile</dd>
+                  </dl>
+                  <div className="mt-4 pt-3 border-t border-win-shadow-deep/40 flex justify-end">
+                    <Link href="/contato" className="no-underline">
+                      <span className="win95-button win-button-text">
+                        Booking →
+                      </span>
+                    </Link>
                   </div>
                 </div>
-              </div>
+              </Win95Window>
             </aside>
           </div>
         </div>
@@ -142,7 +135,7 @@ export default function SobrePage() {
       </section> */}
 
       {/* TIMELINE — file-explorer grid in Win95 windows */}
-      <section className="shell py-16 sm:py-24 ">
+      <section className="shell py-16 ">
         <p className="win-eyebrow win-eyebrow-shadow mb-2">
           {"// linha do tempo · 2016 → hoje"}
         </p>
@@ -158,8 +151,8 @@ export default function SobrePage() {
       </section>
 
       {/* CTA — Win95 dialog */}
-      <section className="shell pb-24 hero ">
-        <Win95Window title="booking.exe — confirmar" controls>
+      <section className="shell pb-24 hero">
+        <Win95Window title="booking.exe — confirmar" controls closeable>
           <div className="p-6 sm:p-8 bg-win-face text-win-ink text-center">
             <p className="win-eyebrow mb-3">
               {"// quer levar a Cremosa pra sua pista?"}

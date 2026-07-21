@@ -170,14 +170,21 @@ export default function DjVerbosaPage() {
       </section>
 
       {/* PAINT95 SECTION — the focal point of the page.
-          Static MS Paint 95 image as background, with an
-          editable <textarea> overlaid on the white canvas
-          area (the user types/edits the Strudel code right
-          inside the Paint canvas). No buttons, no toolbar,
-          no palette interactions — just the image + a
-          text editor, exactly as the user asked. */}
+          Wrapped in a Win95Window with the same chrome as
+          the rest of the site (title bar with × close →
+          reabrir strip), so it reads as a peer of the
+          readme / how-to / chrome / toolbar windows below.
+          The static MS Paint 95 image + editable <textarea>
+          overlay sits inside, just like before — the window
+          chrome doesn't change the editor behavior. */}
       <section className="shell py-8 sm:py-12">
-        <Paint95TextEditor />
+        <Win95Window
+          title="DJ Verbosa - Paint (verbosa.exe)"
+          controls
+          closeable
+        >
+          <Paint95TextEditor />
+        </Win95Window>
       </section>
 
       {/* ABOUT / HOW-TO / SHORTCUTS — three info cards like
@@ -185,7 +192,7 @@ export default function DjVerbosaPage() {
           these fill in the editorial context. */}
       <section className="shell pb-16 sm:pb-24" id="properties-line-dj-verbosa">
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
-          <Win95Window title="verbosa.txt — readme" controls>
+          <Win95Window title="verbosa.txt — readme" controls closeable>
             <div className="p-4 sm:p-5 bg-win-face text-win-ink">
               <p className="win-eyebrow mb-2 text-win-shadow-deep">
                 {"// o que é isso?"}
@@ -212,7 +219,7 @@ export default function DjVerbosaPage() {
             </div>
           </Win95Window>
 
-          <Win95Window title="como usar — help.html" controls>
+          <Win95Window title="como usar — help.html" controls closeable>
             <div className="p-4 sm:p-5 bg-win-face text-win-ink">
               <p className="win-eyebrow mb-2 text-win-shadow-deep">
                 {"// passo a passo"}
@@ -263,7 +270,7 @@ export default function DjVerbosaPage() {
             </div>
           </Win95Window>
 
-          <Win95Window title="chrome — explorar.cfg" controls>
+          <Win95Window title="chrome — explorar.cfg" controls closeable>
             <div className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
               <p className="win-body-sm max-w-2xl">
                 Verbosa é Verbosa, mas a Cremosa também toca.
@@ -296,7 +303,7 @@ export default function DjVerbosaPage() {
         id="toolbar-reference-dj-verbosa"
         aria-label="Referência dos botões da barra de ferramentas do Paint 95"
       >
-        <Win95Window title="toolbar.map — help.html" controls>
+        <Win95Window title="toolbar.map — help.html" controls closeable>
           <div className="p-4 sm:p-5 bg-win-face text-win-ink">
             <p className="win-eyebrow mb-2 text-win-shadow-deep">
               {"// atalhos da barra do paint"}

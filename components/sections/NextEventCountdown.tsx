@@ -60,7 +60,7 @@ export function NextEventCountdown({ events }: { events: CremosaEvent[] }) {
       title={`Próximo show: ${next.title}`}
       className="no-underline block"
     >
-      <Win95Window title="próximo show — contagem" controls>
+      <Win95Window title="próximo show — contagem" controls closeable>
         <div
           className="p-4 sm:p-5 bg-win-face text-win-ink flex flex-col gap-2 text-center"
           data-testid="next-event-countdown-content"
