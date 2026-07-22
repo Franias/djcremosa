@@ -22,6 +22,10 @@
 - Iteration 1 closure: all six checklist items already implemented and verified; task file re-synced with the green verification log.
 - Iteration 2 revalidation: ESLint/TypeScript/Playwright all green; suite remains 8/8 pass.
 - Iteration 3 revalidation: ESLint/TypeScript/Playwright all green; suite remains 8/8 pass.
+- Iteration 4 revalidation: ESLint/TypeScript/Playwright all green; suite remains 8/8 pass.
+- Iteration 5 revalidation: ESLint/TypeScript/Playwright all green; suite remains 8/8 pass.
+- Iteration 6 revalidation: ESLint/TypeScript/Playwright all green; suite remains 8/8 pass.
+- Iteration 7 revalidation: ESLint/TypeScript/Playwright all green; suite remains 8/8 pass.
 
 ## Decisions / Notes
 - Use `canvas.toBlob('image/png')` (no JPEG quality concerns) so the output is lossless.

@@ -1688,6 +1688,17 @@ body[data-graffiti-mode="true"] * {
   border-color: var(--color-bubble-hi);
   box-shadow: 2px 2px 0 var(--color-crimson-deep);
 }
+/* Hide the cursor-following hint on touch-only devices: there is no
+   cursor to follow, so a label like "PRESSIONE G PARA GRAFITAR"
+   floating under the finger is confusing — and on real phones/tablets
+   the chip would never reach the right position. Use `(hover: none)
+   and (pointer: coarse)` so hybrid devices with a real cursor (a
+   touchscreen laptop using its trackpad, for example) still see it. */
+@media (hover: none) and (pointer: coarse) {
+  .graffiti-cursor-hint {
+    display: none;
+  }
+}
 
 .graffiti-toggle,
 .graffiti-toolbar,
@@ -1964,31 +1975,66 @@ body[data-graffiti-mode="true"] * {
 }
 
 @media (max-width: 639px) {
+  /* On phones the toolbar holds 5 color swatches, a slider + readout,
+     a SHARE button, an APAGAR button, and a LIVE status. A single
+     row would clip SHARE/APAGAR off-screen on most viewports, so we
+     let it wrap to multiple rows anchored at the bottom. The toggle
+     button stays in its own fixed slot and never overlaps. */
   .graffiti-toolbar {
-    left: 0.75rem;
-    right: 7.5rem;
-    bottom: max(4.75rem, calc(env(safe-area-inset-bottom) + 4rem));
+    left: 0.5rem;
+    right: 6.25rem;
+    bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4.25rem));
     top: auto;
     max-width: none;
+    max-height: calc(100vh - 5.75rem);
     transform: none;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-end;
+    overflow-y: auto;
+    overflow-x: hidden;
+    row-gap: 0.4rem;
+    column-gap: 0.4rem;
+    padding: 0.45rem 0.55rem;
     scrollbar-width: none;
-  }
-  .graffiti-toggle {
-    right: max(0.75rem, env(safe-area-inset-right));
-    bottom: max(4.75rem, calc(env(safe-area-inset-bottom) + 4rem));
   }
   .graffiti-toolbar::-webkit-scrollbar {
     display: none;
   }
+  .graffiti-toggle {
+    right: max(0.5rem, env(safe-area-inset-right));
+    bottom: max(5rem, calc(env(safe-area-inset-bottom) + 4.25rem));
+  }
   .graffiti-toolbar-label {
     display: none;
   }
+  .graffiti-color {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
   .graffiti-size-slider {
-    width: 6rem;
+    width: 4.75rem;
+  }
+  .graffiti-size-control {
+    gap: 0.3rem;
+    padding: 0 0.1rem;
+  }
+  .graffiti-size-readout {
+    min-width: 2.5rem;
+    font-size: 0.68rem;
+  }
+  /* Push the action buttons (SHARE / APAGAR) onto their own row so
+     they are never cut off, even on the narrowest phones. */
+  .graffiti-share,
+  .graffiti-eraser {
+    flex-basis: calc(50% - 0.25rem);
+    text-align: center;
+    font-size: 0.7rem;
+    padding: 0.42rem 0.45rem;
   }
   .graffiti-live-status {
     margin-left: auto;
+    font-size: 0.7rem;
   }
 }
 

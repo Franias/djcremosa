@@ -9,7 +9,7 @@ import {
 } from "react";
 import { loadPlayhtml } from "@/lib/playhtml";
 import {
-  composShareImage,
+  composShareStoryImage,
   drawGraffitiStroke,
   EMPTY_GRAFFITI_DATA,
   generateGraffitiAuthorId,
@@ -366,10 +366,42 @@ export function GraffitiRuntime() {
     }
   }, []);
 
-  // Share the current mural as a Win95-styled PNG. Triggers a download
-  // via a hidden <a download> element and (when available) also hands
-  // the file to the OS-level share sheet so mobile users can drop it
-  // straight into Instagram Stories.
+  // Shared download + native share helper used by both the SHARE
+  // (landscape) and STORY (9:16 portrait) exports.
+  const deliverBlob = useCallback(async (blob: Blob, filename: string, dataUrl: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setNotice(`PNG salvo · ${filename}`);
+    const file = new File([blob], filename, { type: "image/png" });
+    const nav = navigator as Navigator & {
+      canShare?: (data?: ShareData) => boolean;
+      share?: (data?: ShareData) => Promise<void>;
+    };
+    if (typeof nav.canShare === "function" && nav.canShare({ files: [file] })) {
+      try {
+        await nav.share({
+          files: [file],
+          title: "Cremosa · graffiti",
+          text: dataUrl,
+        });
+      } catch {
+        // User dismissed the share sheet — nothing to do.
+      }
+    }
+  }, []);
+
+  // Share the current mural as a Win95-styled PNG in Instagram Story
+  // format (9:16 portrait). The single SHARE button always produces the
+  // Story composition so the exported file is drop-in ready for Stories
+  // *and* downloads to disk via a hidden <a download> element and
+  // (when available) hands the file to the OS-level share sheet so
+  // mobile users can drop it straight into Instagram Stories / Snapchat.
   const sharePng = useCallback(async () => {
     const source = canvasRef.current;
     if (!source) {
@@ -377,41 +409,15 @@ export function GraffitiRuntime() {
       return;
     }
     try {
-      const { blob, filename, dataUrl } = await composShareImage(source, {
+      const { blob, filename, dataUrl } = await composShareStoryImage(source, {
         title: "graffiti.exe · CREMOSA",
       });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      link.rel = "noopener";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setNotice(`PNG salvo · ${filename}`);
-      // Best-effort mobile share sheet — fall back silently if the
-      // browser can't handle file shares.
-      const file = new File([blob], filename, { type: "image/png" });
-      const nav = navigator as Navigator & {
-        canShare?: (data?: ShareData) => boolean;
-        share?: (data?: ShareData) => Promise<void>;
-      };
-      if (typeof nav.canShare === "function" && nav.canShare({ files: [file] })) {
-        try {
-          await nav.share({
-            files: [file],
-            title: "Cremosa · graffiti",
-            text: dataUrl,
-          });
-        } catch {
-          // User dismissed the share sheet — nothing to do.
-        }
-      }
+      await deliverBlob(blob, filename, dataUrl);
     } catch (error) {
       console.warn("[cremosa] share failed", error);
       setNotice("falha ao gerar PNG · tente de novo");
     }
-  }, []);
+  }, [deliverBlob]);
 
   // Per-user eraser: removes only the strokes painted by the current
   // browser. Other visitors' graffiti stays untouched.
@@ -613,7 +619,7 @@ export function GraffitiRuntime() {
             data-testid="graffiti-share"
             className="graffiti-share"
             onClick={sharePng}
-            aria-label="Salvar pintura como PNG"
+            aria-label="Compartilhar pintura como PNG (formato Story + download)"
           >
             SHARE
           </button>

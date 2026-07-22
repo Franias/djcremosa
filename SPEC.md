@@ -313,10 +313,13 @@ public/
 - [x] Spray mais pigmentado (brush-like): mais partículas, alpha mais alta, miolo opaco
 - [x] Fade in/out da camada transparente ao entrar/sair do modo (`G`) sem perder traços já pintados
 - [x] Aviso `BE NICE!` em estilo Y2K (display font + magenta) por ~2.4s ao ativar o modo
-- [x] Botão SHARE na toolbar exporta mural como PNG Win95-styled com legenda `CONTRACT CREMOSA FOR YOU SHOW`
+- [x] Botão SHARE na toolbar exporta mural como PNG com moldura cinza Win95, faixa de título azul da marca, status bar do site (`Pronto · Porto Alegre, RS — Brasil`, `Cremosa · desde 2016`, `Next show · franias.github.io/djcremosa.exe`, `Booking →`) e legenda azul `CONTRACT CREMOSA FOR YOU SHOW` com a URL `franias.github.io/djcremosa.exe`
+- [x] Botão STORY exporta PNG 9:16 (1080×1920) com mural rotacionado 90° CW, moldura Win95, legenda `CONTRACT CREMOSA FOR YOU SHOW` e footer para Instagram Stories
 - [x] `navigator.share({ files })` opcional em browsers móveis (Instagram Stories, etc.)
 - [x] Mural persistente (`site-graffiti-strokes`) + previews ao vivo (`site-graffiti-active-stroke`) via playhtml
 - [x] Apagamento local: remove apenas os strokes pintados neste navegador; preserva graffiti de outros visitantes
+- [x] Botão único `SHARE` na toolbar exporta o mural como PNG 1080×1920 (9:16 Story) com moldura Win95, título azul da marca, faixa de status do site, legenda azul `CONTRACT CREMOSA FOR YOU SHOW` + URL `franias.github.io/djcremosa.exe`, faz download via `<a download>` e dispara `navigator.share({ files })` quando disponível — o graffiti é blitado na orientação original (sem rotação de 90°) usando `contain` fit
+- [x] Mobile (`max-width: 639px`): chip do cursor (`PRESSIONE G PARA GRAFITAR`) é suprimido via `@media (hover: none) and (pointer: coarse)` — touchscreen puro não tem cursor pra acompanhar; toolbar permite `flex-wrap` para que `SHARE`, `APAGAR`, paleta, slider e `LIVE` permaneçam visíveis mesmo em telas de 320px (iPhone SE)
 - [x] Fallback de toque/mobile, paleta de cores, tamanhos de spray e limites anti-crescimento
 - [x] Testes Playwright para atalho, pintura local, slider, densidade de brush, pass-through, controle de paleta/eraser e apagamento por autor
 

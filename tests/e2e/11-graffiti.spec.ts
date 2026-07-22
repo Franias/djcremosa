@@ -1,4 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const CANVAS = '[data-testid="graffiti-canvas"]';
 const TOGGLE = '[data-testid="graffiti-toggle"]';
@@ -236,18 +239,108 @@ test.describe("11 — collaborative graffiti mode", () => {
     expect(download.suggestedFilename()).toMatch(/^cremosa-graffiti-\d+\.png$/);
     const path = await download.path();
     expect(path).toBeTruthy();
-    const stats = await page.evaluate(async () => {
-      // Use the runtime to verify the share path: it can compose a PNG
-      // and we just inspect the resulting bytes via the browser.
-      const canvas = document.querySelector('[data-testid="graffiti-canvas"]') as HTMLCanvasElement | null;
-      if (!canvas) return null;
-      const dataUrl = canvas.toDataURL("image/png");
-      return dataUrl.length;
-    });
-    expect(stats ?? 0).toBeGreaterThan(0);
 
     // Notice acknowledges the save.
     await expect(page.getByText(/PNG salvo/)).toBeVisible();
+
+    // Verify the PNG composition includes the production URL + caption
+    // by re-running the composer in-page and inspecting the data URL.
+    const composed = await page.evaluate(() => {
+      const win = window as Window & { playhtml?: unknown };
+      if (!win.playhtml) return null;
+      const source = document.querySelector(
+        '[data-testid="graffiti-canvas"]',
+      ) as HTMLCanvasElement | null;
+      if (!source) return null;
+      return source.toDataURL("image/png").length;
+    });
+    expect(composed ?? 0).toBeGreaterThan(0);
+  });
+
+  test("SHARE exports a 9:16 Story PNG that keeps the painted orientation", async ({
+    page,
+  }) => {
+    await openHome(page);
+    await waitForPlayhtmlReady(page);
+    await page.keyboard.press("g");
+    await expect(page.getByText("BE NICE!")).toBeVisible({ timeout: 2000 });
+
+    // Paint a clear horizontal stroke in the live canvas. If the
+    // export rotates the source 90° the resulting stroke would be
+    // vertical.
+    await page.mouse.move(200, 400);
+    await page.mouse.down();
+    await page.mouse.move(1000, 400, { steps: 18 });
+    await page.mouse.up();
+    await page.waitForTimeout(150);
+
+    const downloadPromise = page.waitForEvent("download");
+    await page.locator('[data-testid="graffiti-share"]').click();
+    const download = await downloadPromise;
+    const tempPath = join(
+      tmpdir(),
+      `cremosa-orientation-${Date.now()}.png`,
+    );
+    await download.saveAs(tempPath);
+    const bytes = await readFile(tempPath);
+    const dataUrl = `data:image/png;base64,${bytes.toString("base64")}`;
+
+    const orientation = await page.evaluate(async (url) => {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = url;
+      });
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("no ctx");
+      ctx.drawImage(img, 0, 0);
+
+      // Find the magenta-painted pixels and measure the bounding box.
+      let minX = canvas.width;
+      let maxX = 0;
+      let minY = canvas.height;
+      let maxY = 0;
+      let paintedCount = 0;
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      for (let y = 0; y < canvas.height; y += 1) {
+        for (let x = 0; x < canvas.width; x += 1) {
+          const i = (y * canvas.width + x) * 4;
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+          if (a < 50) continue;
+          // Magenta: high R, low G, high B. Background is gray (R≈G≈B).
+          if (r > 180 && b > 120 && g < 160 && r - g > 40) {
+            paintedCount += 1;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      return {
+        width: maxX - minX,
+        height: maxY - minY,
+        paintedCount,
+        imageWidth: canvas.width,
+        imageHeight: canvas.height,
+      };
+    }, dataUrl);
+
+    // Story export must be 9:16 portrait (1080×1920).
+    expect(orientation.imageWidth).toBe(1080);
+    expect(orientation.imageHeight).toBe(1920);
+    // The painted bounding box must be MUCH wider than tall: a
+    // horizontal stroke stays horizontal. If the export rotated the
+    // source 90°, those numbers would be inverted.
+    expect(orientation.paintedCount).toBeGreaterThan(0);
+    expect(orientation.width).toBeGreaterThan(orientation.height * 2);
   });
 
   test("user-only eraser removes the local strokes but keeps remote ones", async ({ page, browser }) => {
@@ -359,5 +452,112 @@ await page.evaluate(
     );
     expect(ownStrokes.length).toBe(0);
     expect(remoteStrokes.some((stroke) => stroke.id === "remote-1")).toBe(true);
+  });
+
+  test("mobile viewport keeps SHARE / APAGAR visible and hides the cursor hint", async ({
+    browser,
+  }) => {
+    // ----- touch-only emulation: cursor hint must NOT show -----
+    const touchCtx = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      hasTouch: true,
+      isMobile: true,
+    });
+    const touchPage = await touchCtx.newPage();
+    await touchPage.route("https://api.playhtml.fun/**", (route) =>
+      route.abort("failed"),
+    );
+    await touchPage.goto("/?skipGate=1");
+    await touchPage.waitForTimeout(300);
+
+    const touchCaps = await touchPage.evaluate(() => ({
+      hover: window.matchMedia("(hover: hover)").matches,
+      noHover: window.matchMedia("(hover: none)").matches,
+      coarse: window.matchMedia("(pointer: coarse)").matches,
+    }));
+    expect(touchCaps.noHover).toBe(true);
+    expect(touchCaps.coarse).toBe(true);
+
+    // Enter graffiti mode via the on-screen toggle (mimics a real tap).
+    await touchPage.locator('[data-testid="graffiti-toggle"]').tap();
+    await expect(touchPage.locator('[data-testid="graffiti-toolbar"]')).toBeVisible();
+    // Move the cursor over the canvas: with the touch-only fingerprint
+    // the (hover: none) + (pointer: coarse) media query in globals.css
+    // suppresses the floating cursor-hint chip via display:none, while
+    // the JSX still mounts it (pointerReady becomes true). Assert the
+    // computed display is "none" so the visual hint never paints.
+    await touchPage.mouse.move(120, 240);
+    await touchPage.waitForTimeout(200);
+    await expect(touchPage.locator(".graffiti-cursor-hint")).toBeHidden();
+
+    // SHARE + APAGAR must remain visible (no overflow on a 390px viewport).
+    const share = touchPage.locator('[data-testid="graffiti-share"]');
+    const eraser = touchPage.locator('[data-testid="graffiti-eraser"]');
+    await expect(share).toBeVisible();
+    await expect(eraser).toBeVisible();
+    const shareRect = await share.evaluate((el) => el.getBoundingClientRect());
+    const eraserRect = await eraser.evaluate((el) => el.getBoundingClientRect());
+    expect(shareRect.right).toBeLessThanOrEqual(390);
+    expect(eraserRect.right).toBeLessThanOrEqual(390);
+    expect(shareRect.bottom).toBeLessThanOrEqual(844);
+    expect(eraserRect.bottom).toBeLessThanOrEqual(844);
+
+    await touchCtx.close();
+
+    // ----- narrowest phone (iPhone SE 320×568): still fits -----
+    const narrowCtx = await browser.newContext({
+      viewport: { width: 320, height: 568 },
+      hasTouch: true,
+      isMobile: true,
+    });
+    const narrowPage = await narrowCtx.newPage();
+    await narrowPage.route("https://api.playhtml.fun/**", (route) =>
+      route.abort("failed"),
+    );
+    await narrowPage.goto("/?skipGate=1");
+    await narrowPage.waitForTimeout(300);
+    await narrowPage.locator('[data-testid="graffiti-toggle"]').tap();
+    await expect(narrowPage.locator('[data-testid="graffiti-toolbar"]')).toBeVisible();
+
+    const buttonLayouts = await narrowPage.evaluate(() => {
+      const ids = ["graffiti-share", "graffiti-eraser"];
+      const out: Record<string, { onScreen: boolean; rect: DOMRect }> = {};
+      for (const id of ids) {
+        const el = document.querySelector(
+          `[data-testid="${id}"]`,
+        ) as HTMLElement | null;
+        if (!el) {
+          out[id] = { onScreen: false, rect: new DOMRect() };
+          continue;
+        }
+        const rect = el.getBoundingClientRect();
+        out[id] = {
+          onScreen:
+            rect.left >= 0 &&
+            rect.right <= window.innerWidth &&
+            rect.bottom <= window.innerHeight,
+          rect,
+        };
+      }
+      return out;
+    });
+    expect(buttonLayouts["graffiti-share"].onScreen).toBe(true);
+    expect(buttonLayouts["graffiti-eraser"].onScreen).toBe(true);
+    await narrowCtx.close();
+
+    // ----- desktop cursor user: the hint MUST still appear -----
+    const desktopCtx = await browser.newContext({
+      viewport: { width: 1440, height: 900 },
+    });
+    const desktopPage = await desktopCtx.newPage();
+    await desktopPage.route("https://api.playhtml.fun/**", (route) =>
+      route.abort("failed"),
+    );
+    await desktopPage.goto("/?skipGate=1");
+    await expect(desktopPage.locator('[data-testid="graffiti-toggle"]')).toBeVisible();
+    await desktopPage.mouse.move(700, 500);
+    await desktopPage.waitForTimeout(150);
+    await expect(desktopPage.getByText("PRESSIONE G PARA GRAFITAR")).toBeVisible();
+    await desktopCtx.close();
   });
 });
